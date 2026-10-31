@@ -1,0 +1,312 @@
+# 拼豆的 PostgreSQL：CloudNativePG 管理的单实例集群，WAL 连续归档 + 每天基础备份，可以恢复到任意时间点。
+# 运算符与插件在 deploy/k3s/cnpg-operator（集群级，先装）；镜像预拉、切换、恢复步骤见 docs/deployment.md。
+#
+# 要先在服务器上手工准备的（不进仓库）：
+#   pindou-postgres  数据库密码。CloudNativePG 还要一个 username 键：
+#                    kubectl -n pindou patch secret pindou-postgres -p '{"stringData":{"username":"pindou"}}'
+#   pindou-db-s3     本机归档库的访问密钥（ACCESS_KEY_ID、ACCESS_SECRET_KEY，随机生成，命令见文档）
+#
+# 硬约束：
+# - API 与备份任务只认 postgres:5432，所以这里有一个同名服务指向主库。
+#   不要 kubectl delete -f 这个文件：会连同在用的库、归档和 postgres 服务一起删掉。要删什么按名字删。
+# - 归档现在写在本机（同一块盘上的 rclone S3 服务）：能按时间点恢复误操作，但不是灾备——这块盘或这台机器没了，
+#   库和归档一起没。接腾讯云 COS 时加一个指向 COS 的 ObjectStore（地址、路径、凭证不同，其余照抄），
+#   把集群的 barmanObjectName 换过去（见文档「接 COS 之后」）。
+# - 单节点 3.8GiB：数据库容器请求 512Mi（与原来一样），归档边车、rclone、运算符和插件各几十 MB，上限都写死。
+---
+# 数据库卷和归档卷的存储类。local-path 默认 reclaimPolicy=Delete：PVC 一删（例如误删命名空间、删掉 Cluster），
+# 数据目录跟着删。这里保留。写在这个文件里：全新部署先建库、后 apply pindou.yaml，库的卷要先有存储类。
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-path-retain
+provisioner: rancher.io/local-path
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+---
+# 本机的 S3 兼容服务（rclone serve s3），给 WAL 归档与基础备份用。数据目录在 local-path-retain 卷里，
+# 删命名空间也不丢。只有 CloudNativePG 的 Pod 能连（网络策略在文件末尾）。
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pindou-db-archive
+  namespace: pindou
+spec:
+  storageClassName: local-path-retain
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pindou-db-archive
+  namespace: pindou
+spec:
+  selector:
+    app.kubernetes.io/name: pindou-db-archive
+  ports:
+    - name: s3
+      port: 9000
+      targetPort: s3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pindou-db-archive
+  namespace: pindou
+spec:
+  replicas: 1
+  # 卷只能挂在一个 Pod 上，先停旧的再起新的；停的这几秒里归档会失败，PostgreSQL 留着 WAL 稍后重试，不丢
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pindou-db-archive
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pindou-db-archive
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: rclone
+          # 与备份任务同一个镜像，经 Docker Hub 加速拉取
+          image: docker.io/rclone/rclone:1.75.1
+          command: [sh, -c]
+          # 桶就是 /data 下的目录。--vfs-cache-mode off（默认）：上传落盘后才回成功，WAL 归档要的就是这个。
+          # 分片按顺序流式写盘，乱序的分片最多缓存 64M（归档边车 data.jobs=1，本来就按顺序传）。
+          args:
+            - |
+              mkdir -p /data/pindou-db
+              exec rclone serve s3 :local:/data --addr :9000 --auth-key "$ACCESS_KEY_ID,$ACCESS_SECRET_KEY" \
+                --vfs-cache-mode off --multipart-streaming-buffer-limit 64M --log-level NOTICE
+          env:
+            - name: ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: pindou-db-s3
+                  key: ACCESS_KEY_ID
+            - name: ACCESS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pindou-db-s3
+                  key: ACCESS_SECRET_KEY
+            - name: HOME
+              value: /tmp
+            - name: RCLONE_CONFIG
+              value: /tmp/rclone.conf
+          ports:
+            - name: s3
+              containerPort: 9000
+          readinessProbe:
+            tcpSocket:
+              port: s3
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: s3
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 192Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: pindou-db-archive
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+---
+# 归档与基础备份的目的地。retentionPolicy 30d：随时能恢复到最近 30 天内的任意时刻，更早的基础备份和 WAL 自动删。
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: pindou-db-local
+  namespace: pindou
+spec:
+  retentionPolicy: "30d"
+  configuration:
+    destinationPath: s3://pindou-db/
+    endpointURL: http://pindou-db-archive:9000
+    s3Credentials:
+      accessKeyId:
+        name: pindou-db-s3
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: pindou-db-s3
+        key: ACCESS_SECRET_KEY
+    wal:
+      compression: zstd
+    data:
+      compression: gzip
+      # 按顺序一个分片一个分片地传：内存最省，rclone 也不用缓存乱序分片
+      jobs: 1
+      # 备份开始时立即做检查点，不等平摊的检查点（否则一次备份要多等几分钟；库小，I/O 尖峰可以忽略）
+      immediateCheckpoint: true
+  instanceSidecarConfiguration:
+    # boto3 新版默认给每个请求算 CRC 校验，部分 S3 兼容服务不认；只在必须时才算
+    env:
+      - name: AWS_REQUEST_CHECKSUM_CALCULATION
+        value: when_required
+      - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+        value: when_required
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pindou-db
+  namespace: pindou
+spec:
+  instances: 1
+  # 与 deploy/k3s/cnpg-images.txt 一致；带时间戳的标签不会被重推（不带时间戳的 17.11-standard-trixie 每周重建）。
+  # standard 镜像带全部 locale：库沿用原来的 en_US.utf8，排序与 pg_trgm 对中文的切分与原库一致。
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-202609281634-standard-trixie
+  imagePullPolicy: IfNotPresent
+  # 单实例：没有可切换的备库，PDB 只会挡住节点维护
+  enablePDB: false
+  primaryUpdateStrategy: unsupervised
+  # 重启、升级时先礼貌关停 10 秒（API 的连接池不会主动断开，等满也没用），之后快速关停，最长 60 秒
+  smartShutdownTimeout: 10
+  stopDelay: 60
+  postgresql:
+    parameters:
+      timezone: Etc/UTC
+  bootstrap:
+    initdb:
+      database: pindou
+      owner: pindou
+      secret:
+        name: pindou-postgres
+      encoding: UTF8
+      localeCollate: en_US.utf8
+      localeCType: en_US.utf8
+      dataChecksums: true
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: pindou-db-local
+  storage:
+    storageClass: local-path-retain
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 768Mi
+  # 只留读写服务 pindou-db-rw（单实例没有只读副本）；API 用的是下面那个 postgres
+  managed:
+    services:
+      disabledDefaultServices: [ro, r]
+---
+# 每天北京时间 02:45 一个基础备份（这里的时间是 UTC，秒 分 时 日 月 周），在 03:15 的 pg_dump 之前做完。
+# 两份互不依赖：基础备份 + WAL 用来按时间点恢复；pg_dump 是跨版本可读的逻辑副本，并记进 backup_runs 给 /statusz。
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: pindou-db-daily
+  namespace: pindou
+spec:
+  schedule: "0 45 18 * * *"
+  # 创建时立刻做一份：切换后马上就有可恢复的起点
+  immediate: true
+  backupOwnerReference: self
+  cluster:
+    name: pindou-db
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+---
+# API 和备份任务连的 postgres:5432 → CloudNativePG 的主库。选择器与运算符自己的 pindou-db-rw 相同。
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: pindou
+spec:
+  selector:
+    cnpg.io/cluster: pindou-db
+    cnpg.io/instanceRole: primary
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+---
+# 本命名空间的 Pod（API、备份任务、运算符的导入/恢复任务）→ 数据库 5432；
+# 运算符（cnpg-system）→ 实例的状态端口 8000 与 5432。任何 CloudNativePG 集群的实例都适用（含按时间点恢复出来的临时集群）。
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pindou-db-instances
+  namespace: pindou
+spec:
+  podSelector:
+    matchExpressions:
+      - key: cnpg.io/cluster
+        operator: Exists
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 5432
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cnpg-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: cloudnative-pg
+      ports:
+        - port: 8000
+        - port: 5432
+---
+# 只有 CloudNativePG 的 Pod（实例里的归档边车、恢复任务）能连本机归档库。
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pindou-db-archive
+  namespace: pindou
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: pindou-db-archive
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: cnpg.io/cluster
+                operator: Exists
+      ports:
+        - port: 9000

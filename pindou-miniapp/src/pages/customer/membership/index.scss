@@ -1,0 +1,81 @@
+@use '../../../styles/tokens' as ui;
+.membership-screen .navbar-title { font-family: inherit; }
+.membership-screen .page-content { padding: 6PX 16PX 0; line-height: normal; }
+.loyalty-content { display: flex; flex-direction: column; gap: 12PX; }
+.loyalty-member { display: flex; flex-direction: column; gap: 12PX; padding: 16PX 18PX 14PX; border-radius: 18PX; background: ui.$brand-dark; color: ui.$surface; }
+.loyalty-member-top { display: flex; align-items: flex-start; gap: 10PX; }
+.loyalty-member-identity { display: flex; flex-direction: column; gap: 4PX; min-width: 0; flex: 1; }
+.loyalty-member-phone { color: ui.$design-card-muted; font-size: 12PX; }
+.loyalty-member-name { font-size: 21PX; font-weight: 600; overflow-wrap: anywhere; }
+.screen .loyalty-code-button { display: flex; align-items: center; gap: 6PX; flex: none; padding: 0 12PX; min-height: 36PX; border: 1PX solid rgba(ui.$surface, .28); border-radius: 18PX; background: rgba(ui.$surface, .08); color: ui.$surface; font-size: 13PX; }
+.loyalty-code-button .design-icon { width: 16PX; height: 16PX; flex-basis: 16PX; }
+.loyalty-balance { display: flex; flex-direction: column; gap: 2PX; }
+.loyalty-balance-label { color: ui.$design-card-muted; font-size: 12PX; }
+.loyalty-balance-value { font-size: 32PX; line-height: 40PX; letter-spacing: .5PX; font-weight: 600; overflow-wrap: anywhere; }
+.loyalty-assets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding-top: 10PX; border-top: 1PX solid rgba(ui.$surface, .14); }
+.loyalty-asset { display: flex; flex-direction: column; gap: 2PX; min-width: 0; }
+.loyalty-asset-label { color: ui.$design-card-muted; font-size: 12PX; }
+.loyalty-asset-count { font-size: 18PX; font-weight: 600; }
+.loyalty-member-note { color: ui.$accent; font-size: 12PX; }
+.screen .loyalty-latest { display: flex; align-items: center; gap: 8PX; padding: 0 6PX; margin: 0 -6PX; min-height: 40PX; border-radius: 10PX; background: rgba(ui.$surface, .06); color: ui.$design-card-copy; font-size: 13PX; text-align: left; }
+.loyalty-latest-prefix { color: ui.$design-card-muted; flex: none; }
+.loyalty-latest-copy { flex: 1; min-width: 0; }
+.loyalty-latest-link { color: ui.$accent; flex: none; }
+.loyalty-latest .design-icon { flex-basis: 14PX; width: 14PX; height: 14PX; }
+.loyalty-store-note { color: ui.$muted; font-size: 12PX; text-align: center; }
+.loyalty-tabs { position: sticky; top: var(--customer-navigation-height); z-index: 4; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1PX solid ui.$divider; background: ui.$canvas; }
+.screen .loyalty-tab { display: flex; align-items: center; justify-content: center; min-height: 44PX; padding: 0; border-radius: 0; background: transparent; color: ui.$muted; font-size: 15PX; }
+.screen .loyalty-tab-selected { color: ui.$action; box-shadow: inset 0 -2PX 0 ui.$action; font-weight: 600; }
+.loyalty-section { display: flex; flex-direction: column; gap: 10PX; }
+.loyalty-section > .field-help { margin: 0 0 2PX; font-size: 13PX; line-height: normal; }
+.loyalty-rule { display: flex; flex-direction: column; gap: 4PX; padding: 14PX 16PX; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; font-size: 14PX; overflow-wrap: anywhere; }
+.loyalty-rule .strong { font-size: 16PX; font-weight: 600; }
+.loyalty-recharge { flex-direction: row; align-items: center; gap: 12PX; }
+.loyalty-recharge-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4PX; }
+.loyalty-recharge-note { color: ui.$muted; font-size: 13PX; }
+.loyalty-recharge-tag { padding: 3PX 8PX; border-radius: 8PX; background: ui.$action-soft; color: ui.$action; white-space: nowrap; font-size: 12PX; }
+.screen .loyalty-birthday-card { display: flex; flex-direction: column; gap: 2PX; width: 100%; padding: 12PX 16PX; border: 1PX dashed ui.$accent; border-radius: 14PX; background: ui.$action-soft; text-align: left; }
+.loyalty-birthday-card-title { color: ui.$ink; font-size: 15PX; font-weight: 600; }
+.loyalty-birthday-card-note { color: ui.$action; font-size: 13PX; }
+.loyalty-birthday-title { margin-top: 16PX; }
+.loyalty-success { padding: 12PX 16PX; border-radius: ui.$radius; background: ui.$action-soft; color: ui.$action; font-size: ui.$caption-size; }
+.screen .loyalty-leave { width: 100%; min-height: 0; padding: 0; color: ui.$action; font-size: 14PX; text-align: center; }
+.member-history { display: flex; flex-direction: column; gap: 12PX; }
+.member-month { display: flex; flex-direction: column; gap: 12PX; }
+.member-month-head { display: flex; align-items: baseline; justify-content: space-between; }
+.member-month-title { font-size: 15PX; font-weight: 600; }
+.member-month-total { color: ui.$muted; font-size: 12PX; }
+.member-history-list { border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; overflow: hidden; }
+.screen .member-history-row { display: flex; align-items: flex-start; gap: 12PX; width: 100%; padding: 14PX 14PX 14PX 16PX; border-bottom: 1PX solid ui.$divider; background: transparent; color: ui.$ink; text-align: left; }
+.screen .member-history-row:last-child { border-bottom: 0; }
+.screen .member-history-row[disabled] { opacity: 1; }
+.member-history-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3PX; }
+.member-history-title { font-size: 15PX; font-weight: 600; overflow-wrap: anywhere; }
+.member-history-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; white-space: pre-line; overflow-wrap: anywhere; }
+.member-history-value { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 3PX; text-align: right; }
+.member-history-amount { font-size: 16PX; font-weight: 600; }
+.member-history-positive { color: ui.$success; }
+.member-history-reversed .member-history-amount { color: ui.$design-reversed; text-decoration: line-through; }
+.member-history-reversed .member-history-title { color: ui.$muted; }
+.member-history-reversed .ledger-icon { background: ui.$disabled-surface; }
+.member-history-reversal { padding: 1PX 6PX; border: 1PX solid ui.$design-input-border; border-radius: 6PX; color: ui.$muted; font-size: 11PX; }
+.member-history-end { text-align: center; color: ui.$muted; font-size: 12PX; }
+.member-code-mask { position: fixed; inset: 0; z-index: 100; display: flex; align-items: flex-end; background: rgba(ui.$brand-dark, .55); }
+.member-code-sheet { position: relative; width: 100%; max-height: 90vh; overflow-y: auto; padding: 8PX 20PX max(40PX, env(safe-area-inset-bottom)); border-radius: 20PX 20PX 0 0; background: ui.$surface; }
+.member-code-sheet .sheet-handle { margin: 0 auto 12PX; width: 40PX; height: 5PX; border-radius: 3PX; background: ui.$design-input-border; }
+.member-code-sheet-head { display: flex; align-items: center; margin-bottom: 12PX; }
+.member-code-sheet-title { flex: 1; font-size: 18PX; font-weight: 600; }
+.screen .member-code-close { display: flex; align-items: center; justify-content: center; width: 36PX; height: 36PX; border-radius: 18PX; background: ui.$canvas; }
+.member-code-close .design-icon { width: 18PX; height: 18PX; flex-basis: 18PX; }
+.member-code-card { display: flex; flex-direction: column; align-items: center; gap: 12PX; text-align: center; }
+.member-code-title { align-self: stretch; font-size: 16PX; font-weight: 600; text-align: left; }
+.member-code-intro { margin: 0; color: ui.$muted; font-size: 14PX; text-align: center; }
+.member-code-frame { position: relative; box-sizing: content-box; width: 200PX; height: 200PX; padding: 14PX; max-width: 100%; background: ui.$surface; border: 1PX solid ui.$divider; border-radius: 16PX; overflow: hidden; }
+.member-code-image { display: block; width: 200PX; height: 200PX; }
+.member-code-image-expired { opacity: .15; }
+.member-code-placeholder, .member-code-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16PX; text-align: center; }
+.member-code-foot { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; color: ui.$muted; font-size: 12PX; }
+.member-code-sheet-note { font-size: 12PX; color: ui.$muted; }
+
+.membership-screen .navbar-back { left: 4PX; width: 44PX; min-height: 44PX; }
+.membership-screen { font-family: 'Noto Sans SC', 'PingFang SC', sans-serif; }

@@ -1,0 +1,9 @@
+# 运算符的配置（官方清单里没有这个 ConfigMap，运算符启动时读取）。
+# 升级运算符时，实例 Pod 里的实例管理器原地换新，不重启 PostgreSQL：只有一个实例，重启就是停机。
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cnpg-controller-manager-config
+  namespace: cnpg-system
+data:
+  ENABLE_INSTANCE_MANAGER_INPLACE_UPDATES: "true"

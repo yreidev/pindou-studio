@@ -1,0 +1,55 @@
+/* 首页内容页：只管图片的尺寸和排布，颜色、字号都用 Semi 默认主题 */
+.pattern-thumb {
+  display: block;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--semi-border-radius-small);
+  background: var(--semi-color-fill-0);
+}
+
+.pattern-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pattern-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  align-self: flex-start;
+  border-radius: var(--semi-border-radius-medium);
+  background: var(--semi-color-fill-0);
+}
+
+/* 做图纸用的豆子：三项设置横排，窄屏换行；色块是圆点 */
+.bead-settings-fields {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 32px;
+}
+
+.bead-series {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.bead-series-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.bead-swatch {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  vertical-align: middle;
+  box-shadow: inset 0 0 0 1px var(--semi-color-border);
+}

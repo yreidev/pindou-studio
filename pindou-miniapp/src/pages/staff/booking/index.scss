@@ -1,0 +1,39 @@
+@use '../../../styles/tokens' as ui;
+
+// 代客登记（2026-10-20 单独一页）
+.booking-form { display: flex; flex-direction: column; gap: 18PX; padding-bottom: 96PX; }
+.booking-intro { display: block; padding: 10PX 12PX; border-radius: 12PX; background: ui.$action-soft; color: ui.$ink; font-size: 13PX; line-height: 20PX; }
+.booking-section { display: flex; flex-direction: column; gap: 8PX; }
+.booking-label { display: block; font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.booking-label-note { color: ui.$muted; font-size: 13PX; font-weight: 400; }
+.booking-help { display: block; color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.booking-warning { display: block; padding: 8PX 10PX; border-radius: 10PX; background: ui.$warning-soft; color: ui.$warning; font-size: 13PX; line-height: 20PX; }
+.booking-name, .booking-note { background: ui.$surface; }
+.booking-note { height: 72PX; padding: 10PX 12PX; }
+.booking-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8PX; }
+.booking-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.screen .booking-choice { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; height: 46PX; min-height: 46PX; padding: 0 4PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$ink; font-size: 14PX; line-height: 20PX; text-align: center; overflow-wrap: anywhere; }
+.screen .booking-choice-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; font-weight: 600; }
+.booking-choice-note { font-size: 11PX; line-height: 14PX; color: ui.$action; }
+.booking-choice-on .booking-choice-note { color: #d8c08f; }
+.booking-dates { white-space: nowrap; width: 100%; }
+.screen .booking-date { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 56PX; height: 56PX; min-height: 56PX; margin-right: 8PX; padding: 0; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$ink; }
+.screen .booking-date-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.booking-date-top { font-size: 11PX; line-height: 16PX; }
+.booking-date-day { font-family: ui.$font-display; font-size: 20PX; line-height: 24PX; }
+.booking-zone { display: flex; flex-direction: column; gap: 6PX; }
+.booking-zone-name { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.booking-zone-seats { display: flex; flex-wrap: wrap; gap: 8PX; }
+.screen .booking-seat { min-width: 56PX; height: 40PX; min-height: 40PX; padding: 0 12PX; border: 2PX solid #3aa877; border-radius: 10PX; background: rgba(76, 195, 138, .12); color: #1f6e4a; font-size: 14PX; line-height: 36PX; font-weight: 600; text-align: center; }
+.screen .booking-seat-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.booking-footer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; align-items: center; gap: 12PX; padding: 12PX 16PX calc(12PX + env(safe-area-inset-bottom)); border-top: 1PX solid ui.$divider; background: ui.$surface; }
+.booking-footer-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.booking-footer-main { font-size: 15PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.booking-footer-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.screen .booking-submit { flex: 0 0 auto; min-width: 104PX; height: 48PX; min-height: 48PX; border-radius: 14PX; background: ui.$brand-dark; color: ui.$on-dark; font-size: 17PX; line-height: 48PX; font-weight: 600; text-align: center; }
+.screen .booking-submit[disabled] { opacity: .45; }
+
+@media (min-width: ui.$staff-wide) {
+  .booking-form { max-width: 720PX; }
+  .booking-footer { left: ui.$staff-sidebar; }
+}

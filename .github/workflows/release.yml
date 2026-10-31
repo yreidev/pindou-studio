@@ -1,0 +1,315 @@
+# 后端与网页后台的镜像（2026-10-31 起各自发版，见 docs/plan-split-release.md），小程序另见 miniapp.yml：
+# - 打 backend-v<版本> 标签：构建后端镜像 docker.io/yreidev/pindou-api（只有接口）；
+# - 打 admin-v<版本> 标签：构建网页后台镜像 docker.io/yreidev/pindou-admin（页面服务），版本须等于 pindou-admin/package.json；
+# - 手动触发：选构建哪一个，后端的版本记作 dev-<commit>，镜像只打 sha 标签。
+# 旧的 v0.0.x 标签留作历史，不再触发任何流程。
+# 等这个提交在 main 上的「工程验证」通过再构建，不重跑检查：推 main 时 verify.yml 已经对同一个提交跑过。
+# 所以必须先把提交推到 main、再打标签；这个提交在 main 上没有检查记录或检查没通过，就不出镜像。
+# 镜像标签：版本号与 sha-<7 位 commit>；不打 latest，部署一律钉具体标签。
+# 只构建、不部署：生产发布前要先备份数据库，由人按 backend-release skill 操作（网页后台的上线步骤也在里面）。
+# 需要仓库 secret：DOCKERHUB_USERNAME、DOCKERHUB_TOKEN（Docker Hub 的访问令牌，只给推送权限）。
+# 镜像是公开的：国内服务器经腾讯云的 Docker Hub 加速拉取，加速只代理公开镜像。里面只有二进制，不含任何密钥。
+# action 固定到提交 SHA（行尾是版本号）：这个任务带着 Docker Hub 的推送密钥。
+name: 镜像
+
+on:
+  push:
+    tags: ['backend-v*', 'admin-v*']
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 构建哪一个镜像
+        type: choice
+        options: [backend, admin]
+        required: true
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}-${{ inputs.target }}
+  cancel-in-progress: false
+
+env:
+  # actions/checkout 先 git init 再取代码，git 每次都提示「没设默认分支名」；设上就不提示，对取到的代码没有影响
+  DOCKER_BUILD_RECORD_UPLOAD: false
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+
+jobs:
+  plan:
+    name: 构建哪一个、版本号
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      target: ${{ steps.plan.outputs.target }}
+      version: ${{ steps.plan.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: plan
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          set -eu
+          if [ "$REF_TYPE" = tag ]; then
+            case "$REF_NAME" in
+              backend-v*) target=backend; version="${REF_NAME#backend-v}" ;;
+              admin-v*) target=admin; version="${REF_NAME#admin-v}" ;;
+              *) echo "::error::不认识的标签 $REF_NAME"; exit 1 ;;
+            esac
+            if ! printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+              echo "::error::标签 $REF_NAME 的版本号不是 x.y.z"
+              exit 1
+            fi
+            admin=$(jq -r .version pindou-admin/package.json)
+            if [ "$target" = admin ] && [ "$version" != "$admin" ]; then
+              echo "::error::标签 $REF_NAME 与 pindou-admin/package.json 的版本 $admin 不同：先改版本号、推到 main，再打标签"
+              exit 1
+            fi
+          else
+            target="$TARGET"
+            version="dev-${GITHUB_SHA::7}"
+          fi
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "构建 $target，版本 $version"
+
+  verified:
+    name: 等 main 上的检查结论
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -u
+          for i in $(seq 1 130); do
+            run=$(gh run list -R "$REPO" --workflow verify.yml --event push --commit "$SHA" --limit 1 \
+              --json databaseId,status,conclusion -q '.[0] // empty | "\(.databaseId) \(.status) \(.conclusion)"')
+            if [ -z "$run" ]; then
+              # 标签和 main 几乎同时推上来时，检查可能还没登记；等一会儿还没有就是没推到 main
+              if [ "$i" -ge 12 ]; then
+                echo "::error::提交 $SHA 在 main 上没有「工程验证」记录：先把它推到 main，再打标签"
+                exit 1
+              fi
+            else
+              read -r id status conclusion <<< "$run"
+              if [ "$status" = completed ]; then
+                if [ "$conclusion" = success ]; then echo "main 上的检查已通过：https://github.com/$REPO/actions/runs/$id"; exit 0; fi
+                echo "::error::main 上的检查没通过（$conclusion）：https://github.com/$REPO/actions/runs/$id，不出镜像"
+                exit 1
+              fi
+              echo "检查进行中（run $id）…"
+            fi
+            sleep 20
+          done
+          echo "::error::等检查超时"
+          exit 1
+
+  backend:
+    environment: production-build
+    name: 后端镜像
+    needs: [plan, verified]
+    if: needs.plan.outputs.target == 'backend'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 校验镜像发布凭据
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
+            echo '::error::请在 production-build Environment 设置 DOCKERHUB_USERNAME 和 DOCKERHUB_TOKEN'
+            exit 1
+          fi
+      - name: 校验私有配置引用
+        env:
+          CONFIG_REPOSITORY: ${{ vars.STORE_CONFIG_REPOSITORY }}
+          CONFIG_COMMIT: ${{ vars.STORE_CONFIG_COMMIT }}
+        run: |
+          test -n "$CONFIG_REPOSITORY"
+          [[ "$CONFIG_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+      - name: 读取固定版本的私有门店配置
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ vars.STORE_CONFIG_REPOSITORY }}
+          ref: ${{ vars.STORE_CONFIG_COMMIT }}
+          ssh-key: ${{ secrets.STORE_CONFIG_SSH_KEY }}
+          path: .store-config
+          persist-credentials: false
+      - name: 应用门店素材与构建环境
+        run: python3 deploy/apply-store-config.py .store-config
+
+      # 二进制按 go.mod 的 toolchain 行编译，与 verify 里跑测试的是同一工具链
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: pindou-backend/go.mod
+          cache-dependency-path: pindou-backend/go.sum
+
+      # 版本号取标签去掉 backend-v（backend-v0.0.39 → 0.0.39），/healthz 与网页后台首页的「后端版本」显示它
+      - env:
+          VERSION: ${{ needs.plan.outputs.version }}
+        run: make backend-binary BACKEND_COMMIT="$GITHUB_SHA" BACKEND_VERSION="$VERSION"
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 与 Makefile 的 BACKEND_IMAGE、deploy/k3s 清单里的镜像名一致；版本标签只在打标签时出（手动触发只有 sha）
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: docker.io/yreidev/pindou-api
+          flavor: latest=false
+          tags: |
+            type=raw,value=${{ needs.plan.outputs.version }},enable=${{ github.ref_type == 'tag' }}
+            type=sha,prefix=sha-,format=short
+
+      - id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: pindou-backend/bin
+          file: pindou-backend/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # digest 才唯一确定镜像（标签可以被重推覆盖）：发布时在服务器上核对拉到的就是它
+      - name: 镜像摘要
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          {
+            echo '### 已推送'
+            echo '```'
+            echo "$TAGS"
+            echo '```'
+            echo "digest: $DIGEST"
+            echo "commit: $GITHUB_SHA"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  admin:
+    environment: production-build
+    name: 网页后台镜像
+    needs: [plan, verified]
+    if: needs.plan.outputs.target == 'admin'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # 页面服务（cmd/pindou-admin-web）按 go.mod 的 toolchain 行编译
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: pindou-backend/go.mod
+          cache-dependency-path: pindou-backend/go.sum
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
+        with:
+          # 版本取 pindou-admin/package.json 的 packageManager；Node 由上面的 setup-node 装，依赖由下一步装
+          working-directory: pindou-admin
+          node-version-file: false
+          install: false
+      - run: pnpm --dir pindou-admin install --frozen-lockfile
+
+      - name: 校验镜像发布凭据
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
+            echo '::error::请在 production-build Environment 设置 DOCKERHUB_USERNAME 和 DOCKERHUB_TOKEN'
+            exit 1
+          fi
+      - name: 校验私有配置引用
+        env:
+          CONFIG_REPOSITORY: ${{ vars.STORE_CONFIG_REPOSITORY }}
+          CONFIG_COMMIT: ${{ vars.STORE_CONFIG_COMMIT }}
+        run: |
+          test -n "$CONFIG_REPOSITORY"
+          [[ "$CONFIG_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+      - name: 读取固定版本的私有门店配置
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ vars.STORE_CONFIG_REPOSITORY }}
+          ref: ${{ vars.STORE_CONFIG_COMMIT }}
+          ssh-key: ${{ secrets.STORE_CONFIG_SSH_KEY }}
+          path: .store-config
+          persist-credentials: false
+      - name: 应用门店素材与构建环境
+        run: python3 deploy/apply-store-config.py .store-config
+
+      # 版本取 pindou-admin/package.json（plan 已核对与标签一致），commit 写进页面和 /healthz
+      - run: make admin-binary ADMIN_COMMIT="$GITHUB_SHA"
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 与 Makefile 的 ADMIN_IMAGE、deploy/k3s 清单里的镜像名一致
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: docker.io/yreidev/pindou-admin
+          flavor: latest=false
+          tags: |
+            type=raw,value=${{ needs.plan.outputs.version }},enable=${{ github.ref_type == 'tag' }}
+            type=sha,prefix=sha-,format=short
+
+      - id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: pindou-admin/bin
+          file: pindou-admin/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: 镜像摘要
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          {
+            echo '### 已推送'
+            echo '```'
+            echo "$TAGS"
+            echo '```'
+            echo "digest: $DIGEST"
+            echo "commit: $GITHUB_SHA"
+          } >> "$GITHUB_STEP_SUMMARY"

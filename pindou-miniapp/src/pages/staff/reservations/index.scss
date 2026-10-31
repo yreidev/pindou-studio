@@ -1,0 +1,42 @@
+@use '../../../styles/tokens' as ui;
+
+// 预约到店（2026-10-20 重做）：今天 / 明天 / 以后、时间线、置顶的红卡、右下角「代客登记」。
+.booking-days { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6PX; margin: 8PX 0 12PX; }
+.screen .booking-day { height: 38PX; min-height: 38PX; padding: 0 4PX; border: 1PX solid ui.$divider; border-radius: 999PX; background: ui.$surface; color: ui.$ink; font-size: 14PX; line-height: 36PX; text-align: center; }
+.screen .booking-day-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; font-weight: 600; }
+.booking-missed { display: flex; flex-direction: column; gap: 6PX; margin-bottom: 10PX; padding: 12PX 14PX; border: 2PX solid #c0492f; border-radius: 16PX; background: #fbeee9; }
+.booking-missed-title { font-size: 16PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.booking-missed-meta { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.booking-missed-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8PX; margin-top: 4PX; }
+.booking-missed-actions .booking-button:only-child { grid-column: 1 / -1; }
+.booking-timeline { display: flex; flex-direction: column; gap: 10PX; }
+.booking-slot { display: flex; align-items: flex-start; gap: 10PX; }
+.booking-time { display: flex; flex: 0 0 52PX; flex-direction: column; padding-top: 12PX; }
+.booking-time-start { font-family: ui.$font-display; font-size: 17PX; line-height: 22PX; font-variant-numeric: tabular-nums; }
+.booking-time-end { color: ui.$muted; font-size: 11PX; line-height: 16PX; }
+.booking-card { display: flex; flex: 1; flex-direction: column; gap: 8PX; min-width: 0; padding: 12PX 14PX; border: 1PX solid ui.$divider; border-radius: 16PX; background: ui.$surface; }
+.booking-card-head { display: flex; align-items: flex-start; gap: 10PX; }
+.booking-card-copy { display: flex; flex: 1; flex-direction: column; gap: 2PX; min-width: 0; }
+.booking-card-title { font-size: 15PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.booking-card-meta { color: ui.$muted; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+.booking-card-note { color: ui.$warning; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+.booking-state { flex-shrink: 0; padding: 0 8PX; border-radius: 999PX; background: ui.$disabled-surface; color: ui.$muted; font-size: 11PX; line-height: 20PX; }
+.booking-state-pending { background: ui.$warning-soft; color: ui.$warning; font-weight: 600; }
+.booking-state-confirmed { background: ui.$action-soft; color: ui.$action; font-weight: 600; }
+.booking-card-actions { display: grid; grid-template-columns: minmax(0, 1fr) 44PX; gap: 8PX; }
+.screen .booking-button { display: flex; align-items: center; justify-content: center; min-width: 0; height: 40PX; min-height: 40PX; padding: 0 8PX; border: 1PX solid ui.$divider; border-radius: 10PX; background: ui.$surface; color: ui.$ink; font-size: 14PX; line-height: 20PX; text-align: center; }
+.screen .booking-button-dark { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; font-size: 15PX; font-weight: 600; }
+.screen .booking-button-danger { border-color: #c0492f; background: #c0492f; color: #ffffff; font-weight: 600; }
+.screen .booking-more { font-size: 18PX; color: ui.$muted; }
+.screen .booking-button[disabled] { opacity: .55; }
+.booking-empty { display: block; padding: 24PX 4PX; color: ui.$muted; font-size: 13PX; line-height: 20PX; text-align: center; }
+.screen .booking-ended-toggle { display: block; width: 100%; min-height: 48PX; margin-top: 12PX; padding: 0; background: transparent; color: ui.$action; font-size: 14PX; line-height: 48PX; text-align: center; }
+.booking-ended { padding-bottom: 72PX; }
+.booking-ended-row { display: flex; flex-direction: column; gap: 2PX; padding: 10PX 0; border-bottom: 1PX solid ui.$divider; }
+.screen .booking-fab { position: fixed; right: 16PX; bottom: calc(72PX + env(safe-area-inset-bottom)); z-index: 15; min-height: 48PX; padding: 0 18PX; border-radius: 24PX; background: ui.$accent; color: ui.$on-accent; font-size: 15PX; line-height: 48PX; font-weight: 600; box-shadow: 0 6PX 18PX rgba(34, 33, 29, .22); }
+.staff-page-reservations .staff-body { padding-bottom: 64PX; }
+
+@media (min-width: ui.$staff-wide) {
+  .staff-page-reservations .staff-body { max-width: 760PX; }
+  .screen .booking-fab { bottom: 32PX; right: 32PX; }
+}

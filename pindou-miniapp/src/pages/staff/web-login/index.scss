@@ -1,0 +1,32 @@
+@use '../../../styles/tokens' as ui;
+
+// 连电脑（2026-10-20 合成一页）：登录电脑、手机当扫码枪、全部退出。
+.computer-intro { display: block; margin: 4PX 0 12PX; color: ui.$muted; font-size: 13PX; line-height: 20PX; }
+.computer-card { display: flex; flex-direction: column; gap: 12PX; margin-bottom: 12PX; padding: 14PX; border: 1PX solid ui.$divider; border-radius: 16PX; background: ui.$surface; }
+.computer-card-request { border: 2PX solid ui.$accent; background: #fbf7ee; }
+.computer-card-out { background: transparent; }
+.computer-head { display: flex; flex-direction: column; gap: 2PX; }
+.computer-title { font-size: 16PX; line-height: 22PX; font-weight: 600; }
+.computer-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+.computer-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8PX; }
+.screen .computer-button { display: flex; align-items: center; justify-content: center; min-width: 0; height: 46PX; min-height: 46PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$ink; font-size: 15PX; line-height: 20PX; font-weight: 600; }
+.screen .computer-button-dark { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.screen .computer-button-gold { border-color: ui.$accent; background: ui.$accent; color: ui.$on-accent; }
+.screen .computer-button-danger { border-color: ui.$danger; background: ui.$danger-soft; color: ui.$danger; }
+.screen .computer-button[disabled] { opacity: .55; }
+.computer-latest { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4PX 12PX; padding: 10PX 12PX; border-radius: 10PX; font-size: 13PX; line-height: 20PX; }
+.computer-latest-sent { background: ui.$role-clerk-soft; color: ui.$success; }
+.computer-latest-offline { background: ui.$warning-soft; color: ui.$warning; }
+.computer-latest-error { background: ui.$danger-soft; color: ui.$danger; }
+.computer-latest-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.computer-latest-time { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.computer-latest-message { flex-basis: 100%; overflow-wrap: anywhere; }
+.computer-footnote { display: block; padding: 8PX 0; color: #b0a999; font-size: 11PX; line-height: 17PX; text-align: center; }
+// 设备、网络地址、时间、状态两列对照，标签窄、内容宽，长地址允许换行。
+.web-login-facts { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 16PX; row-gap: 10PX; align-items: baseline; }
+.web-login-facts .field-label { margin-bottom: 0; color: ui.$muted; font-weight: 400; }
+.web-login-facts Text, .web-login-facts text { overflow-wrap: anywhere; }
+
+@media (min-width: ui.$staff-wide) {
+  .staff-page-web-login .staff-body { max-width: 640PX; }
+}

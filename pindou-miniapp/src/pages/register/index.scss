@@ -1,0 +1,63 @@
+@use '../../styles/tokens' as ui;
+
+// 登录（2026-10-20 重做，画稿 CLogin）：深色品牌页，拼豆心形、品牌话、「登录后接着……」；主按钮「一键登录」
+// （画稿上是「微信一键登录」带微信图标，2026-10-28 提审要求去掉，见 index.tsx）。
+.screen.register-login { min-height: 100vh; background: ui.$brand-dark; color: ui.$on-dark; }
+.register-hero { display: flex; flex-direction: column; align-items: center; gap: 10PX; padding: 32PX 0 36PX; text-align: center; }
+.register-title { display: block; margin-top: 14PX; color: ui.$on-dark; font-family: ui.$font-display; font-size: 28PX; line-height: 36PX; }
+.register-subtitle { display: block; color: ui.$muted-on-dark; font-size: 14PX; line-height: 20PX; }
+.register-hint { margin-top: 6PX; padding: 6PX 14PX; border-radius: 999PX; background: rgba(216, 192, 143, 0.16); color: #d8c08f; font-size: 13PX; line-height: 20PX; }
+.screen .register-signin { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 52PX; border-radius: 26PX; background: #d8c08f; color: ui.$brand-dark; font-size: 17PX; line-height: 24PX; font-weight: 600; }
+.screen .register-create { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48PX; margin-top: 12PX; border: 1PX solid rgba(247, 245, 240, 0.3); border-radius: 24PX; background: transparent; color: ui.$on-dark; font-size: 15PX; line-height: 22PX; }
+.register-footnote { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 28PX; color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+.register-footnote-tight { margin-top: 2PX; }
+// 登录页的同意框（深色底）：默认不勾，勾了才能登录
+.register-login .register-login-agreement { justify-content: center; margin: 20PX 0 0; color: ui.$on-dark; }
+.screen.register-login .register-privacy-link { color: #d8c08f; }
+.register-login .inline-error { margin-top: 12PX; }
+
+// 创建账号（画稿 CRegister）：头像和昵称一张卡，先勾隐私协议，再快捷填写手机号；手动填写降为文字链。
+.register-intro { display: flex; flex-direction: column; gap: 4PX; padding: 8PX 0 16PX; }
+.register-intro-title { font-family: ui.$font-display; font-size: 24PX; line-height: 32PX; }
+.register-intro-note { color: ui.$muted; font-size: 14PX; line-height: 20PX; }
+.register-card { display: flex; flex-direction: column; gap: 8PX; margin-bottom: 12PX; padding: 14PX 16PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.register-card .field-label { margin: 0; }
+.register-card-row { display: flex; align-items: center; justify-content: space-between; gap: 12PX; padding-bottom: 8PX; border-bottom: 1PX solid ui.$divider; }
+.register-card-row .avatar-picker { flex: 1; }
+.register-optional { color: ui.$muted; font-size: 12PX; }
+.register-screen .register-avatar-remove { justify-content: flex-end; padding: 0; }
+.register-label-row { display: flex; align-items: center; justify-content: space-between; gap: 12PX; }
+.screen .register-inline { min-height: 32PX; padding: 4PX 10PX; border-radius: 999PX; background: ui.$action-soft; color: ui.$action; font-size: 13PX; line-height: 24PX; }
+.register-agreement { align-items: center; justify-content: flex-start; flex-wrap: wrap; column-gap: 8PX; row-gap: 0; margin: 0 0 12PX; padding: 0 4PX; font-size: 14PX; line-height: 20PX; }
+.register-agreement-note { width: 100%; color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.register-consent-choice { display: flex; align-items: center; gap: 6PX; min-height: ui.$control-height; }
+.register-screen .register-privacy-link { flex: 0 0 auto; min-height: ui.$control-height; padding: 0; color: ui.$action; font-size: 14PX; line-height: 20PX; white-space: nowrap; }
+.screen .register-phone-button { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60PX; padding: 8PX 12PX; border-radius: ui.$radius; background: ui.$brand-dark; color: ui.$on-dark; }
+.screen .register-phone-disabled { background: ui.$disabled-surface; color: ui.$disabled-ink; }
+.register-phone-title { font-size: 16PX; line-height: 22PX; font-weight: 600; }
+.register-phone-note { font-size: 12PX; line-height: 18PX; opacity: 0.8; }
+.register-screen .manual-phone { justify-content: center; min-height: 40PX; padding: 0; color: ui.$action; font-size: 14PX; line-height: 20PX; }
+.register-submit { padding: 4PX 0 8PX; }
+.register-screen .register-back { display: flex; width: 100%; }
+
+// Login 稿：390 宽的逻辑像素，保留创建账号表单原来的布局。
+.register-login .navbar-title { font-family: inherit; color: ui.$surface; }
+.register-login .page-content { padding: 24PX 24PX 0; line-height: normal; }
+.register-login .register-hero { gap: 12PX; padding: 0 0 34PX; }
+.register-login .bead-heart { margin-top: 12PX; }
+.register-login .register-title { margin-top: 14PX; color: ui.$surface; font-size: 30PX; line-height: normal; font-weight: 300; letter-spacing: 4PX; }
+.register-login .register-subtitle { color: ui.$design-login-subtitle; font-size: 13PX; line-height: normal; }
+.screen.register-login .register-signin { min-height: 50PX; border-radius: 25PX; background: ui.$accent; color: ui.$ink; font-size: 16PX; }
+.screen.register-login .register-create { border-color: ui.$design-login-border; color: ui.$surface; }
+.screen .register-claim { display: flex; align-items: center; justify-content: center; gap: 4PX; width: 100%; min-height: 44PX; margin-top: 12PX; color: ui.$design-login-link; font-size: 14PX; }
+.register-claim .design-icon { width: 14PX; height: 14PX; flex-basis: 14PX; }
+.register-login .register-login-agreement { gap: 8PX; margin: 20PX 0 0; padding: 0; color: ui.$surface; font-size: 13PX; }
+// 看着 20 高，透明内边距加负外边距把点得到的范围扩到 40，排版不变
+.register-login .register-consent-choice, .register-login .register-privacy-link { min-height: 20PX; padding: 10PX 0; margin: -10PX 0; font-size: 13PX; line-height: normal; }
+.register-login .register-consent-choice .wx-checkbox-input { width: 20PX; height: 20PX; border-radius: 4PX; }
+.screen.register-login .register-privacy-link { color: ui.$design-login-link; }
+.register-login .register-footnote-tight { margin-top: 12PX; color: ui.$design-login-foot; }
+
+.register-login .navbar-back { left: 4PX; width: 44PX; min-height: 44PX; }
+.register-login { font-family: 'Noto Sans SC', 'PingFang SC', sans-serif; }
+.register-login .register-consent-choice .wx-checkbox-input { margin: 0; border: 0; background: ui.$surface; }

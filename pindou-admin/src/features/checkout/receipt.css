@@ -1,0 +1,132 @@
+/* 小票：屏幕上按选的纸宽预览，打印时只留小票。纸张在打印对话框里选（小票打印机的 58mm／80mm 卷纸，或普通 A4），
+ * 这里只按纸宽排版；颜色用 Semi 默认主题的变量。 */
+
+.receipt-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.receipt-sheet {
+  box-sizing: border-box;
+  margin: 0 auto;
+  color: var(--semi-color-text-0);
+  background: var(--semi-color-bg-0);
+  border: 1px solid var(--semi-color-border);
+  line-height: 1.45;
+  word-break: break-all;
+}
+
+/* 58mm 卷纸可打印宽度约 48mm，80mm 约 72mm：两边留出打印头够不到的地方 */
+.receipt-58 {
+  width: 58mm;
+  padding: 4mm 5mm;
+  font-size: 9pt;
+}
+
+.receipt-80 {
+  width: 80mm;
+  padding: 4mm 4mm;
+  font-size: 10pt;
+}
+
+.receipt-a4 {
+  width: 100%;
+  max-width: 150mm;
+  padding: 10mm 12mm;
+  font-size: 11pt;
+}
+
+.receipt-logo {
+  display: block;
+  width: 64%;
+  height: auto;
+  margin: 0 auto 1.5mm;
+}
+
+.receipt-store,
+.receipt-title,
+.receipt-footer,
+.receipt-note {
+  text-align: center;
+}
+
+.receipt-store {
+  font-weight: 600;
+}
+
+.receipt-title {
+  font-size: 1.15em;
+  font-weight: 600;
+  margin-top: 1mm;
+}
+
+.receipt-heading {
+  font-weight: 600;
+  margin-bottom: 0.5mm;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2mm;
+}
+
+.receipt-row > :last-child {
+  flex-shrink: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.receipt-strong {
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+.receipt-rule {
+  border-top: 1px dashed currentColor;
+  margin: 2mm 0;
+}
+
+.receipt-note {
+  font-size: 0.9em;
+  margin: 0.5mm 0;
+}
+
+.receipt-footer {
+  margin-top: 1mm;
+}
+
+@media print {
+  /* 只留小票：标题说明、操作区、弹窗与提示都不打印（侧栏、顶栏由 app.css 隐藏） */
+  .receipt-page .page-header,
+  body:has(.receipt-sheet) .semi-portal {
+    display: none !important;
+  }
+
+  /* 后台布局是一屏高、内容区自己滚动，打印时会被截成一页；放开高度和滚动，去掉内边距 */
+  body:has(.receipt-sheet) .semi-layout,
+  body:has(.receipt-sheet) .semi-layout-content {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    background: none !important;
+  }
+  .receipt-page .page {
+    max-width: none;
+  }
+
+  .receipt-sheet {
+    border: none;
+    background: none;
+  }
+  /* 小票纸从左上角开始打，不居中（卷纸宽度就是纸宽） */
+  .receipt-58,
+  .receipt-80 {
+    margin: 0;
+  }
+}

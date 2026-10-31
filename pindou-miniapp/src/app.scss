@@ -1,0 +1,240 @@
+@use './styles/tokens' as ui;
+@use './styles/font';
+
+page, .taro_page, .screen {
+  min-height: 100%;
+  color: ui.$ink;
+  background: ui.$canvas;
+  font-size: ui.$body-size;
+  line-height: 24PX;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.ui-button { box-sizing: border-box; margin: 0; padding: 0; width: auto; font: inherit; line-height: inherit; border: 0; border-radius: 0; background: transparent; color: inherit; }
+.ui-button::after { border: 0; }
+.screen .ui-button { margin: 0; }
+.screen taro-button-core { font-family: inherit; }
+.screen .text-button { background: transparent; }
+.screen .icon-button { width: 48PX; background: transparent; }
+image, taro-image-core { display: block; }
+.screen .taro-img__mode-aspectfit { left: 0; right: 0; margin: auto; }
+.screen { min-height: 100vh; padding-bottom: 24PX; }
+.home-screen, .patterns-screen, .orders-screen, .profile-screen { min-height: calc(100vh - 50PX); }
+.navbar { position: sticky; top: 0; z-index: 5; background: ui.$canvas; }
+.screen-dark .navbar { background: ui.$brand-dark; color: ui.$on-dark; }
+.navbar-content { position: relative; display: flex; align-items: center; }
+.navbar-title { display: block; width: 100%; padding: 0 88PX; text-align: center; font-family: ui.$font-display; font-size: 16PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.screen .navbar-title-action { display: flex; align-items: center; justify-content: center; gap: 4PX; min-width: 0; min-height: 44PX; font-family: inherit; font-weight: 600; }
+.navbar-title-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.navbar-title-mark { flex: 0 0 auto; opacity: 0.6; }
+.brand { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4PX; width: 100%; box-sizing: border-box; padding-left: 16PX; padding-right: 96PX; min-width: 0; }
+.brand-logo { display: block; width: 184PX; max-width: 100%; height: 29PX; flex: 0 0 auto; }
+.brand-slogan { display: block; font-family: ui.$font-display; font-size: 14PX; line-height: 20PX; color: ui.$muted; }
+.navbar-back { position: absolute; left: 8PX; top: 0; bottom: 0; }
+.icon-button { display: flex; width: 48PX; min-height: 48PX; align-items: center; justify-content: center; }
+.back-image { width: 22PX; height: 22PX; }
+.account-avatar { display: block; flex: 0 0 auto; width: 64PX; height: 64PX; border-radius: 50%; overflow: hidden; background: ui.$surface; }
+.page-content { width: 100%; max-width: ui.$content-width; margin: 0 auto; padding: 16PX ui.$page-gutter; }
+.page-heading { display: block; padding: 4PX 0 14PX; font-size: ui.$title-size; line-height: 32PX; font-weight: 600; }
+.row { display: flex; align-items: center; gap: 12PX; min-width: 0; }
+.row-between { justify-content: space-between; }
+.grow { flex: 1; min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
+.strong { font-weight: 600; }
+.muted { color: ui.$muted; font-size: ui.$caption-size; line-height: 22PX; }
+.align-right { text-align: right; }
+.money { color: ui.$action; font-weight: 600; font-variant-numeric: tabular-nums; }
+.section { padding: ui.$section-space 0; border-bottom: 1PX solid ui.$divider; }
+.section-title { display: block; margin-bottom: 12PX; font-size: ui.$section-title-size; line-height: 26PX; font-weight: 600; }
+.section-heading { justify-content: space-between; min-height: ui.$control-height; margin-bottom: 12PX; }
+.section-heading .section-title { margin-bottom: 0; }
+.screen .text-button { color: ui.$action; font-size: 14PX; line-height: ui.$control-line-height; min-width: ui.$control-height; min-height: ui.$control-height; display: inline-flex; align-items: center; justify-content: center; padding: 10PX 8PX; text-align: center; overflow-wrap: anywhere; }
+.chevron { color: ui.$muted; font-size: 24PX; line-height: 1; }
+.screen .button { display: flex; align-items: center; justify-content: center; gap: 8PX; min-width: 0; min-height: ui.$control-height; padding: ui.$control-padding-y ui.$control-padding-x; border-radius: ui.$radius; font-size: ui.$body-size; line-height: 24PX; font-weight: 600; text-align: center; overflow-wrap: anywhere; border: 1PX solid transparent; }
+.screen .button-primary, .screen .button-teal { background: ui.$accent; color: ui.$on-accent; }
+.screen .button-outline { border-color: ui.$action; color: ui.$action; background: ui.$surface; }
+.screen .button.button-disabled, .screen .button[disabled] { color: ui.$disabled-ink; background: ui.$disabled-surface; border-color: ui.$border; }
+.screen .button-danger { color: ui.$danger; background: ui.$danger-soft; border-color: ui.$danger; }
+.screen .text-danger { color: ui.$danger; }
+.screen .button + .button { margin-top: ui.$action-gap; }
+.screen .action-stack { display: flex; flex-direction: column; gap: ui.$action-gap; margin-top: 16PX; }
+.screen .action-stack .button + .button { margin-top: 0; }
+// 按下去：变淡之外轻轻缩一下（docs/plan-interaction.md 第 1 节）；transform 不改布局尺寸
+.pressed { opacity: .78; transform: scale(.97); }
+.badge { display: inline-block; flex: 0 0 auto; padding: 1PX 6PX; border-radius: ui.$radius; font-size: ui.$caption-size; line-height: 22PX; color: ui.$action; background: ui.$action-soft; }
+.badge-draft { color: ui.$action; background: ui.$action-soft; }
+.badge-unverified, .badge-partially_paid { color: ui.$warning; background: ui.$warning-soft; }
+.badge-refunded, .badge-voided { color: ui.$muted; background: ui.$disabled-surface; }
+.status-view { padding: 48PX 16PX; display: flex; align-items: center; flex-direction: column; text-align: center; gap: 16PX; }
+.status-image { width: 40PX; height: 40PX; margin-bottom: 8PX; }
+.status-title { font-size: 16PX; line-height: 24PX; font-weight: 600; }
+.status-message { max-width: 28em; }
+.status-view .button { width: 200PX; max-width: 100%; margin-top: 8PX; }
+.skeleton-list { padding-top: 12PX; }
+.skeleton-row { display: flex; gap: 16PX; padding: 16PX 0; margin-bottom: 12PX; border-bottom: 1PX solid ui.$divider; }
+.skeleton-image { width: 64PX; height: 64PX; flex: 0 0 auto; background: ui.$disabled-surface; border-radius: 4PX; }
+.skeleton-copy { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; gap: 8PX; }
+.skeleton-line { height: 8PX; width: 85%; background: ui.$disabled-surface; border-radius: 4PX; }
+.skeleton-line-medium { width: 55%; }
+.skeleton-line-short { width: 35%; }
+.loading-label { display: block; text-align: center; color: ui.$muted; font-size: 12PX; }
+.skeleton-avatar { border-radius: 50%; }
+.skeleton-number { width: 48PX; height: 32PX; margin-top: 16PX; background: ui.$disabled-surface; border-radius: 4PX; }
+.skeleton-input { height: ui.$input-height; margin-top: 12PX; background: ui.$disabled-surface; border-radius: 6PX; }
+.screen .order-card { display: block; width: 100%; text-align: left; padding: 24PX 0; margin: 0; border-bottom: 1PX solid ui.$divider; }
+.order-heading { font-size: ui.$body-size; gap: 8PX; }
+.order-status-icon { flex: 0 0 auto; width: 26PX; height: 26PX; }
+.order-symbol { flex: 0 0 auto; width: 26PX; height: 26PX; }
+.order-lines { margin: 12PX 0; color: ui.$muted; font-size: ui.$caption-size; }
+.order-lines .row { margin-top: 8PX; }
+.order-footer { padding-top: 8PX; flex-wrap: wrap; }
+.order-footer .money { font-size: 24PX; line-height: 32PX; overflow-wrap: anywhere; }
+.form-section { padding: ui.$section-space 0; border-bottom: 1PX solid ui.$divider; }
+.field { margin: ui.$field-space 0; }
+.field-label { display: block; margin-bottom: 8PX; font-weight: 600; font-size: 14PX; }
+.input { box-sizing: border-box; width: 100%; height: ui.$input-height; padding: 0 12PX; background: ui.$surface; border: 1PX solid ui.$border; border-radius: ui.$radius; font-size: ui.$body-size; }
+.screen taro-input-core { display: flex; align-items: center; }
+.screen .input .weui-input { height: 100%; font: inherit; }
+.field-help { display: block; margin-top: 8PX; color: ui.$muted; font-size: ui.$caption-size; line-height: 22PX; }
+.field-error { display: block; margin-top: 8PX; color: ui.$danger; font-size: ui.$caption-size; line-height: 20PX; }
+.submit-area { padding-top: 20PX; padding-bottom: env(safe-area-inset-bottom); }
+.inline-error { padding: 12PX; margin: 12PX 0; background: ui.$danger-soft; color: ui.$danger; border-radius: ui.$radius; font-size: ui.$caption-size; line-height: 20PX; }
+.info-row { padding: 12PX 0; align-items: flex-start; }
+.info-row + .info-row { border-top: 1PX solid ui.$divider; }
+.info-label { flex: 0 0 88PX; color: ui.$muted; font-size: ui.$caption-size; }
+.info-value { flex: 1; min-width: 0; text-align: right; overflow-wrap: anywhere; word-break: normal; }
+.hint { color: ui.$warning; background: ui.$warning-soft; padding: 12PX; border-radius: ui.$radius; font-size: 12PX; }
+.agreement { display: flex; align-items: flex-start; gap: 8PX; font-size: ui.$caption-size; color: ui.$muted; }
+.agreement checkbox { flex: 0 0 auto; }
+.privacy-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 20; display: flex; align-items: center; justify-content: center; padding: 20PX; }
+// 写明字色：弹框开在深色页（登录页）里时，不写就继承浅色字，白底上看不见
+.privacy-dialog { background: ui.$surface; color: ui.$ink; width: 100%; max-width: 400PX; max-height: 85vh; overflow-y: auto; padding: 20PX; border-radius: 8PX; }
+.privacy-dialog .text-button { padding-left: 0; justify-content: flex-start; }
+.privacy-dialog .button { margin-top: 12PX; }
+
+.inline-icon { flex: 0 0 16PX; width: 16PX; height: 16PX; }
+.screen .text-button { gap: 8PX; }
+.screen .navigation-row { display: flex; align-items: center; gap: 16PX; width: 100%; min-height: 52PX; padding: 14PX 0; color: ui.$ink; text-align: left; border-bottom: 1PX solid ui.$divider; }
+// 手作与预约共用的版式与控件。原先散落在 pages/customer/membership/index.scss 和
+// pages/customer/experience/index.scss 里，靠跨页面 import 共享——改样式会波及看不见的页面。
+.loyalty-content { display: flex; flex-direction: column; gap: 16PX; padding-bottom: env(safe-area-inset-bottom); }
+.loyalty-content > .button + .button { margin-top: 0; }
+.loyalty-card { display: flex; flex-direction: column; gap: 12PX; padding: 20PX; background: ui.$surface; border-radius: ui.$card-radius; min-width: 0; overflow-wrap: anywhere; }
+.loyalty-section { padding: 0 0 16PX; }
+.loyalty-section > .button { margin-top: 16PX; }
+.loyalty-picker { display: flex; align-items: center; min-height: ui.$input-height; padding: 12PX; border: 1PX solid ui.$border; border-radius: ui.$radius; background: ui.$surface; color: ui.$ink; margin: 16PX 0; overflow-wrap: anywhere; }
+.experience-seats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12PX; }
+.screen .experience-seat { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4PX; min-height: 76PX; padding: 12PX 8PX; border: 2PX solid ui.$border; border-radius: ui.$radius; background: ui.$surface; }
+.experience-seat-status { font-size: ui.$caption-size; line-height: 20PX; }
+.screen .experience-seat-selected { background: ui.$action-soft; border: 2PX solid ui.$action; color: ui.$action; }
+.screen .experience-seat[disabled] { background: ui.$disabled-surface; color: ui.$muted; border-color: ui.$divider; }
+.experience-packages { display: flex; flex-direction: column; gap: 12PX; }
+.screen .experience-package { display: flex; align-items: center; justify-content: space-between; gap: 16PX; padding: 16PX; min-height: 88PX; border: 2PX solid ui.$border; border-radius: ui.$radius; text-align: left; background: ui.$surface; }
+.experience-package-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; gap: 4PX; overflow-wrap: anywhere; }
+.experience-package .money { flex: 0 1 auto; font-size: 20PX; line-height: 28PX; overflow-wrap: anywhere; }
+.screen .experience-package-selected { border: 2PX solid ui.$action; background: ui.$action-soft; }
+.experience-confirm { padding: 20PX 0; border-top: 1PX solid ui.$divider; }
+.experience-confirm .button { width: 100%; margin-top: 16PX; }
+.experience-selection { display: flex; flex-direction: column; gap: 4PX; overflow-wrap: anywhere; }
+@media (min-width: 480px) { .experience-seats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 350px) { .experience-seats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.section-empty { display: flex; flex-direction: column; gap: 8PX; padding: 20PX 0; }
+.section-intro { padding: 16PX 0 24PX; }
+.filter-tabs { display: flex; gap: 8PX; margin: 16PX 0 24PX; }
+.screen .filter-tab { @include ui.segment; flex: 1; padding-left: 4PX; padding-right: 4PX; }
+.screen .filter-tab-selected { @include ui.selected; }
+.bottom-action { position: sticky; bottom: 0; z-index: 8; display: flex; flex-direction: column; gap: 12PX; padding: 16PX 0 calc(16PX + env(safe-area-inset-bottom)); background: ui.$canvas; border-top: 1PX solid ui.$divider; }
+.bottom-action .button { width: 100%; }
+.ui-button:focus-visible { outline: 2PX solid ui.$action; outline-offset: 2PX; }
+
+view,
+text,
+image,
+button,
+input,
+textarea,
+taro-view-core,
+taro-text-core,
+taro-image-core,
+taro-button-core,
+taro-input-core {
+  box-sizing: border-box;
+  letter-spacing: 0;
+}
+
+@media (max-width: 350px) { .page-content { padding-left: 16PX; padding-right: 16PX; } }
+
+.refresh-notice { padding: 12PX 0; border-bottom: 1PX solid ui.$divider; }
+.refresh-notice .text-button { padding-left: 0; }
+
+
+.input-invalid { border-color: ui.$danger; }
+.input { color: ui.$ink; }
+.field, .staff-field { scroll-margin-top: 112PX; scroll-margin-bottom: 128PX; }
+.page-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8PX; padding: 16PX 0; }
+.page-controls .muted { text-align: center; }
+.ui-button { transition: opacity 120ms ease-out, background-color 120ms ease-out, transform 120ms ease-out; }
+.ui-button[disabled] { cursor: default; }
+@media (hover: hover) { .ui-button:not([disabled]) { cursor: pointer; } }
+@media (prefers-reduced-motion: reduce) { .ui-button { transition: none; } .pressed { transform: none; } }
+// 进场（docs/plan-interaction.md 第 5 节）：第一次出现时上浮淡入，排第几个就晚几个 70 毫秒，第 8 个以后一起出来。
+// 元素按最终状态写，动画只是从下面来（backwards：等的那段先藏着，播完回到本来的样子）；减弱动态效果时不播。
+@keyframes enter-rise { from { opacity: 0; transform: translateY(12PX); } }
+.enter { animation: enter-rise 420ms cubic-bezier(.32, .86, .28, 1) backwards; }
+.enter:nth-child(2) { animation-delay: 70ms; }
+.enter:nth-child(3) { animation-delay: 140ms; }
+.enter:nth-child(4) { animation-delay: 210ms; }
+.enter:nth-child(5) { animation-delay: 280ms; }
+.enter:nth-child(6) { animation-delay: 350ms; }
+.enter:nth-child(7) { animation-delay: 420ms; }
+.enter:nth-child(n+8) { animation-delay: 490ms; }
+@media (prefers-reduced-motion: reduce) { .enter { animation: none; } }
+// 底部弹层（components/sheet.tsx，docs/plan-interaction.md 第 2 节）：从底下升起、遮罩渐显；关的时候滑下去、遮罩渐隐。
+// 拖动时面板 1:1 跟手（去掉过渡），松手弹回或滑走才有过渡。升起用动画、跟手和滑走用过渡：动画只填开头（backwards），播完行内的位置才管用。
+@keyframes sheet-rise { from { transform: translateY(102%); } }
+// 遮罩只淡它自己的底色，不淡 opacity：面板、对话框都在遮罩里面，淡 opacity 会连它们一起透明，升起时透出底下的页面
+@keyframes sheet-scrim { from { background-color: transparent; } }
+@keyframes sheet-fade { from { opacity: 0; } }
+.sheet-motion-mask { animation: sheet-scrim 320ms ease-out backwards; transition: background-color 240ms ease-in; }
+.sheet-motion-mask.sheet-motion-leaving { background-color: transparent; }
+.sheet-motion-panel { animation: sheet-rise 320ms cubic-bezier(.32, .86, .28, 1) backwards; transition: transform 240ms cubic-bezier(.32, .86, .28, 1); }
+.sheet-motion-dragging { transition: none; }
+.sheet-drag { touch-action: none; }
+.sheet-handle { width: 36PX; height: 4PX; margin: 8PX auto 0; border-radius: 99PX; background: ui.$divider; }
+// 居中的对话框（隐私授权）：从小一点放大、淡入
+@keyframes dialog-pop { from { opacity: 0; transform: scale(.86); } }
+.privacy-backdrop { animation: sheet-scrim 200ms ease-out backwards; }
+.privacy-dialog { animation: dialog-pop 280ms cubic-bezier(.32, .86, .28, 1) backwards; }
+
+// 完成的勾（components/done-mark.tsx，docs/plan-interaction.md 第 3 节）：圆弹出来，短笔、长笔依次从 0 拉长。
+// 两笔按圆的百分比定位：短笔 (27%, 52%) → (43%, 68%)，长笔 (43%, 68%) → (73%, 36%)
+@keyframes done-pop { from { opacity: 0; transform: scale(.6); } }
+@keyframes done-short { from { transform: rotate(45deg) scaleX(0); } }
+@keyframes done-long { from { transform: rotate(-46.8deg) scaleX(0); } }
+.done-mark { position: relative; flex: 0 0 auto; width: 56PX; height: 56PX; border-radius: 50%; background: ui.$success; animation: done-pop 240ms cubic-bezier(.32, .86, .28, 1) backwards; }
+.done-mark-short, .done-mark-long { position: absolute; height: 5PX; border-radius: 3PX; background: #ffffff; transform-origin: 0 50%; }
+.done-mark-short { left: 27%; top: calc(52% - 2.5PX); width: 22.6%; transform: rotate(45deg); animation: done-short 140ms ease-in 200ms backwards; }
+.done-mark-long { left: 43%; top: calc(68% - 2.5PX); width: 43.9%; transform: rotate(-46.8deg); animation: done-long 200ms ease-out 340ms backwards; }
+.done-mark-small { width: 14PX; height: 14PX; }
+.done-mark-small .done-mark-short, .done-mark-small .done-mark-long { height: 2PX; border-radius: 1PX; }
+.done-mark-small .done-mark-short { top: calc(52% - 1PX); }
+.done-mark-small .done-mark-long { top: calc(68% - 1PX); }
+// 盖满屏的完成页（员工收款成功）：约 1 秒后自己回去，点一下马上回
+.done-overlay { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10PX; padding: 0 ui.$page-gutter; background: rgba(247, 245, 240, .97); color: ui.$ink; animation: sheet-fade 200ms ease-out backwards; }
+.done-overlay .done-mark { margin-bottom: 6PX; }
+.done-overlay-title { font-size: ui.$title-size; font-weight: 600; line-height: 30PX; }
+.done-overlay-amount { font-size: 28PX; font-weight: 600; line-height: 36PX; }
+.done-overlay-note { font-size: ui.$caption-size; color: ui.$muted; }
+@media (prefers-reduced-motion: reduce) {
+  .sheet-motion-mask, .sheet-motion-panel, .privacy-backdrop, .privacy-dialog, .done-overlay { animation: none; transition: none; }
+  .done-mark, .done-mark-short, .done-mark-long { animation: none; }
+}
+@media (max-width: 350px) {
+  .order-tabs, .filter-tabs { flex-wrap: wrap; }
+  .order-tab, .screen .filter-tab { flex-basis: 40%; }
+}
+.developer-float-area { position: fixed; left: 12PX; z-index: 90; pointer-events: none; }
+.developer-float { width: 56PX; height: 56PX; pointer-events: auto; }
+.developer-float-button.ui-button { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 56PX; height: 56PX; min-height: 56PX; padding: 0; border: 1PX solid ui.$border; border-radius: 50%; background: ui.$surface; box-shadow: 0 3PX 12PX rgba(0, 0, 0, 0.16); }
+.developer-float-icon { width: 22PX; height: 22PX; }
+.developer-float-label { font-size: 12PX; line-height: 18PX; color: ui.$ink; }
+.profile-version { display: block; padding: 16PX 0 8PX; color: ui.$muted; font-size: 11PX; line-height: 16PX; text-align: center; }

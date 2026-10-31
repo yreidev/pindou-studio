@@ -1,0 +1,70 @@
+@use '../../styles/tokens' as ui;
+
+// 桌位页、现场页的底部弹层（开台、会话）。电脑宽屏改成右侧抽屉。
+.table-sheet-mask { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; background: rgba(34, 33, 29, .55); }
+.table-sheet { display: flex; flex-direction: column; width: 100%; max-width: 640PX; max-height: 88vh; margin: 0 auto; border-radius: 20PX 20PX 0 0; background: ui.$canvas; color: ui.$ink; box-sizing: border-box; }
+.table-sheet-handle { width: 40PX; height: 4PX; margin: 8PX auto 0; border-radius: 2PX; background: ui.$divider; }
+.table-sheet-head { display: flex; align-items: flex-start; gap: 12PX; padding: 10PX 16PX 8PX; }
+.table-sheet-heading { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2PX; }
+.table-sheet-title-row { display: flex; align-items: center; gap: 8PX; }
+.table-sheet-title { font-family: ui.$font-display; font-size: 28PX; line-height: 34PX; font-weight: 600; }
+.table-sheet-pill { padding: 1PX 8PX; border-radius: 999PX; background: ui.$brand-dark; color: #d8c08f; font-size: 12PX; line-height: 20PX; }
+.table-sheet-pill-danger { background: #c0492f; color: #ffffff; }
+.table-sheet-pill-warning { background: ui.$accent; color: ui.$on-accent; }
+.table-sheet-meta { color: ui.$muted; font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.screen .table-sheet-close { flex: 0 0 40PX; width: 40PX; height: 40PX; min-height: 40PX; border-radius: 50%; background: ui.$surface; color: ui.$muted; font-size: 22PX; line-height: 40PX; text-align: center; }
+.table-sheet-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14PX; padding: 4PX 16PX 12PX; }
+.table-sheet-footer { display: flex; flex-direction: column; gap: 8PX; padding: 12PX 16PX calc(12PX + env(safe-area-inset-bottom)); border-top: 1PX solid ui.$divider; background: ui.$surface; }
+.table-sheet-section { display: flex; flex-direction: column; gap: 8PX; }
+.table-sheet-label { font-size: 13PX; line-height: 20PX; font-weight: 600; color: ui.$muted; }
+.table-sheet-segments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8PX; }
+.table-sheet-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8PX; }
+.screen .table-sheet-choice { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-width: 0; height: 48PX; min-height: 48PX; padding: 0 4PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$ink; font-size: 15PX; line-height: 20PX; text-align: center; box-sizing: border-box; overflow-wrap: anywhere; }
+.screen .table-sheet-choice-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; font-weight: 600; }
+.screen .table-sheet-choice-off { color: ui.$muted; background: ui.$disabled-surface; }
+.screen .table-sheet-choice[disabled] { opacity: .6; }
+.table-sheet-choice-note { font-size: 11PX; line-height: 14PX; color: ui.$action; }
+.table-sheet-choice-on .table-sheet-choice-note { color: #d8c08f; }
+.table-sheet-search { background: ui.$surface; }
+.table-sheet-results { display: flex; flex-direction: column; gap: 6PX; }
+.table-sheet-chosen { display: flex; align-items: center; justify-content: space-between; gap: 12PX; min-height: 52PX; padding: 0 4PX 0 14PX; border: 2PX solid ui.$accent; border-radius: 12PX; background: ui.$surface; }
+.table-sheet-chosen-name { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.table-sheet-start { display: flex; align-items: center; justify-content: space-between; gap: 12PX; min-height: 48PX; padding: 0 14PX; border-radius: 12PX; background: ui.$action-soft; }
+.table-sheet-start-copy { font-size: 15PX; }
+.table-sheet-link, .table-sheet-inline-link { color: ui.$action; font-size: 14PX; line-height: 20PX; }
+// 「改成更早」「改回现在」看着一行字，透明内边距（块的再加负外边距）把点得到的范围扩到约 40 高，排版不变
+.table-sheet-link { padding: 10PX 0; margin: -10PX 0; }
+.table-sheet-inline-link { margin-left: 8PX; padding: 10PX 0; }
+.table-sheet-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12PX; }
+.table-sheet-summary-main { font-weight: 600; overflow-wrap: anywhere; }
+.table-sheet-summary-note { flex-shrink: 0; color: ui.$muted; font-size: 13PX; }
+.screen .table-sheet-primary { display: flex; align-items: center; justify-content: center; flex: 1; min-width: 0; height: 50PX; min-height: 50PX; border-radius: 14PX; background: ui.$brand-dark; color: ui.$on-dark; font-size: 17PX; line-height: 24PX; font-weight: 600; }
+.screen .table-sheet-secondary { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: 112PX; height: 50PX; min-height: 50PX; padding: 0 12PX; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; color: ui.$ink; font-size: 15PX; }
+.screen .table-sheet-primary[disabled], .screen .table-sheet-secondary[disabled] { opacity: .55; }
+.table-sheet-pair { display: flex; gap: 8PX; }
+.screen .table-sheet-quiet { min-height: 36PX; padding: 0; background: transparent; color: ui.$muted; font-size: 13PX; line-height: 36PX; text-align: center; }
+.screen .table-sheet-inline { min-height: 36PX; padding: 0; background: transparent; color: ui.$action; font-size: 13PX; line-height: 36PX; text-align: left; }
+.table-sheet-timer { display: flex; flex-direction: column; gap: 12PX; padding: 16PX; border-radius: 16PX; background: ui.$brand-dark; color: ui.$on-dark; }
+.table-sheet-timer-danger { background: #5a1f14; }
+.table-sheet-timer-main { display: flex; align-items: baseline; justify-content: space-between; gap: 12PX; }
+.table-sheet-timer-label { color: ui.$muted-on-dark; font-size: 13PX; }
+.table-sheet-timer-value { font-family: ui.$font-display; font-size: 40PX; line-height: 44PX; font-variant-numeric: tabular-nums; }
+.table-sheet-timer-danger .table-sheet-timer-value { color: #f0a48f; }
+.table-sheet-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8PX; }
+.table-sheet-fact { display: flex; flex-direction: column; gap: 2PX; min-width: 0; }
+.table-sheet-fact-label { color: ui.$muted-on-dark; font-size: 11PX; line-height: 16PX; }
+.table-sheet-fact-value { font-size: 14PX; line-height: 20PX; font-weight: 600; overflow-wrap: anywhere; }
+.table-sheet-charge { display: flex; flex-direction: column; gap: 4PX; padding: 12PX 14PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; }
+.table-sheet-charge-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12PX; }
+.table-sheet-charge-row .money { font-size: 22PX; line-height: 28PX; }
+.table-sheet-hint { color: ui.$muted; font-size: 13PX; line-height: 20PX; }
+.table-sheet-actions { margin-top: -2PX; }
+
+@media (min-width: ui.$staff-wide) {
+  .table-sheet-mask { justify-content: flex-end; align-items: stretch; }
+  .table-sheet { width: 440PX; max-width: 50vw; max-height: 100vh; margin: 0; border-radius: 0; }
+  .table-sheet-handle { display: none; }
+  // 宽屏是右侧抽屉：不从底下升起、不跟手往下拖，只淡入淡出（components/sheet.tsx）
+  .table-sheet.sheet-motion-panel { animation: sheet-fade 240ms ease-out backwards; transform: none !important; transition: opacity 240ms ease-in; }
+  .sheet-motion-leaving .table-sheet.sheet-motion-panel { opacity: 0; }
+}

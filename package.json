@@ -1,0 +1,12 @@
+{
+  "name": "pindou-studio",
+  "private": true,
+  "scripts": {
+    "frontend:check": "npm run check --prefix pindou-miniapp",
+    "frontend:build": "npm run build --prefix pindou-miniapp",
+    "verify": "make verify"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

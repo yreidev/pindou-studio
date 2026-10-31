@@ -1,0 +1,38 @@
+@use '../../../styles/tokens' as ui;
+
+// 结账（2026-10-20 重做，画稿 BCheckout）：顶部深色汇总卡写这次要收多少和抵扣，下面顾客、明细、会员抵扣、
+// 店长老板的折扣免单、线下收款，底部只放「确认收款 ¥」。
+.checkout-summary { display: flex; flex-direction: column; margin: 8PX 0 4PX; padding: 18PX 18PX 16PX; border-radius: 18PX; background: ui.$brand-dark; color: ui.$on-dark; }
+.checkout-summary-meta { color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+.checkout-summary-label { margin-top: 10PX; color: #d8c08f; font-size: 13PX; line-height: 20PX; }
+.checkout-summary-total { font-family: ui.$font-display; font-size: 36PX; line-height: 44PX; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.checkout-summary-rows { display: flex; flex-direction: column; gap: 4PX; margin-top: 10PX; padding-top: 10PX; border-top: 1PX solid rgba(247, 245, 240, 0.14); }
+.checkout-summary-row { display: flex; justify-content: space-between; gap: 12PX; color: ui.$muted-on-dark; font-size: 13PX; line-height: 20PX; font-variant-numeric: tabular-nums; }
+.checkout-summary-note { margin-top: 8PX; color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+
+.checkout-customer-card { display: flex; align-items: center; gap: 12PX; }
+.checkout-customer-initial { flex: 0 0 44PX; height: 44PX; border-radius: 22PX; background: ui.$brand-dark; color: #d8c08f; font-size: 18PX; font-weight: 600; line-height: 44PX; text-align: center; }
+.checkout-customer-guest { background: ui.$action-soft; color: ui.$action; }
+.checkout-customer-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.checkout-customer-name { font-size: 16PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.checkout-customer-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 4PX 12PX; margin-top: 12PX; }
+
+.checkout-line { display: flex; align-items: center; gap: 12PX; padding: 10PX 0; border-bottom: 1PX solid ui.$divider; }
+.checkout-line:last-of-type { border-bottom: 0; }
+.checkout-line-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.checkout-line-amount { flex-shrink: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.checkout-line-edit { margin: 0 0 10PX; }
+.screen .checkout-add-line { min-height: 44PX; margin: 4PX 0 8PX; border: 1PX dashed ui.$border; border-radius: ui.$radius; background: transparent; color: ui.$action; font-size: 15PX; line-height: 42PX; font-weight: 600; text-align: center; }
+
+.checkout-group-label { display: block; margin-top: 16PX; color: ui.$action; font-size: 12PX; line-height: 18PX; font-weight: 600; letter-spacing: 1PX; }
+.checkout-manager { padding-top: 12PX; }
+
+.checkout-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8PX; margin-bottom: 12PX; }
+.checkout-choices-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.screen .checkout-choice { @include ui.segment; border: 1PX solid ui.$divider; color: ui.$ink; font-weight: 600; }
+.screen .checkout-choice-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+
+.checkout-bottom-hint { display: block; margin: 6PX 0 2PX; color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+
+.member-settlement-row { display: flex; align-items: center; justify-content: space-between; gap: 12PX; margin-bottom: 8PX; }
+.member-settlement-copy { display: flex; flex-direction: column; min-width: 0; }

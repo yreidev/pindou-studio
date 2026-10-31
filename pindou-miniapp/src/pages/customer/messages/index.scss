@@ -1,0 +1,29 @@
+@use '../../../styles/tokens' as ui;
+.messages-screen .navbar-title { font-family: inherit; }
+.messages-screen .page-content { padding: 6PX 16PX 0; line-height: normal; }
+.messages-content { display: flex; flex-direction: column; gap: 14PX; }
+.messages-read-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: -6PX; color: ui.$muted; font-size: 13PX; }
+.messages-read-row .text-button { min-height: 32PX; padding: 0; font-size: 13PX; }
+.messages-day { display: flex; flex-direction: column; gap: 6PX; }
+.messages-day-title { padding-left: 4PX; color: ui.$muted; font-size: 12PX; }
+.messages-list { border: 1PX solid ui.$divider; border-radius: 14PX; overflow: hidden; background: ui.$surface; }
+.screen .message-row { display: flex; align-items: flex-start; gap: 12PX; width: 100%; padding: 14PX 14PX 14PX 16PX; border-bottom: 1PX solid ui.$divider; background: transparent; color: ui.$ink; text-align: left; }
+.screen .message-row[disabled] { opacity: 1; }
+.screen .message-row:last-child { border-bottom: 0; }
+.message-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 3PX; }
+.message-heading { display: flex; align-items: center; gap: 6PX; }
+.message-title { min-width: 0; font-size: 15PX; font-weight: 600; overflow-wrap: anywhere; }
+.message-unread { flex: 0 0 8PX; width: 8PX; height: 8PX; border-radius: 4PX; background: ui.$danger; }
+.message-time { flex: 0 0 auto; margin-left: auto; color: ui.$muted; font-size: 12PX; }
+.message-line { font-size: 14PX; overflow-wrap: anywhere; }
+.message-line-secondary { color: ui.$muted; font-size: 12PX; }
+.messages-foot { display: block; color: ui.$muted; font-size: 12PX; text-align: center; }
+.messages-empty { display: flex; flex-direction: column; align-items: center; gap: 10PX; padding: 80PX 24PX 0; text-align: center; }
+.messages-empty .ledger-icon { width: 52PX; height: 52PX; flex-basis: 52PX; background: transparent; }
+.messages-empty .design-icon { width: 52PX; height: 52PX; flex-basis: 52PX; }
+.messages-empty-title { font-size: 18PX; font-weight: 600; }
+.messages-empty-note { color: ui.$muted; font-size: 14PX; line-height: 22PX; }
+.screen .messages-book { display: flex; align-items: center; min-height: 40PX; margin-top: 10PX; padding: 0 22PX; border-radius: 20PX; background: ui.$ink; color: ui.$surface; font-size: 14PX; font-weight: 600; }
+
+.messages-screen .navbar-back { left: 4PX; width: 44PX; min-height: 44PX; }
+.messages-screen { font-family: 'Noto Sans SC', 'PingFang SC', sans-serif; }

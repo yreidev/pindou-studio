@@ -1,0 +1,91 @@
+/* 呼叫店员面板：只管布局，颜色用 Semi 默认主题。 */
+.service-calls-loading {
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.service-call-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* 「我去处理」「已处理」排在文字下面（同看板其他侧栏的按钮行）：侧栏窄，放右边会把桌位、认领人挤成一字一行 */
+.service-call-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* 「点一下页面任意处开启提示音」：浮在页面顶部正中，不占版面（出现、消失都不挪动下面的内容，免得第一下点偏），
+ * 也不挡点击（点击穿过它落到下面的页面上，同时唤醒声音）。 */
+.call-alert-hint {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  max-width: calc(100vw - 24px);
+  pointer-events: none;
+}
+
+/* 右上角呼叫提示里的每一行 */
+.call-alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 「提醒设置」弹窗 */
+.alert-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.alert-settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alert-settings-section .semi-typography-paragraph {
+  margin: 0;
+}
+
+.alert-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 右上角呼叫提示底部的「知道了」「去「现场」处理」 */
+.call-alert-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+/* 音量：标题、滑块、数字一行 */
+.alert-settings-volume {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.alert-settings-volume-slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-settings-volume-value {
+  min-width: 3ch;
+  text-align: right;
+}

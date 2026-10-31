@@ -1,0 +1,28 @@
+@use '../../styles/tokens' as ui;
+
+// 我的订单（2026-10-20 重做，画稿 BOrders）
+.orders-head { display: flex; align-items: center; justify-content: space-between; gap: 12PX; }
+.screen .orders-reservations { min-height: 34PX; padding: 5PX 14PX; border: 1PX solid ui.$divider; border-radius: 999PX; background: ui.$surface; color: ui.$ink; font-size: 13PX; line-height: 22PX; }
+.order-tabs { display: flex; width: 100%; gap: 8PX; margin: 12PX 0; }
+.order-tab { @include ui.segment; flex: 1; padding-left: 2PX; padding-right: 2PX; }
+.order-tab.selected { @include ui.selected; }
+.orders-section { display: block; margin: 16PX 0 8PX; font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.screen .orders-open { display: flex; flex-direction: column; gap: 2PX; width: 100%; margin-bottom: 10PX; padding: 16PX 18PX; border-radius: 20PX; background: ui.$brand-dark; color: ui.$on-dark; text-align: left; }
+.orders-open-top { display: flex; align-items: center; justify-content: space-between; gap: 12PX; }
+.orders-open-time { color: ui.$muted-on-dark; font-size: 13PX; line-height: 20PX; }
+.orders-open-state { padding: 1PX 10PX; border-radius: 999PX; background: rgba(216, 192, 143, 0.2); color: #d8c08f; font-size: 12PX; line-height: 20PX; font-weight: 600; }
+.orders-open-label { margin-top: 8PX; color: #d8c08f; font-size: 13PX; line-height: 18PX; }
+.orders-open-amount { font-family: ui.$font-display; font-size: 34PX; line-height: 42PX; font-variant-numeric: tabular-nums; }
+.orders-open-note { color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+.orders-open-foot { display: flex; align-items: center; justify-content: space-between; gap: 12PX; margin-top: 10PX; padding-top: 10PX; border-top: 1PX solid rgba(247, 245, 240, 0.14); font-size: 13PX; line-height: 20PX; }
+.orders-open-lines { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.orders-open-more { flex-shrink: 0; color: #d8c08f; }
+.orders-past { padding: 0 14PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.orders-past .order-card:last-child { border-bottom: 0; }
+.orders-end { display: block; padding: 16PX 0; text-align: center; color: ui.$muted; font-size: 14PX; line-height: 20PX; }
+// 以前的单：沿用订单卡（components/customer），在这里压紧一点
+.screen .orders-past .order-card { padding: 14PX 0; }
+.orders-past .order-lines { margin: 6PX 0; }
+.orders-past .order-lines .row { margin-top: 2PX; }
+.orders-past .order-footer { padding-top: 2PX; }
+.orders-past .order-footer .money { font-size: 18PX; line-height: 26PX; }

@@ -1,0 +1,129 @@
+@use '../../../styles/tokens' as ui;
+@use '../../../styles/store-contact';
+.reservation-hint { display: block; padding-top: 8PX; }
+
+.seatmap-plan { position: relative; margin-top: 8PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; overflow: hidden; background: ui.$surface; }
+.seatmap-image { display: block; width: 100%; }
+
+// 视觉层：只画状态，不接收点击；编号由底图透出，不能盖住
+.seatmap-mark { position: absolute; border-radius: 10PX; pointer-events: none; }
+.seatmap-mark-free { background: transparent; }
+.seatmap-mark-dim { background: rgba(247, 245, 240, .78); }
+.seatmap-mark-taken { background: rgba(247, 245, 240, .72); box-shadow: inset 0 0 0 1PX rgba(34, 33, 29, .28); }
+// 选好时段后，那时空着、可以点的座位框一圈金边
+.seatmap-mark-pick { box-shadow: inset 0 0 0 2PX ui.$accent, 0 0 0 1PX rgba(180, 151, 99, .35); }
+
+// 热区贴合座位本身，不做固定尺寸的放大圆：底图上最近的两个座位中心只隔约 68 像素，
+// 换算到手机屏约 21.8px，任何超过该半径的热区都会盖住邻座的圆心导致误选。
+// 视觉上座位偏小是底图决定的，靠放大热区解决会换来更糟的错点。
+.screen .seatmap-hit { position: absolute; padding: 0; background: transparent; border: 0; border-radius: 8PX; }
+.screen .seatmap-hit[disabled] { background: transparent; }
+
+// 标签整体上移一个自身高度，让它落在锚点之上：底图的入口就在图片最下沿，
+// 居中对齐会有一半落到 .seatmap-plan 的 overflow 之外被裁掉。
+
+// ——— 打开页面先看到的：月份、日期横条、平面图 ———
+// 七天一行、一屏放下，不左右滑；天数更多时按七天一行往下排。
+.plan-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6PX; padding-bottom: 2PX; }
+.screen .plan-day { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-width: 0; min-height: 44PX; padding: 4PX 2PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; }
+.screen .plan-day-on { background: ui.$action-soft; border-color: ui.$accent; color: ui.$action; }
+.plan-day-week { font-size: 10PX; line-height: 14PX; color: ui.$muted; }
+.screen .plan-day-on .plan-day-week { color: ui.$action; }
+.plan-day-date { font-size: 13PX; line-height: 18PX; font-weight: 600; font-variant-numeric: tabular-nums; }
+// 歇业日：日期条上写「店休」，底色压灰，和能约的日子分开
+.screen .plan-day-closed { background: ui.$disabled-surface; }
+.screen .plan-day-closed .plan-day-week { color: ui.$muted; font-weight: 600; }
+
+.plan-key { display: inline-block; width: 10PX; height: 10PX; border-radius: 3PX; flex: 0 0 auto; }
+.plan-key-taken { background: ui.$disabled-surface; border: 1PX solid ui.$border; }
+
+.plan-offmap { padding-top: 12PX; }
+.plan-offmap > .strong { display: block; padding-bottom: 8PX; }
+
+// ——— 图上方标题、图下方分区图例与标语：都来自门店海报，把上下留白填成有用的信息 ———
+.plan-title { display: flex; align-items: center; justify-content: space-between; gap: 10PX; padding: 10PX 2PX 0; }
+.plan-title-copy { display: flex; align-items: baseline; gap: 8PX; min-width: 0; }
+.screen .plan-help { flex: 0 0 auto; width: 24PX; height: 24PX; min-height: 24PX; padding: 0; border: 1PX solid ui.$divider; border-radius: 50%; background: ui.$surface; color: ui.$muted; font-size: 13PX; line-height: 22PX; }
+.plan-title-text { font-family: ui.$font-display; font-size: 18PX; line-height: 26PX; }
+.plan-title-sub { font-size: ui.$caption-size; line-height: 20PX; color: ui.$muted; }
+.plan-zones-card { margin-top: 10PX; padding: 10PX 12PX 8PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.plan-zones-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6PX 12PX; }
+.plan-zone-row { display: flex; align-items: center; gap: 6PX; min-width: 0; }
+.plan-zone-swatch { display: inline-block; width: 14PX; height: 14PX; border-radius: 4PX; flex: 0 0 auto; border: 1PX solid rgba(34, 33, 29, .12); }
+.plan-zone-name { font-size: 13PX; line-height: 18PX; font-weight: 600; flex: 0 0 auto; }
+.plan-zone-desc { flex: 1 1 auto; min-width: 0; font-size: 12PX; line-height: 18PX; color: ui.$muted; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+// 包间整间预约要找门店：跟在图例后面，字色比空闲统计深一档，是顾客要照着做的话
+.plan-room-note { display: block; margin-top: 8PX; font-size: 12PX; line-height: 18PX; color: ui.$ink; }
+.plan-zones-note { display: flex; align-items: center; gap: 4PX; margin-top: 8PX; padding-top: 8PX; border-top: 1PX dashed ui.$divider; font-size: 12PX; line-height: 18PX; color: ui.$muted; }
+.plan-zones-note .plan-key { margin-right: 0; }
+.plan-footer { display: block; padding: 12PX 0 4PX; font-family: ui.$font-display; font-size: 14PX; line-height: 20PX; color: ui.$muted; text-align: center; letter-spacing: 2PX; }
+@media (max-width: 350px) { .plan-zones-grid { grid-template-columns: minmax(0, 1fr); } }
+
+// ——— 先选坐多久、几点开始（2026-10-20 重做，画稿 CReserveTime） ———
+.plan-content { gap: 10PX; }
+.plan-question { display: block; padding-top: 6PX; font-size: 16PX; line-height: 24PX; font-weight: 600; }
+.plan-packages { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8PX; }
+.screen .plan-package { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-width: 0; min-height: 52PX; padding: 6PX 4PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; color: ui.$ink; text-align: center; }
+.screen .plan-package-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.plan-package-name { font-size: 14PX; line-height: 20PX; font-weight: 600; overflow-wrap: anywhere; }
+.plan-package-note { font-size: 12PX; line-height: 16PX; opacity: .75; font-variant-numeric: tabular-nums; }
+
+.plan-slots { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8PX; }
+.screen .plan-slot { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-width: 0; min-height: 52PX; padding: 6PX 4PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; color: ui.$ink; font-variant-numeric: tabular-nums; }
+.plan-slot-time { font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.plan-slot-state { font-size: 12PX; line-height: 16PX; color: ui.$success; }
+.screen .plan-slot-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.screen .plan-slot-on .plan-slot-state { color: #d8c08f; }
+.screen .plan-slot[disabled] { background: ui.$disabled-surface; color: ui.$muted; border-color: ui.$divider; }
+.screen .plan-slot[disabled] .plan-slot-state { color: ui.$muted; }
+
+.plan-map-note { display: flex; align-items: center; flex-wrap: wrap; gap: 2PX 8PX; padding: 2PX 2PX 0; }
+.plan-map-note-text { flex: 1 1 200PX; min-width: 0; color: ui.$muted; font-size: 13PX; line-height: 20PX; }
+.plan-map-note .text-button { flex: 0 0 auto; min-height: 36PX; padding: 6PX 0; font-size: 13PX; }
+
+// ——— 点座位后弹出的确认层（画稿 CReserveConfirm / BReserveConfirm） ———
+.plan-sheet-mask { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; background: rgba(0, 0, 0, .72); }
+.plan-sheet { display: flex; flex-direction: column; gap: 12PX; width: 100%; max-width: 640PX; margin: 0 auto; max-height: 88vh; overflow-y: auto; box-sizing: border-box; padding: 20PX ui.$page-gutter calc(16PX + env(safe-area-inset-bottom)); border-radius: 20PX 20PX 0 0; background: ui.$canvas; }
+.plan-sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12PX; }
+.plan-sheet .sheet-handle { margin: -12PX auto 8PX; }
+// 预约提交成功：勾、座位和时段（docs/plan-interaction.md 第 3 节）
+.plan-done { display: flex; flex-direction: column; align-items: center; gap: 8PX; padding: 12PX 0 4PX; text-align: center; }
+.plan-done .done-mark { margin-bottom: 4PX; }
+.plan-done-title { font-size: ui.$section-title-size; font-weight: 600; line-height: 26PX; }
+.plan-done-when { font-size: ui.$body-size; line-height: 24PX; }
+.plan-done-note { font-size: ui.$caption-size; line-height: 20PX; color: ui.$muted; }
+.screen .plan-done-ok { align-self: stretch; margin-top: 12PX; }
+.plan-sheet-title { display: flex; flex-direction: column; min-width: 0; }
+.plan-sheet-code { font-family: ui.$font-display; font-size: 40PX; line-height: 48PX; }
+.plan-sheet-place { color: ui.$muted; font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.plan-sheet-rows { display: flex; flex-direction: column; padding: 4PX 14PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.plan-sheet-row { display: flex; gap: 14PX; padding: 10PX 0; border-bottom: 1PX solid ui.$divider; font-size: 14PX; line-height: 21PX; }
+.plan-sheet-row:last-child { border-bottom: 0; }
+.plan-sheet-label { flex: 0 0 32PX; color: ui.$muted; }
+.plan-sheet-value { flex: 1; min-width: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.screen .plan-sheet-submit { width: 100%; min-height: 48PX; border-radius: 24PX; background: ui.$brand-dark; color: ui.$on-dark; font-size: 16PX; font-weight: 600; }
+.screen .plan-sheet-submit[disabled] { background: ui.$disabled-surface; color: ui.$disabled-ink; }
+.plan-sheet-foot { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0 6PX; text-align: center; }
+.plan-sheet-foot-text { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.plan-sheet-foot .text-button { min-height: 32PX; padding: 4PX 0; font-size: 12PX; }
+@media (max-width: 350px) { .plan-packages { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 350px) { .plan-slots { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+// 320 宽的机型上七格只剩约 36PX 一格，日期字号再降一档才不挤。
+@media (max-width: 350px) { .plan-days { gap: 4PX; } .plan-day-date { font-size: 13PX; } }
+
+/* 门店停用的桌：画成斜纹压灰，和「当天已约满」区分开 ——
+   约满明天可能有位，停用今天明天都没有，不该给顾客同一种暗示。 */
+.seatmap-mark-off {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(34, 33, 29, .10) 0,
+    rgba(34, 33, 29, .10) 3PX,
+    rgba(247, 245, 240, .82) 3PX,
+    rgba(247, 245, 240, .82) 7PX
+  );
+  box-shadow: inset 0 0 0 1PX rgba(34, 33, 29, .22);
+}
+// 从首页「今天还能约」点的整点排不下了：说一声，让顾客换个时间
+.plan-wanted { display: flex; align-items: center; gap: 8PX; padding: 8PX 12PX; border-radius: 12PX; background: ui.$action-soft; }
+.plan-wanted-text { flex: 1; min-width: 0; color: ui.$action; font-size: ui.$caption-size; line-height: 20PX; }
+.plan-wanted .text-button { flex: 0 0 auto; min-height: 36PX; padding: 6PX 4PX; }

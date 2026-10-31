@@ -1,0 +1,44 @@
+# Node workspaces
+node_modules
+dist/
+coverage/
+.vite/
+.swc/
+
+# WeChat Mini Program generated and local configuration
+pindou-miniapp/miniprogram_npm/
+pindou-miniapp/project.private.config.json
+# 端到端采集的截图产物（人看完就扔，不入库）
+pindou-miniapp/.e2e-shots/
+pindou-miniapp-uni/.e2e-shots/
+pindou-admin/.e2e-shots/
+
+# 网页后台：路由树由 check/build 现生成；Playwright 报告与失败截图不入库
+pindou-admin/src/routeTree.gen.ts
+pindou-admin/playwright-report/
+pindou-admin/test-results/
+
+# Go（pindou-backend/bin 是后端二进制，pindou-admin/bin 是网页后台服务的二进制）
+bin/
+# 网页后台构建产物在 make admin-embed 时复制进来再嵌入二进制；只保留占位说明，让 go:embed 没有产物也能编译
+!pindou-backend/internal/adminui/dist/
+pindou-backend/internal/adminui/dist/*
+!pindou-backend/internal/adminui/dist/README.txt
+*.test
+*.out
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local environment
+.env
+.env.*
+!.env.example
+ds-bundle/
+
+# miniprogram-ci 预览生成的二维码
+deploy/miniprogram/preview-qrcode.jpg
+
+# Private store checkout used only by release builds
+.store-config/

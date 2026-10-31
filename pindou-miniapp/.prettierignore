@@ -1,0 +1,24 @@
+dist
+node_modules
+miniprogram_npm
+.swc
+package-lock.json
+# 生成物，由 scripts/build-font-subset.mjs 写出，含一条 25KB 的 base64
+src/styles/_font.scss
+src/assets/fonts
+
+# SCSS 全部排除：Prettier 会把 Taro 的大写 PX 转义（12PX）小写成 12px，
+# 随后被 postcss 当成普通像素转成 12rpx，尺寸直接减半。
+# 构建、类型检查、测试都不会报错，只有真机能看出来。
+*.scss
+
+# 微信开发者工具生成的本地文件：已在 .gitignore 里，不进版本库，
+# 但 prettier 默认还是会检查它 —— 开过开发者工具的人跑 make verify 就会撞上
+# 一个与自己改动无关的红灯。工具自己写的格式，不归我们管。
+project.private.config.json
+# 采图产物：已在 .gitignore 里，不进版本库。采过图的人跑 format:check 不该撞红灯。
+.e2e-shots
+# 由 npm run api:types 从 docs/api.yaml 生成，npm run check 核对它是最新的；格式归生成器管。
+src/api/schema.d.ts
+# 抠图模型的许可证原文（Apache-2.0），逐字保留，不让 Prettier 改缩进。
+src/pages/maker/model/LICENSE-U2Net.md

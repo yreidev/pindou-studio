@@ -1,0 +1,23 @@
+{
+  "name": "pindou-miniprogram-ci",
+  "private": true,
+  "description": "用微信官方 miniprogram-ci 预览、上传小程序（不开开发者工具）。见 docs/deployment.md「小程序上传」。",
+  "type": "module",
+  "scripts": {
+    "preview": "node mp.mjs preview",
+    "upload": "node mp.mjs upload"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "miniprogram-ci": "2.1.31"
+  },
+  "allowScripts": {
+    "@parcel/watcher": false,
+    "@swc/core": false,
+    "core-js": false,
+    "less": false,
+    "protobufjs": false
+  }
+}

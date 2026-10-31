@@ -1,0 +1,75 @@
+# CloudNativePG 运算符与 Barman Cloud 插件，装在 cnpg-system 命名空间（集群级，跟拼豆的发布无关）。
+# 用法、镜像预拉与升级见 docs/deployment.md「数据库（CloudNativePG）」：
+#   kubectl apply --server-side -k deploy/k3s/cnpg-operator
+#
+# 两个 YAML 是官方发布的原样副本，不手改，要改的都写在下面的 patches 里：
+#   cnpg-1.30.1.yaml                 https://github.com/cloudnative-pg/cloudnative-pg/releases/download/v1.30.1/cnpg-1.30.1.yaml
+#                                    sha256 37237f145d8138256ea25ae830f87759255665ff08f8d552fdd8224a5ec032fb
+#   plugin-barman-cloud-0.15.1.yaml  https://github.com/cloudnative-pg/plugin-barman-cloud/releases/download/v0.15.1/manifest.yaml
+#                                    sha256 8f377ff4a7d0d3f74fc64b0f7ac4f449fc38ca9e83a40107cca2f9315a9bd920
+# 升级时换成新版本的原样文件、更新上面的 sha256 和 deploy/k3s/cnpg-images.txt，先在本机彩排（deploy/cnpg-rehearsal.sh）。
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - cnpg-1.30.1.yaml
+  - plugin-barman-cloud-0.15.1.yaml
+  - operator-config.yaml
+patches:
+  # 国内服务器直连不了 ghcr.io：镜像事先按 digest 预拉（deploy/k3s/cnpg-images.txt），只在本机没有时才拉。
+  # 官方清单是 Always，运算符每次重启都要去 ghcr.io 拉一遍，拉不到就起不来。
+  - target:
+      kind: Deployment
+      name: cnpg-controller-manager
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
+  # 插件官方清单用 cert-manager 签运算符与插件之间的 mTLS 证书。单节点上不为两张证书多跑三个 cert-manager 进程：
+  # 证书由 deploy/k3s/cnpg-plugin-tls.sh 生成（自签、10 年），这里删掉 cert-manager 的资源。
+  - patch: |-
+      $patch: delete
+      apiVersion: cert-manager.io/v1
+      kind: Certificate
+      metadata:
+        name: barman-cloud-client
+        namespace: cnpg-system
+  - patch: |-
+      $patch: delete
+      apiVersion: cert-manager.io/v1
+      kind: Certificate
+      metadata:
+        name: barman-cloud-server
+        namespace: cnpg-system
+  - patch: |-
+      $patch: delete
+      apiVersion: cert-manager.io/v1
+      kind: Issuer
+      metadata:
+        name: selfsigned-issuer
+        namespace: cnpg-system
+  # 插件：日志从 debug 降到 info；补上内存请求与上限（官方清单没写，单节点上不留无上限的进程）。
+  - target:
+      kind: Deployment
+      name: barman-cloud
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args
+        value:
+          - operator
+          - --server-cert=/server/tls.crt
+          - --server-key=/server/tls.key
+          - --client-cert=/client/tls.crt
+          - --server-address=:9090
+          - --leader-elect
+          - --log-level=info
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 10m
+            memory: 48Mi
+          limits:
+            memory: 192Mi

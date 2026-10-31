@@ -1,0 +1,7 @@
+@use '../styles/tokens' as ui;
+
+.coupon-fields { display: flex; flex-direction: column; margin-top: 16PX; }
+.coupon-platforms { display: flex; flex-wrap: wrap; gap: 8PX; }
+.coupon-platform { @include ui.segment; flex: 1 1 0; min-width: 72PX; padding-left: 4PX; padding-right: 4PX; }
+.coupon-platform-selected { @include ui.selected; }
+.coupon-code { margin-top: 12PX; }

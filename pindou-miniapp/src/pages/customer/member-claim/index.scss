@@ -1,0 +1,38 @@
+@use '../../../styles/tokens' as ui;
+.member-claim-screen .navbar-title { font-family: inherit; }
+.member-claim-screen .page-content { padding: 10PX 20PX 0; line-height: normal; }
+.claim-content, .claim-success { display: flex; flex-direction: column; gap: 16PX; }
+.claim-intro { display: flex; flex-direction: column; gap: 6PX; }
+.claim-title { font-size: 20PX; font-weight: 600; }
+.claim-description { color: ui.$muted; font-size: 14PX; line-height: 22PX; }
+.claim-fields { display: flex; flex-direction: column; gap: 16PX; padding: 16PX; border: 1PX solid ui.$divider; border-radius: 16PX; background: ui.$surface; }
+.claim-field { display: flex; flex-direction: column; gap: 8PX; }
+.claim-label { font-size: 14PX; font-weight: 600; }
+.claim-input, .claim-password { box-sizing: border-box; width: 100%; height: 48PX; padding: 0 12PX 0 14PX; border: 1PX solid ui.$design-input-border; border-radius: 12PX; background: ui.$surface; font-size: 16PX; }
+.claim-password { display: flex; align-items: center; gap: 8PX; }
+.claim-password-input { flex: 1; min-width: 0; font-size: 16PX; }
+.claim-password-input::placeholder, .claim-input::placeholder { color: ui.$design-placeholder; }
+.claim-show-password { display: flex; align-items: center; justify-content: center; }
+.claim-password-help { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.claim-agreement, .claim-consent { display: flex; align-items: center; gap: 10PX; font-size: 14PX; }
+.claim-consent .wx-checkbox-input, .claim-consent .weui-icon { width: 20PX; height: 20PX; border-radius: 4PX; }
+.claim-privacy { color: ui.$action; }
+.screen .claim-submit { display: flex; align-items: center; justify-content: center; min-height: 50PX; border-radius: 25PX; background: ui.$accent; color: ui.$ink; font-size: 16PX; font-weight: 600; }
+.claim-foot { color: ui.$muted; font-size: 13PX; line-height: 20PX; text-align: center; }
+.member-claimed-screen .page-content { padding-top: 18PX; }
+.claim-check { display: flex; align-items: center; justify-content: center; align-self: center; width: 60PX; height: 60PX; border-radius: 30PX; background: ui.$role-clerk-soft; }
+.claim-check .design-icon { width: 32PX; height: 32PX; flex-basis: 32PX; }
+.claim-welcome { display: flex; align-items: center; align-self: center; flex-direction: column; gap: 6PX; text-align: center; }
+.claim-welcome-title { font-family: ui.$font-display; font-size: 26PX; }
+.claim-welcome-note { font-size: 14PX; color: ui.$muted; }
+.claim-balance-card { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8PX; padding: 16PX 18PX; border-radius: 18PX; background: ui.$brand-dark; color: ui.$surface; }
+.claim-asset { display: flex; flex-direction: column; gap: 2PX; min-width: 0; }
+.claim-asset-label { color: ui.$design-card-muted; font-size: 12PX; }
+.claim-asset-value { font-size: 26PX; font-weight: 600; overflow-wrap: anywhere; }
+.claim-gift { color: ui.$accent; font-size: 12PX; }
+.claim-history { grid-column: 1 / -1; padding-top: 10PX; border-top: 1PX solid rgba(ui.$surface, .14); font-size: 13PX; color: ui.$design-claimed-copy; }
+.screen .claim-view-member { display: flex; align-items: center; justify-content: center; min-height: 46PX; border: 1PX solid ui.$divider; border-radius: 23PX; background: ui.$surface; font-size: 15PX; }
+
+.member-claim-screen .navbar-back { left: 4PX; width: 44PX; min-height: 44PX; }
+.member-claim-screen { font-family: 'Noto Sans SC', 'PingFang SC', sans-serif; }
+.claim-consent .wx-checkbox-input { margin: 0; border: 1.5PX solid ui.$design-input-border; background: ui.$surface; }

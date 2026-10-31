@@ -1,0 +1,20 @@
+@use '../../../styles/tokens' as ui;
+
+// 待结账（2026-10-20 重做）：「可以收了」「还在计时」两段，按桌号列。
+.staff-orders-search { margin: 8PX 0 14PX; background: ui.$surface; }
+.staff-orders-group { display: flex; flex-direction: column; gap: 8PX; margin-bottom: 16PX; }
+.staff-orders-title { font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.staff-orders-note { margin-top: -6PX; color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.staff-orders-empty { display: block; padding: 12PX 0; color: ui.$muted; font-size: 13PX; }
+.staff-order { display: flex; flex-direction: column; gap: 10PX; padding: 12PX 14PX; border: 1PX solid ui.$divider; border-radius: 16PX; background: ui.$surface; }
+.staff-order-head { display: flex; align-items: center; gap: 12PX; }
+.staff-order-table { flex: 0 0 48PX; height: 48PX; border-radius: 12PX; background: ui.$brand-dark; color: #d8c08f; font-family: ui.$font-display; font-size: 18PX; line-height: 48PX; text-align: center; }
+.staff-order-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.staff-order-title { font-size: 15PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.staff-order-meta { color: ui.$muted; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+.staff-order-amount { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+.staff-order-amount .money { font-size: 18PX; line-height: 24PX; }
+.staff-order-state { color: ui.$muted; font-size: 11PX; line-height: 16PX; }
+.staff-order-state-warning { color: ui.$warning; font-size: 11PX; line-height: 16PX; font-weight: 600; }
+.screen .staff-order-button { min-height: 40PX; border: 1PX solid ui.$divider; border-radius: 10PX; background: ui.$surface; color: ui.$ink; font-size: 15PX; line-height: 38PX; font-weight: 600; text-align: center; }
+.screen .staff-order-button-dark { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }

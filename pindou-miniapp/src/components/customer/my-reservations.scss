@@ -1,0 +1,79 @@
+@use '../../styles/tokens' as ui;
+@use '../../styles/store-contact';
+
+// 我的预约（2026-10-20 重做，画稿 CMyReservations）
+.mine-head { display: flex; align-items: center; justify-content: space-between; gap: 12PX; margin: 4PX 0 10PX; }
+.mine-title { font-size: 16PX; line-height: 24PX; font-weight: 600; }
+.screen .mine-book { min-height: 34PX; padding: 5PX 14PX; border-radius: 999PX; background: ui.$brand-dark; color: ui.$on-dark; font-size: 14PX; line-height: 24PX; font-weight: 600; }
+.screen .mine-all { min-height: 30PX; padding: 4PX 0; background: transparent; color: ui.$action; font-size: 13PX; line-height: 22PX; }
+
+.mine-next { display: flex; flex-direction: column; gap: 4PX; margin-bottom: 12PX; padding: 18PX; border-radius: 20PX; background: ui.$brand-dark; color: ui.$on-dark; }
+.mine-next-top { display: flex; align-items: center; justify-content: space-between; gap: 12PX; }
+.mine-next-day { color: ui.$muted-on-dark; font-size: 13PX; line-height: 20PX; }
+.mine-next-time { font-family: ui.$font-display; font-size: 34PX; line-height: 42PX; font-variant-numeric: tabular-nums; }
+.mine-next-until { color: #d8c08f; font-size: 14PX; line-height: 20PX; }
+.mine-rows { display: flex; flex-direction: column; gap: 6PX; margin-top: 10PX; padding-top: 12PX; border-top: 1PX solid rgba(247, 245, 240, 0.14); }
+.mine-row { display: flex; gap: 12PX; font-size: 14PX; line-height: 20PX; }
+.mine-row-label { flex: 0 0 36PX; color: ui.$muted-on-dark; }
+.mine-row-value { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.mine-row-price { color: ui.$muted-on-dark; font-size: 13PX; line-height: 20PX; }
+.mine-next-actions { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 10PX; margin-top: 14PX; }
+.screen .mine-scan { min-height: 46PX; border-radius: 23PX; background: #d8c08f; color: ui.$brand-dark; font-size: 15PX; line-height: 46PX; font-weight: 600; text-align: center; }
+.screen .mine-cancel { min-height: 46PX; border: 1PX solid rgba(247, 245, 240, 0.3); border-radius: 23PX; background: transparent; color: ui.$on-dark; font-size: 15PX; line-height: 44PX; text-align: center; }
+// 不是今天的预约没有「到店扫码入座」，只剩取消一个按钮
+.mine-next-actions-single { grid-template-columns: minmax(0, 1fr); }
+
+.mine-state { align-self: flex-start; padding: 1PX 10PX; border-radius: 999PX; font-size: 12PX; line-height: 20PX; font-weight: 600; }
+.mine-state-confirmed { background: rgba(76, 195, 138, 0.18); color: #4cc38a; }
+.mine-state-pending { background: rgba(216, 192, 143, 0.2); color: ui.$action; }
+.mine-next .mine-state-pending { color: #d8c08f; }
+
+.mine-card { display: flex; align-items: center; gap: 12PX; margin-bottom: 10PX; padding: 12PX 14PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.mine-card-date { display: flex; flex: 0 0 46PX; flex-direction: column; align-items: center; padding: 6PX 0; border-radius: 12PX; background: ui.$action-soft; color: ui.$action; }
+.mine-card-weekday { font-size: 11PX; line-height: 16PX; }
+.mine-card-day { font-family: ui.$font-display; font-size: 20PX; line-height: 24PX; }
+.mine-card-copy { display: flex; flex: 1; flex-direction: column; gap: 2PX; min-width: 0; }
+.mine-card-title { font-size: 15PX; line-height: 22PX; font-weight: 600; font-variant-numeric: tabular-nums; }
+.mine-card-meta { color: ui.$muted; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+.mine-card .mine-state-confirmed { color: ui.$success; }
+.screen .mine-card-cancel { flex-shrink: 0; min-height: 34PX; padding: 4PX 12PX; border: 1PX solid ui.$divider; border-radius: 999PX; background: transparent; color: ui.$muted; font-size: 13PX; line-height: 24PX; }
+
+// 微信提醒：大卡里是一行浅色字或文字按钮，小卡里跟在状态下面
+.mine-next-notice { align-self: flex-start; color: ui.$muted-on-dark; font-size: 13PX; line-height: 20PX; }
+.screen .mine-next-notice.mine-notice-on { min-height: 0; padding: 0; background: transparent; color: #d8c08f; font-size: 13PX; line-height: 20PX; text-decoration: underline; }
+.mine-card-notice { align-self: flex-start; color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.screen .mine-card-notice.mine-notice-on { min-height: 0; padding: 0; background: transparent; color: ui.$action; font-size: 12PX; line-height: 18PX; text-decoration: underline; }
+
+.mine-past { margin-top: 16PX; }
+.mine-past-list { padding: 0 14PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.mine-past-row { display: flex; align-items: center; gap: 10PX; padding: 12PX 0; border-bottom: 1PX solid ui.$divider; }
+.mine-past-row:last-child { border-bottom: 0; }
+.mine-past-date { flex: 0 0 72PX; font-size: 13PX; line-height: 20PX; font-weight: 600; font-variant-numeric: tabular-nums; }
+.mine-past-copy { flex: 1; min-width: 0; color: ui.$muted; font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.mine-past-state { flex-shrink: 0; color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.mine-past-state-seated { color: ui.$success; }
+.mine-past-state-no_show, .mine-past-state-expired { color: ui.$danger; }
+
+.mine-foot { display: flex; flex-wrap: wrap; align-items: center; margin-top: 18PX; color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+// 透明内边距加负外边距：看着一行小字，点得到的范围约 40 高
+.screen .mine-foot-link { min-height: 0; padding: 11PX 4PX; margin: -11PX -4PX; background: transparent; color: ui.$action; font-size: 12PX; line-height: 18PX; text-decoration: underline; }
+.my-reservations-suspended { display: flex; flex-direction: column; gap: 4PX; margin-bottom: 16PX; padding: 14PX 16PX; border-radius: ui.$radius; background: ui.$warning-soft; color: ui.$warning; }
+.loyalty-content.mine { gap: 0; }
+
+// 取消预约的确认（2026-10-27）：从底下弹出来，先选原因再确认；外框和预约页「确认预约」的底部弹层一样
+.cancel-sheet-mask { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; background: rgba(0, 0, 0, 0.72); }
+.cancel-sheet { display: flex; flex-direction: column; gap: 12PX; width: 100%; max-width: ui.$content-width; margin: 0 auto; max-height: 88vh; overflow-y: auto; box-sizing: border-box; padding: 20PX ui.$page-gutter calc(16PX + env(safe-area-inset-bottom)); border-radius: 20PX 20PX 0 0; background: ui.$canvas; color: ui.$ink; }
+.cancel-sheet .sheet-handle { margin: -12PX auto 8PX; }
+.cancel-sheet-title { display: block; font-size: ui.$section-title-size; line-height: 26PX; font-weight: 600; }
+.cancel-sheet-summary { display: flex; flex-direction: column; gap: 2PX; padding: 12PX 14PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; }
+.cancel-sheet-when { font-size: 15PX; line-height: 22PX; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cancel-sheet-what { color: ui.$muted; font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.cancel-sheet-question { margin-top: 4PX; font-size: 14PX; line-height: 20PX; font-weight: 600; }
+.cancel-sheet-reasons { display: flex; flex-wrap: wrap; gap: 8PX; }
+.screen .cancel-sheet-reason { min-height: 38PX; padding: 7PX 14PX; border: 1PX solid ui.$divider; border-radius: 999PX; background: ui.$surface; color: ui.$ink; font-size: 14PX; line-height: 22PX; }
+.screen .cancel-sheet-reason-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; font-weight: 600; }
+.cancel-sheet-other { min-height: 72PX; }
+.cancel-sheet-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10PX; margin-top: 4PX; }
+.screen .cancel-sheet-keep { min-height: 46PX; border: 1PX solid ui.$divider; border-radius: 23PX; background: ui.$surface; color: ui.$ink; font-size: 15PX; line-height: 44PX; text-align: center; }
+.screen .cancel-sheet-confirm { min-height: 46PX; border-radius: 23PX; background: ui.$danger; color: ui.$surface; font-size: 15PX; line-height: 46PX; font-weight: 600; text-align: center; }
+.screen .cancel-sheet-confirm[disabled] { background: ui.$disabled-surface; color: ui.$disabled-ink; }

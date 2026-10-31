@@ -1,0 +1,21 @@
+@use '../../../styles/tokens' as ui;
+
+// 收货明细一行一张卡：商品名与删除在一行，库存参考、数量、进价往下排。
+.receiving-row { margin-top: 12PX; padding: 16PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; overflow-wrap: anywhere; }
+.receiving-row .staff-field { margin: 12PX 0 0; }
+.receiving-row .input { background: ui.$canvas; }
+.receiving-row-heading { display: flex; align-items: center; justify-content: space-between; gap: 12PX; }
+.receiving-unknown { margin: 12PX 0; }
+.receiving-summary { padding: ui.$section-space 0; }
+.receiving-totals { display: flex; align-items: baseline; justify-content: space-between; gap: 12PX; font-size: 18PX; line-height: 26PX; font-variant-numeric: tabular-nums; }
+
+// 2026-10-20 重做：扫码区放大（深色大按钮），第一次进货没填进价的行标红，底部写合计和还差什么。
+.receiving-add { padding-top: 12PX; }
+.receiving-scan { display: flex; flex-direction: column; gap: 6PX; margin-bottom: 8PX; }
+.screen .receiving-scan .button { min-height: 64PX; border-radius: 16PX; border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; font-size: 18PX; }
+.receiving-scan-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; text-align: center; }
+.receiving-row-missing { border: 2PX solid #c0492f; background: #fbeee9; }
+.receiving-missing-note { display: block; margin-top: 4PX; color: #a23c25; font-size: 13PX; line-height: 20PX; font-weight: 600; }
+.receiving-summary { position: sticky; bottom: 0; z-index: 8; display: flex; flex-direction: column; gap: 8PX; margin: 0 -#{ui.$page-gutter}; padding: 12PX ui.$page-gutter calc(12PX + env(safe-area-inset-bottom)); border-top: 1PX solid ui.$divider; background: ui.$surface; }
+.screen .receiving-summary .button { border-radius: 14PX; background: ui.$brand-dark; color: ui.$on-dark; border-color: ui.$brand-dark; }
+.screen .receiving-summary .button.button-disabled { opacity: .45; }

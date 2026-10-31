@@ -1,0 +1,8 @@
+# CloudNativePG 用到的 ghcr.io 镜像：清单里写的名字（标签）、多平台索引的 digest、其中 linux/amd64 清单的 digest。
+# deploy/k3s/cnpg-prepull.sh 按索引 digest 拉（内容由 digest 保证，与从哪个镜像站拉无关），再打成第一列的名字。
+# 离线导入（docker save --platform linux/amd64 → k3s ctr images import）得到的是单平台镜像，digest 对第三列。
+# 升级运算符、插件或 PostgreSQL 小版本时同步改这里和引用它们的清单。
+ghcr.io/cloudnative-pg/cloudnative-pg:1.30.1                           sha256:923c267ec29636db3bee20f993d0ec4973fa22998e1adad37da79e4d32b5bc07  sha256:b0f9805bd5f98592e7320b5ea624dd10a7a6ef8e477df5650655c94f0b242497
+ghcr.io/cloudnative-pg/plugin-barman-cloud:v0.15.1                     sha256:c75acad19a36e8176cfe2885761ff1b836c6ef977d7257e298c99a28b5c302ef  sha256:e982a3b8813703e5c0e58c49aef7e15fe41bbe396c949c480627bda6a3a067b9
+ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.15.1             sha256:2287a793a804db751edd0d07d44cd549e357677e98a800eb12e2cf7c0d53f9b0  sha256:eb61ec74fddfcadc956fa49d99306daf9d6ec84b59594b183614037e2b5a5785
+ghcr.io/cloudnative-pg/postgresql:17.11-202609281634-standard-trixie   sha256:db440678e1eca4f53999f819a6200ceb4b8cd2339c568c9bb0596052d3bc4ac5  sha256:2ef38f694dc68ed3d68169528325c2948b91e89917d950959392ff1bb3360fb0

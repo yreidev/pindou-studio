@@ -1,0 +1,102 @@
+/* 结账页的布局。颜色用 Semi 默认主题，这里只管排布。 */
+
+/* 电脑上左边明细、右边会员抵扣、折扣与收款；平板、手机一列 */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.checkout-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
+  .checkout-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 明细一行：商品或服务、名称、数量、单价、删除。按卡片自己的宽度排（卡片在分栏里，比窗口窄得多），
+ * 放不下一行时两列换行，不撑出卡片 */
+.checkout-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  container-type: inline-size;
+}
+
+.checkout-line {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(72px, 1fr) minmax(88px, 1fr) 32px;
+  gap: 8px;
+  align-items: start;
+}
+
+@container (max-width: 520px) {
+  .checkout-line {
+    grid-template-columns: 1fr 1fr;
+  }
+  .checkout-line-head {
+    display: none;
+  }
+}
+
+.checkout-line-actions,
+.checkout-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.checkout-lines-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.checkout-card-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkout-member-inputs {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.checkout-discounts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.checkout-due {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* 顾客账户：现在是谁，下面一排操作；选人时下拉框占满卡片宽 */
+.checkout-customer {
+  margin-bottom: 12px;
+}
+
+.checkout-customer-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

@@ -1,0 +1,47 @@
+/* 经营规则页：只管布局，颜色用 Semi 自己的变量。 */
+
+.rules-panel {
+  margin-top: 16px;
+}
+
+.rules-toolbar {
+  justify-content: space-between;
+}
+
+.rule-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rule-form,
+.rule-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 草稿表单、发布确认框的各项之间已由上面的 gap 隔开，字段外壳自己不再留底 */
+.rule-form .field,
+.rule-dialog .field {
+  margin-bottom: 0;
+}
+
+.rule-preview-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: var(--semi-border-radius-medium);
+  background: var(--semi-color-fill-0);
+}
+
+.rule-preview-text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* 自由计时价下面的「折合每小时」紧贴输入框 */
+.rule-form .rule-hourly {
+  margin: -8px 0 0;
+}

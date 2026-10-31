@@ -1,0 +1,242 @@
+// 做图纸各页共用的样式：每页的 index.scss 用 @use 引进来，编进各自页面的样式（留在分包里，不进主包的 common.wxss）。
+@use '../../styles/tokens' as ui;
+
+// 做图纸（docs/plan-bead-maker.md，画稿 MSetup、MPhoto、MPhotoTone、MPhotoCut、MEdit、MEditMore、MList、MBead、MBeadRow、MMine、MImport）。
+// 照片调整、改图、清单是浅色；边拼边看是深色（店里灯下、晚上在家看着不刺眼）。画布的高度按屏幕高度给，小屏也留得下下面的按钮。
+
+.screen.maker-screen .page-content { display: flex; flex-direction: column; gap: 12PX; padding-top: 8PX; padding-bottom: calc(24PX + env(safe-area-inset-bottom)); }
+.screen.maker-screen-dark { background: ui.$brand-dark; color: ui.$on-dark; }
+.maker-screen-dark .navbar { background: ui.$brand-dark; color: ui.$on-dark; }
+
+.maker-canvas { display: block; width: 100%; touch-action: none; }
+.maker-strong { display: block; font-size: 15PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.maker-note { display: block; color: ui.$muted; font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.maker-hint { display: block; color: ui.$muted; font-size: 12PX; line-height: 18PX; text-align: center; }
+.maker-meta { display: block; color: ui.$muted; font-size: 12PX; line-height: 18PX; text-align: center; font-variant-numeric: tabular-nums; }
+.maker-center { display: flex; justify-content: center; padding: 24PX 0; text-align: center; }
+.maker-note.maker-center { padding: 0; }
+.maker-intro { display: flex; flex-direction: column; gap: 4PX; }
+.maker-link { color: ui.$action; font-size: 14PX; line-height: 20PX; }
+
+// 页签、芯片、分段
+.maker-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4PX; padding: 4PX; border-radius: ui.$radius; background: ui.$action-soft; }
+.maker-tabs-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.maker-tabs, .maker-banner { flex: 0 0 auto; }
+.screen .maker-tab { min-height: 40PX; padding: 8PX 4PX; border-radius: 9PX; color: ui.$muted; font-size: 14PX; line-height: 22PX; text-align: center; }
+.screen .maker-tab-selected { background: ui.$surface; color: ui.$ink; font-weight: 600; }
+.maker-screen-dark .maker-tabs { background: #2d2b26; }
+.maker-screen-dark .maker-tab { color: ui.$muted-on-dark; }
+.maker-screen-dark .maker-tab-selected { background: #3a3833; color: ui.$on-dark; }
+.maker-chips { display: flex; flex-wrap: wrap; gap: 8PX; }
+.screen .maker-chip { min-height: 36PX; padding: 6PX 14PX; border: 1PX solid ui.$divider; border-radius: 18PX; background: ui.$surface; color: ui.$ink; font-size: 14PX; line-height: 22PX; }
+.screen .maker-chip-selected { @include ui.selected; border-color: ui.$accent; }
+.screen .maker-chip-dark { border-color: #3a3833; background: #2d2b26; color: ui.$on-dark; }
+.screen .maker-chip-dark.maker-chip-selected { border-color: ui.$accent; background: ui.$accent; color: ui.$on-accent; }
+.maker-segment { display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; gap: 4PX; padding: 4PX; border-radius: ui.$radius; background: ui.$action-soft; }
+.screen .maker-segment-item { min-height: 36PX; padding: 6PX 8PX; border-radius: 9PX; color: ui.$muted; font-size: 14PX; line-height: 22PX; text-align: center; }
+.screen .maker-segment-selected { background: ui.$surface; color: ui.$ink; font-weight: 600; }
+.maker-segment-dark { background: #2d2b26; }
+.screen .maker-segment-dark .maker-segment-item { color: ui.$muted-on-dark; }
+.screen .maker-segment-dark .maker-segment-selected { background: #3a3833; color: ui.$on-dark; }
+
+// 按钮
+.maker-row-actions { display: flex; flex-wrap: wrap; gap: 8PX; }
+.maker-row-actions .maker-action { flex: 1 1 0; }
+.screen .maker-action { display: flex; align-items: center; justify-content: center; min-height: 44PX; padding: 8PX 14PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; color: ui.$ink; font-size: 14PX; line-height: 20PX; text-align: center; }
+.screen .maker-action-primary { border-color: ui.$accent; background: ui.$accent; color: ui.$on-accent; font-weight: 600; }
+.screen .maker-action-dark { border-color: #3a3833; background: #2d2b26; color: ui.$on-dark; }
+.screen .maker-action[disabled] { color: ui.$disabled-ink; background: ui.$disabled-surface; border-color: ui.$divider; }
+.screen .maker-action-dark[disabled] { color: #706b62; background: #2d2b26; border-color: #2d2b26; }
+.maker-bottom { display: flex; flex-direction: column; gap: 8PX; margin-top: 4PX; }
+.maker-bottom-pair { flex-direction: row; }
+.maker-bottom-pair > .ui-button { flex: 1 1 0; }
+.screen .maker-bottom .button + .button { margin-top: 0; }
+
+// 横幅（缺色、冲突、没登录）
+.maker-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 10PX; padding: 12PX 14PX; border-radius: ui.$radius; background: ui.$warning-soft; color: ui.$warning; }
+.maker-banner-text { flex: 1 1 200PX; min-width: 0; font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.maker-banner .maker-row-actions { flex: 1 1 100%; }
+
+// 第一步：调整照片。一屏放下：页面不滚，照片铺满标题栏以下，工具浮在照片上（2026-10-21 业主定）
+.screen.maker-screen-stage { display: flex; flex-direction: column; height: 100vh; min-height: 0; padding-bottom: 0; overflow: hidden; }
+.screen.maker-screen-stage .page-content { display: flex; flex: 1; flex-direction: column; min-height: 0; max-width: none; padding: 0; gap: 0; }
+.maker-stage { display: flex; flex: 1; flex-direction: column; min-height: 0; background: ui.$brand-dark; }
+.maker-stage-photo { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.maker-stage-photo .maker-photo-canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+// 底下的胶囊工具栏和面板：排在照片下面（不压在画布上），四周留边，看着是浮着的
+.maker-float-bottom { display: flex; flex: 0 0 auto; flex-direction: column; gap: 8PX; padding: 4PX 10PX calc(10PX + env(safe-area-inset-bottom)); }
+.maker-float-panel, .maker-dock { border: 1PX solid rgba(255, 255, 255, 0.08); background: #2f2d28; color: ui.$on-dark; box-shadow: 0 6PX 18PX rgba(0, 0, 0, 0.28); }
+.screen .maker-float-panel .maker-chip-dark { border-color: #4a463e; background: #3a3833; }
+.screen .maker-float-panel .maker-chip-dark.maker-chip-selected { border-color: ui.$accent; background: ui.$accent; color: ui.$on-accent; }
+.maker-float-panel { display: flex; flex-direction: column; gap: 10PX; padding: 10PX 14PX 12PX; border-radius: 18PX; }
+.maker-float-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8PX; }
+.maker-float-panel-title { color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+.screen .maker-float-close { min-height: 28PX; padding: 2PX 0 2PX 12PX; color: #d8c08f; font-size: 13PX; line-height: 24PX; }
+/* 比例、风格一排平分宽度，最窄的屏也放得下，不用左右滑 */
+.maker-float-row { display: flex; gap: 6PX; }
+.screen .maker-float-row .maker-chip { flex: 1 1 0; min-width: 0; padding-right: 0; padding-left: 0; text-align: center; }
+.maker-float-note { display: block; color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+.maker-float-panel .maker-slider-label { flex-basis: 48PX; color: ui.$on-dark; font-size: 13PX; }
+.maker-float-panel .maker-slider-value { color: ui.$muted-on-dark; }
+.maker-float-panel .maker-slider-row { min-height: 32PX; }
+.maker-dock { display: flex; align-items: center; gap: 2PX; padding: 6PX 6PX 6PX 4PX; border-radius: 22PX; }
+.screen .maker-float-tool { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; justify-content: center; gap: 2PX; min-width: 0; min-height: 52PX; padding: 4PX 0; border-radius: 14PX; color: ui.$on-dark; }
+.screen .maker-float-tool-selected { background: rgba(216, 192, 143, 0.2); color: #d8c08f; }
+.maker-float-icon { width: 22PX; height: 22PX; }
+.maker-float-label { font-size: 11PX; line-height: 14PX; }
+.screen .maker-dock-next { flex: 0 0 auto; min-height: 44PX; margin-left: 4PX; padding: 0 16PX; border-radius: 16PX; background: ui.$accent; color: ui.$on-accent; font-size: 15PX; font-weight: 600; line-height: 44PX; }
+.maker-failed { display: flex; flex-direction: column; align-items: center; gap: 8PX; padding: 24PX 0; }
+.screen .maker-retry { align-self: center; }
+.maker-panel { display: flex; flex-direction: column; gap: 12PX; padding: 14PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.maker-slider-row { display: flex; align-items: center; gap: 8PX; }
+.maker-slider-label { flex: 0 0 56PX; font-size: 14PX; line-height: 20PX; }
+.maker-slider { flex: 1; min-width: 0; margin: 0 4PX; }
+.maker-slider-value { flex: 0 0 36PX; color: ui.$muted; font-size: 13PX; line-height: 20PX; text-align: right; font-variant-numeric: tabular-nums; }
+.maker-cut-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10PX; }
+.maker-cut-copy { flex: 1 1 160PX; min-width: 0; }
+
+// 第二步：格数和颜色。一屏放下：预览图占掉剩下的高度，下面一块设置卡（格数、颜色最多、色卡、更多设置），不常改的在「更多设置」弹层里
+.screen.maker-screen-fit { display: flex; flex-direction: column; height: 100vh; min-height: 0; padding-bottom: 0; overflow: hidden; }
+.screen.maker-screen-fit .page-content { display: flex; flex: 1; flex-direction: column; min-height: 0; gap: 8PX; padding: 4PX 16PX calc(10PX + env(safe-area-inset-bottom)); }
+.maker-setup-preview { position: relative; display: flex; flex: 1; align-items: center; justify-content: center; min-height: 120PX; overflow: hidden; border: 1PX solid ui.$divider; border-radius: ui.$artwork-radius; background: ui.$surface; }
+.maker-setup-preview .maker-setup-canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.maker-meta-row { display: flex; flex: 0 0 auto; align-items: center; justify-content: center; gap: 8PX; }
+.screen .maker-meta-retry { padding: 0; color: ui.$action; font-size: 12PX; line-height: 18PX; }
+.maker-setup-styles { display: flex; flex: 0 0 auto; gap: 6PX; }
+.screen .maker-setup-styles .maker-chip { flex: 1 1 0; min-width: 0; min-height: 32PX; padding: 4PX 0; font-size: 14PX; line-height: 22PX; text-align: center; }
+.maker-setup-card { display: flex; flex: 0 0 auto; flex-direction: column; padding: 0 14PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.screen .maker-setup-row { display: flex; align-items: center; justify-content: space-between; gap: 12PX; min-height: 52PX; border-bottom: 1PX solid ui.$divider; }
+.screen .maker-setup-row:last-child { border-bottom: 0; }
+.screen .maker-setup-link { width: 100%; padding: 0; border-radius: 0; background: transparent; color: ui.$ink; text-align: left; }
+.maker-setup-label { flex: 0 0 auto; font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.maker-setup-value { min-width: 0; overflow: hidden; color: ui.$action; font-size: 14PX; line-height: 20PX; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.maker-setup-cols { display: flex; flex: 1; gap: 6PX; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.maker-setup-cols::-webkit-scrollbar { display: none; }
+.screen .maker-setup-cols .maker-chip { flex: 0 0 auto; min-height: 32PX; padding: 4PX 11PX; font-size: 14PX; line-height: 22PX; }
+.screen .maker-setup-cols .maker-input { flex: 0 0 auto; width: 72PX; height: 32PX; }
+.maker-sheet-tip { margin-top: 12PX; }
+.maker-field { display: flex; flex-direction: column; gap: 8PX; padding: 12PX 0; border-bottom: 1PX solid ui.$divider; }
+.maker-field-head { display: flex; flex-direction: column; gap: 2PX; min-width: 0; }
+.maker-field-inline { flex-direction: row; align-items: center; justify-content: space-between; gap: 12PX; }
+.maker-field-inline .maker-field-head { flex: 1; }
+.screen .maker-field-link { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; text-align: left; }
+.maker-panel .maker-field { padding: 0; border-bottom: 0; }
+.screen .maker-input { box-sizing: border-box; width: 96PX; height: 36PX; padding: 0 10PX; border: 1PX solid ui.$border; border-radius: 18PX; background: ui.$surface; font-size: 14PX; }
+.maker-stepper { display: flex; flex: 0 0 auto; align-items: center; gap: 4PX; }
+.screen .maker-stepper-button { width: 40PX; min-height: 40PX; border: 1PX solid ui.$divider; border-radius: 20PX; background: ui.$surface; color: ui.$ink; font-size: 18PX; line-height: 38PX; text-align: center; }
+.screen .maker-stepper-button[disabled] { color: ui.$disabled-ink; background: ui.$disabled-surface; }
+.maker-stepper-value { min-width: 36PX; font-size: 16PX; line-height: 24PX; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; }
+
+// 一张图纸：名字在标题栏里（点了改名）。改图、边拼边看一屏放下（和照片那两页一样用 maker-screen-fit）：
+// 画布占掉剩下的高度，下面一排常用的，不常用的收进「更多」弹层；按钮都排在画布外面，不压在画布上（开发者工具里画布总在最上层）
+.maker-list { display: flex; flex-direction: column; gap: 10PX; }
+.maker-edit, .maker-bead { display: flex; flex: 1; flex-direction: column; gap: 8PX; min-height: 0; }
+.maker-canvas-wrap { position: relative; overflow: hidden; border: 1PX solid ui.$divider; border-radius: ui.$artwork-radius; background: ui.$canvas; }
+.maker-canvas-dark { border-color: #3a3833; background: ui.$brand-dark; }
+.maker-canvas-fill { flex: 1; min-height: 120PX; }
+.maker-canvas-fill .maker-grid-canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+// 画布下面一行：撤销、重做、原图，右边是格数、颜色、颗数
+.maker-edit-bar { display: flex; flex: 0 0 auto; align-items: center; gap: 6PX; }
+.screen .maker-edit-bar .maker-action { flex: 0 0 auto; padding: 8PX 12PX; }
+.maker-edit-bar .maker-meta { flex: 1; min-width: 0; overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.maker-reference { position: absolute; top: 8PX; right: 8PX; width: 30%; max-width: 140PX; padding: 3PX; border: 1PX solid ui.$divider; border-radius: 8PX; background: ui.$surface; }
+.maker-reference-canvas { height: 110PX; border-radius: 5PX; }
+.maker-palette-strip { display: flex; gap: 6PX; overflow-x: auto; padding-bottom: 2PX; scrollbar-width: none; }
+.maker-palette-strip::-webkit-scrollbar { display: none; }
+.screen .maker-swatch { display: flex; flex: 0 0 auto; flex-direction: column; align-items: center; gap: 2PX; width: 52PX; min-height: 60PX; padding: 5PX 2PX; border: 1PX solid ui.$divider; border-radius: 10PX; background: ui.$surface; color: ui.$ink; }
+.screen .maker-swatch-selected { border: 2PX solid ui.$action; padding: 4PX 1PX; }
+.screen .maker-swatch-add { justify-content: center; color: ui.$action; font-size: 22PX; line-height: 28PX; }
+.screen .maker-swatch-dark { border-color: #3a3833; background: #2d2b26; color: ui.$on-dark; }
+.screen .maker-swatch-dark.maker-swatch-selected { border-color: ui.$accent; }
+.maker-swatch-color { width: 26PX; height: 26PX; border-radius: 13PX; box-shadow: inset 0 0 0 1PX rgba(0, 0, 0, 0.12); }
+.maker-swatch-code { font-size: 11PX; line-height: 14PX; font-variant-numeric: tabular-nums; }
+.maker-swatch-left { color: ui.$muted-on-dark; font-size: 10PX; line-height: 12PX; }
+.maker-palette-strip, .maker-tools, .maker-board-chips { flex: 0 0 auto; }
+.maker-tools { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6PX; }
+.screen .maker-tool { min-height: 44PX; padding: 6PX 2PX; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border: 1PX solid ui.$divider; border-radius: 10PX; background: ui.$surface; color: ui.$ink; font-size: 13PX; line-height: 16PX; text-align: center; overflow-wrap: anywhere; }
+.screen .maker-tool-selected { border-color: ui.$accent; background: ui.$action-soft; color: ui.$action; font-weight: 600; }
+.maker-sync { flex: 0 0 auto; }
+
+// 用豆清单
+.maker-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8PX; }
+.maker-fact { display: flex; flex-direction: column; gap: 2PX; min-width: 0; padding: 12PX 10PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; }
+.maker-fact-label { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.maker-fact-value { font-size: 17PX; line-height: 24PX; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.maker-fact-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.screen .maker-fact-link { padding: 0; color: ui.$action; font-size: 12PX; line-height: 18PX; text-align: left; }
+.maker-bead-list { display: flex; flex-direction: column; border-top: 1PX solid ui.$divider; }
+.maker-bead-row { display: flex; align-items: center; gap: 10PX; min-height: 44PX; border-bottom: 1PX solid ui.$divider; }
+.maker-bead-swatch { flex: 0 0 auto; width: 22PX; height: 22PX; border-radius: 11PX; box-shadow: inset 0 0 0 1PX rgba(0, 0, 0, 0.12); }
+.maker-bead-code { flex: 0 0 64PX; font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.maker-bead-count { flex: 1; font-size: 15PX; line-height: 22PX; font-variant-numeric: tabular-nums; }
+.maker-bead-store { color: ui.$muted; font-size: 13PX; line-height: 20PX; }
+.maker-bead-missing { color: ui.$warning; }
+.maker-export-canvas { position: fixed; left: -10000PX; top: 0; width: 300PX; height: 300PX; }
+
+// 边拼边看（深色）：上面是看法和底板、这一块拼了多少，下面是颜色条或这一行、按钮和整张的进度
+.maker-bead-head { display: flex; flex: 0 0 auto; align-items: center; gap: 8PX; }
+.maker-bead-head .maker-segment { flex: 1; min-width: 0; }
+.screen .maker-bead-board { flex: 0 0 auto; min-height: 44PX; padding: 0 12PX; border: 1PX solid #3a3833; border-radius: ui.$radius; background: #2d2b26; color: ui.$on-dark; font-size: 14PX; line-height: 42PX; }
+.maker-board-chips { display: flex; gap: 6PX; overflow-x: auto; scrollbar-width: none; }
+.maker-board-chips::-webkit-scrollbar { display: none; }
+.screen .maker-board-chips .maker-chip { flex: 0 0 auto; min-width: 44PX; min-height: 36PX; padding: 4PX 10PX; text-align: center; }
+.maker-bead-line { flex: 0 0 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.maker-bead-action { display: flex; flex: 0 0 auto; align-items: center; justify-content: center; min-height: 44PX; }
+.maker-bead-action > .ui-button { flex: 1; }
+.maker-bead .maker-progress, .maker-bead .maker-bottom, .maker-edit .maker-bottom { flex: 0 0 auto; margin-top: 0; }
+.maker-dark-line { display: block; color: ui.$on-dark; font-size: 13PX; line-height: 20PX; font-variant-numeric: tabular-nums; }
+.maker-dark-note { display: block; color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+.maker-runs { display: flex; flex: 0 0 auto; flex-direction: column; gap: 4PX; padding: 4PX 12PX 10PX; border-radius: ui.$radius; background: #2d2b26; }
+.maker-runs-closed { padding-bottom: 4PX; }
+.screen .maker-runs-head { display: flex; align-items: center; justify-content: space-between; min-height: 36PX; padding: 0; color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; text-align: left; }
+// 一行颜色段多（宽的图纸）时只露三行左右，上下滑着看，不把画布挤没
+.maker-run-list { display: flex; flex-wrap: wrap; gap: 6PX 12PX; max-height: 72PX; overflow-y: auto; }
+.maker-run { display: flex; align-items: center; gap: 6PX; }
+.maker-run-swatch { width: 16PX; height: 16PX; border-radius: 8PX; box-shadow: inset 0 0 0 1PX rgba(255, 255, 255, 0.18); }
+.maker-run-text { color: ui.$on-dark; font-size: 14PX; line-height: 20PX; font-variant-numeric: tabular-nums; }
+.maker-progress { display: flex; align-items: baseline; justify-content: space-between; gap: 8PX; }
+
+// 我的图纸
+.maker-mine-head { display: flex; flex-direction: column; gap: 2PX; }
+.maker-entries { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8PX; }
+.screen .maker-entry { display: flex; align-items: center; justify-content: center; min-height: 52PX; padding: 8PX 10PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; color: ui.$ink; font-size: 14PX; line-height: 20PX; font-weight: 600; text-align: center; }
+.screen .maker-entry-primary { border-color: ui.$accent; background: ui.$accent; color: ui.$on-accent; }
+.maker-mine-list { display: flex; flex-direction: column; border-top: 1PX solid ui.$divider; }
+.maker-mine-row { display: flex; align-items: center; gap: 4PX; border-bottom: 1PX solid ui.$divider; }
+.screen .maker-mine-open { display: flex; flex: 1; align-items: center; gap: 12PX; min-width: 0; padding: 12PX 0; text-align: left; color: ui.$ink; }
+.maker-mine-thumb { flex: 0 0 auto; width: 64PX; height: 64PX; border: 1PX solid ui.$divider; border-radius: 8PX; background: ui.$action-soft; image-rendering: pixelated; }
+.maker-mine-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.maker-mine-name { font-size: 15PX; line-height: 22PX; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.screen .maker-mine-more { flex: 0 0 auto; width: 44PX; min-height: 44PX; color: ui.$muted; font-size: 20PX; line-height: 44PX; text-align: center; }
+.maker-menu { display: flex; flex-direction: column; margin-bottom: 8PX; }
+.screen .maker-menu-item { min-height: 48PX; padding: 12PX 0; border-bottom: 1PX solid ui.$divider; color: ui.$ink; font-size: 15PX; line-height: 24PX; text-align: left; }
+.screen .maker-menu-danger { color: ui.$danger; }
+
+// 底部弹层
+.maker-sheet-mask { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(34, 33, 29, 0.48); }
+.maker-sheet-mask-light { background: rgba(34, 33, 29, 0.12); }
+.maker-sheet-mask-light .maker-sheet { box-shadow: 0 -4PX 24PX rgba(34, 33, 29, 0.18); }
+.maker-sheet { display: flex; flex-direction: column; width: 100%; max-width: ui.$content-width; max-height: 80vh; margin: 0 auto; border-radius: 20PX 20PX 0 0; background: ui.$canvas; color: ui.$ink; }
+.maker-sheet-head { display: flex; align-items: flex-start; gap: 8PX; padding: 16PX ui.$page-gutter 8PX; }
+.maker-sheet-heading { flex: 1; min-width: 0; }
+.maker-sheet-title { display: block; font-size: 17PX; line-height: 24PX; font-weight: 600; overflow-wrap: anywhere; }
+.maker-sheet-note { display: block; color: ui.$muted; font-size: 13PX; line-height: 20PX; }
+.screen .maker-sheet-close { width: 40PX; min-height: 40PX; color: ui.$muted; font-size: 24PX; line-height: 40PX; text-align: center; }
+.maker-sheet-body { box-sizing: border-box; flex: 1; min-height: 0; max-height: 60vh; padding: 0 ui.$page-gutter 12PX; }
+.maker-sheet-body .maker-chips + .maker-sheet-label, .maker-sheet-body .maker-cut-row + .maker-note { margin-top: 12PX; }
+.maker-sheet-body .maker-chips + .maker-cut-row { margin-top: 16PX; }
+.maker-sheet-body-last { padding-bottom: calc(16PX + env(safe-area-inset-bottom)); }
+.maker-sheet-footer { padding: 8PX ui.$page-gutter calc(12PX + env(safe-area-inset-bottom)); border-top: 1PX solid ui.$divider; }
+.maker-sheet-label { display: block; margin: 12PX 0 8PX; color: ui.$muted; font-size: 13PX; line-height: 20PX; }
+.maker-sheet .input { margin-bottom: 6PX; }
+.maker-palette-group { padding-bottom: 8PX; }
+.maker-palette-brand { display: flex; flex-direction: column; gap: 6PX; padding: 6PX 0; }
+.maker-palette-brand-name { font-size: 14PX; line-height: 20PX; font-weight: 600; }
+.maker-palette-options { display: flex; flex-wrap: wrap; gap: 8PX; }
+.maker-color-prefixes { padding: 4PX 0 12PX; }
+.maker-color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60PX, 1fr)); gap: 6PX; }
+.screen .maker-color { display: flex; flex-direction: column; align-items: center; gap: 2PX; min-height: 64PX; padding: 6PX 2PX; border: 1PX solid ui.$divider; border-radius: 10PX; background: ui.$surface; color: ui.$ink; }
+.screen .maker-color-selected { border: 2PX solid ui.$action; padding: 5PX 1PX; }
+.maker-color-swatch { width: 28PX; height: 28PX; border-radius: 14PX; box-shadow: inset 0 0 0 1PX rgba(0, 0, 0, 0.12); }
+.maker-color-code { font-size: 12PX; line-height: 16PX; font-variant-numeric: tabular-nums; }
+.maker-color-missing { color: ui.$warning; font-size: 10PX; line-height: 12PX; }

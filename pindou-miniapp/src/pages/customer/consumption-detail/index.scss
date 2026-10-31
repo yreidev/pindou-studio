@@ -1,0 +1,23 @@
+@use '../../../styles/tokens' as ui;
+.consumption-detail-screen .navbar-title { font-family: inherit; }
+.consumption-detail-screen .page-content { padding: 6PX 16PX 0; line-height: normal; }
+.receipt-content { display: flex; flex-direction: column; gap: 14PX; }
+.receipt-card { display: flex; flex-direction: column; gap: 14PX; padding: 22PX 18PX 18PX; border: 1PX solid ui.$divider; border-radius: 16PX; background: ui.$surface; }
+.receipt-brand { align-self: center; color: ui.$muted; font-size: 12PX; letter-spacing: 3PX; text-align: center; }
+.receipt-heading { display: flex; flex-direction: column; align-items: center; align-self: center; gap: 2PX; }
+.receipt-amount { color: ui.$ink; font-size: 36PX; line-height: 44PX; font-weight: 600; text-align: center; overflow-wrap: anywhere; }
+.receipt-reversed { color: ui.$design-reversed; text-decoration: line-through; }
+.receipt-status { color: ui.$muted; font-size: 13PX; text-align: center; }
+.receipt-extra { color: ui.$muted; font-size: 12PX; line-height: 20PX; text-align: center; overflow-wrap: anywhere; }
+.receipt-section { display: flex; flex-direction: column; gap: 6PX; padding-top: 14PX; border-top: 1PX dashed ui.$divider; }
+.receipt-row { display: flex; justify-content: space-between; gap: 16PX; color: ui.$muted; font-size: 14PX; line-height: 22PX; }
+.receipt-row > text:first-child { flex: none; }
+.receipt-value { min-width: 0; color: ui.$ink; text-align: right; overflow-wrap: anywhere; }
+.receipt-gift { align-self: flex-end; margin-top: -6PX; color: ui.$muted; font-size: 12PX; }
+.receipt-note, .receipt-recorded { color: ui.$muted; font-size: 12PX; }
+.screen .receipt-all { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 46PX; border: 1PX solid ui.$divider; border-radius: 23PX; background: ui.$surface; color: ui.$ink; font-size: 15PX; }
+.screen .receipt-contact { width: 100%; padding: 0; color: ui.$action; font-size: 13PX; text-align: center; }
+.receipt-contact > text:first-child { color: ui.$muted; }
+
+.consumption-detail-screen .navbar-back { left: 4PX; width: 44PX; min-height: 44PX; }
+.consumption-detail-screen { font-family: 'Noto Sans SC', 'PingFang SC', sans-serif; }

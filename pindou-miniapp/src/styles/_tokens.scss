@@ -1,0 +1,100 @@
+$action: #806539;
+$accent: #b49763;
+$action-soft: #f1eadc;
+$ink: #25231f;
+$muted: #706b62;
+$canvas: #f7f5f0;
+$surface: #ffffff;
+$border: #8b8375;
+$divider: #e4ddcf;
+$disabled-ink: #706b62;
+$disabled-surface: #ede9e1;
+$danger: #a82929;
+$danger-soft: #fff0ef;
+$radius: 12PX;
+$card-radius: 16PX;
+$on-accent: #25231f;
+$warning: #80531d;
+$warning-soft: #fff3df;
+$success: #286b50;
+$role-clerk: $success;
+$role-clerk-soft: #edf5f0;
+$role-manager: #315c7a;
+$role-manager-soft: #edf3f8;
+$role-owner: $action;
+$role-owner-soft: $action-soft;
+$brand-dark: #22211d;
+$on-dark: #f7f5f0;
+$muted-on-dark: #c7bda9;
+$font-display: 'Example Display', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+$artwork-radius: 12PX;
+$page-gutter: 20PX;
+$body-size: 16PX;
+$caption-size: 14PX;
+$title-size: 22PX;
+$section-title-size: 18PX;
+$control-height: 48PX;
+$input-height: 48PX;
+$content-width: 640PX;
+$control-line-height: 20PX;
+$control-padding-x: 16PX;
+$control-padding-y: 10PX;
+$section-space: 24PX;
+$field-space: 16PX;
+$action-gap: 12PX;
+
+@mixin segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: $control-height;
+  padding: $control-padding-y 8PX;
+  border-radius: $radius;
+  background: $surface;
+  color: $muted;
+  font-size: 14PX;
+  line-height: $control-line-height;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+@mixin selected {
+  color: $on-accent;
+  background: $accent;
+  font-weight: 600;
+}
+
+$staff-tablet: 768px;
+$staff-wide: 1024px;
+$staff-sidebar: 192PX;
+$staff-content-width: 1440PX;
+
+// 员工会员页设计稿里的辅助色，不改变其他页面的现有色值。
+$member-nav-muted: #bdb6a8;
+$member-segment: #ebe6dc;
+$member-card-tile: rgba(255, 255, 255, .06);
+$member-light-border: rgba(255, 255, 255, .28);
+$member-sheet-mask: rgba(247, 245, 240, .45);
+$member-segment-shadow: rgba(0, 0, 0, .12);
+$member-gift-border: #e8d9b8;
+$member-gift-surface: #fbf7ee;
+$member-row-divider: #efebe3;
+
+// 消息与会员设计稿新增色，不改动现有主题。
+$design-card-muted: #a9a294;
+$design-input-border: #c9c1b2;
+$design-placeholder: #aaa294;
+$design-reversed: #a39c8f;
+$design-chevron: #b3ab9c;
+$design-login-art: #2d2b26;
+$design-login-subtitle: #b9b2a4;
+$design-login-border: #6a655b;
+$design-login-link: #ddc99c;
+$design-login-foot: #8f887b;
+$design-card-copy: #e8e2d6;
+$design-claimed-copy: #d6cfc2;
+
+$design-bead-empty: #4a4740;
+$design-bead-scarlet: #c8432f;
+$design-bead-honey: #e1c690;

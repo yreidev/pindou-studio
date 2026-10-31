@@ -1,0 +1,7 @@
+@use '../../styles/tokens' as ui;
+
+.developer-account { padding: 24PX 0; border-bottom: 1PX solid ui.$divider; }
+.developer-name { display: block; margin-bottom: 8PX; font-size: 22PX; line-height: 32PX; font-weight: 600; overflow-wrap: anywhere; }
+.developer-switch { padding: 24PX 0; }
+.developer-picker { display: flex; align-items: center; min-height: 48PX; padding: 0 16PX; border: 1PX solid ui.$border; border-radius: ui.$radius; background: ui.$surface; }
+.developer-write-notice { display: block; margin: 16PX 0 24PX; color: ui.$warning; font-size: 14PX; line-height: 22PX; }

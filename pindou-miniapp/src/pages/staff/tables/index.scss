@@ -1,0 +1,38 @@
+@use '../../../styles/tokens' as ui;
+
+// 桌位页（2026-10-20 重做）：筛选四格、平面图按状态着色、图下列出超时和快到点的桌。
+.tables-filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6PX; margin: 8PX 0 10PX; }
+.screen .tables-filter { height: 36PX; min-height: 36PX; padding: 0 2PX; border: 1PX solid ui.$divider; border-radius: 999PX; background: ui.$surface; color: ui.$ink; font-size: 13PX; line-height: 34PX; text-align: center; }
+.screen .tables-filter-alert { border-color: #e0b9ab; background: #fbeee9; color: #a23c25; }
+.screen .tables-filter-on { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; font-weight: 600; }
+.tables-plan { position: relative; width: 100%; border: 1PX solid ui.$divider; border-radius: 14PX; overflow: hidden; background: ui.$surface; }
+.screen .tables-hit { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-height: 0; padding: 0; border-radius: 3PX; box-sizing: border-box; line-height: 1; }
+.tables-hit-code { font-size: 9PX; line-height: 10PX; font-weight: 700; }
+.tables-hit-minutes { font-size: 9PX; line-height: 10PX; }
+// 底图上各区自带底色（A 区是粉的）：状态色要压得住，空闲用绿框加浅绿底
+.tables-hit-free { border: 2PX solid #3aa877; background: rgba(76, 195, 138, .22); color: #1f6e4a; }
+.tables-hit-busy { background: rgba(34, 33, 29, .86); color: ui.$on-dark; }
+.tables-hit-expiring { background: ui.$accent; color: ui.$on-accent; }
+.tables-hit-overdue { background: #c0492f; color: #ffffff; }
+.tables-hit-off { background: repeating-linear-gradient(45deg, #d9d4ca 0, #d9d4ca 3PX, #efebe3 3PX, #efebe3 6PX); color: ui.$muted; }
+// 图上有、门店数据里没有：后端启动校正会拦住这种情况，画成红框是兜底提示
+.tables-hit-missing { border: 2PX dashed #c0492f; background: rgba(192, 73, 47, .12); }
+.tables-hit-dim { opacity: .22; }
+.tables-legend { display: flex; flex-wrap: wrap; gap: 4PX 12PX; margin: 10PX 0; color: ui.$muted; font-size: 11PX; line-height: 16PX; }
+.tables-legend-item { display: flex; align-items: center; gap: 4PX; }
+.tables-swatch { width: 12PX; height: 12PX; border-radius: 3PX; box-sizing: border-box; }
+.tables-alerts { display: flex; flex-direction: column; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; overflow: hidden; }
+.screen .tables-alert { display: flex; align-items: center; gap: 10PX; width: 100%; min-height: 46PX; padding: 0 12PX; border-bottom: 1PX solid #efebe3; color: ui.$ink; text-align: left; }
+.screen .tables-alert:last-child { border-bottom: 0; }
+.tables-dot { flex: 0 0 10PX; width: 10PX; height: 10PX; border-radius: 50%; }
+.tables-dot-danger { background: #c0492f; }
+.tables-dot-warning { background: ui.$accent; }
+.tables-alert-text { flex: 1; min-width: 0; font-size: 15PX; font-weight: 600; overflow-wrap: anywhere; }
+.tables-alert-more { color: ui.$action; font-size: 13PX; }
+.screen .tables-view { display: block; width: 100%; min-height: 44PX; margin-top: 8PX; padding: 0; background: transparent; color: ui.$action; font-size: 14PX; line-height: 44PX; text-align: center; }
+.table-tile-expiring { border-color: ui.$accent; background: #fbf7ee; }
+.table-tile-overdue { border-color: #c0492f; background: #fbeee9; }
+
+@media (min-width: ui.$staff-wide) {
+  .tables-plan { max-width: 760PX; }
+}

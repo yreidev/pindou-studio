@@ -1,0 +1,25 @@
+@use '../../../styles/tokens' as ui;
+
+// 订单详情（2026-10-20 重做，画稿 BOrderDetail）
+.detail-head { display: flex; flex-direction: column; gap: 2PX; margin-bottom: 12PX; padding: 16PX 18PX; border-radius: 20PX; background: ui.$brand-dark; color: ui.$on-dark; }
+.detail-head-top { display: flex; align-items: center; justify-content: space-between; gap: 12PX; }
+.detail-head-time { color: ui.$muted-on-dark; font-size: 13PX; line-height: 20PX; }
+.detail-head .badge { background: rgba(216, 192, 143, 0.2); color: #d8c08f; }
+.detail-title { display: block; margin-top: 6PX; font-size: 17PX; font-weight: 600; line-height: 24PX; overflow-wrap: anywhere; }
+.detail-head-label { margin-top: 6PX; color: #d8c08f; font-size: 13PX; line-height: 18PX; }
+.detail-amount { display: block; font-family: ui.$font-display; font-size: 34PX; line-height: 42PX; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.detail-head-note { color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+.detail-card { display: flex; flex-direction: column; margin-bottom: 12PX; padding: 14PX 16PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.detail-card .section-title { margin-bottom: 6PX; }
+.detail-line { display: flex; align-items: center; gap: 12PX; padding: 8PX 0; }
+.detail-line-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.detail-line-amount { flex-shrink: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.detail-totals { margin-top: 8PX; padding-top: 10PX; border-top: 1PX solid ui.$divider; }
+.detail-total { display: flex; justify-content: space-between; gap: 12PX; padding: 3PX 0; color: ui.$muted; font-size: 14PX; line-height: 20PX; }
+.detail-paid { color: ui.$ink; }
+.detail-paid .money { font-size: 20PX; line-height: 28PX; }
+.detail-id { flex-direction: row; align-items: center; gap: 12PX; }
+.detail-id-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.detail-screen .info-label { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.detail-screen .info-value { font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.screen .detail-copy { flex-shrink: 0; min-height: 34PX; padding: 4PX 12PX; border: 1PX solid ui.$divider; border-radius: 999PX; background: transparent; color: ui.$action; font-size: 13PX; line-height: 24PX; }

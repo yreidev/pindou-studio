@@ -1,0 +1,251 @@
+/* 网页后台用 Semi Design 默认主题，不覆盖任何颜色变量；这里只放布局（居中、间距、网格）。
+ * 需要颜色时引用 Semi 自己的变量（--semi-color-*），不写死色值。 */
+body {
+  margin: 0;
+}
+
+.page {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.page-extra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 表单与筛选栏：控件之间留空隙，窄屏换行 */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* 工具栏里要连在一起的一组（标签和它的输入框），换行时整组换 */
+.toolbar-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 表单的一项（components/Field.tsx）：标题、控件、说明、错误上下排；表格里的一格（compact）下面不留间距 */
+.field {
+  margin-bottom: 16px;
+}
+
+.field-compact {
+  margin-bottom: 0;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* 控件下面的说明与错误（也用在不属于某个字段的提示上） */
+.field-help,
+.field-error {
+  display: block;
+  margin-top: 4px;
+}
+
+/* 打印时只留内容区（桌码打印等），去掉侧栏、顶栏 */
+@media print {
+  .semi-layout-sider,
+  .admin-header,
+  .no-print {
+    display: none !important;
+  }
+}
+
+.page-center {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card-grid {
+  display: grid;
+  /* min()：手机屏比 320px 还窄时一张卡片占满一行，不超出屏幕 */
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.shortcut-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.shortcut-card {
+  height: 100%;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---------- 登录页 ---------- */
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background: var(--semi-color-fill-0);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.login-logo {
+  width: 160px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.login-qr {
+  width: 224px;
+  height: 224px;
+  margin: 12px 0 4px;
+  display: grid;
+  place-items: center;
+}
+
+.login-steps {
+  width: 100%;
+  margin: 12px 0 0;
+  text-align: left;
+}
+
+/* ---------- 登录后的布局 ---------- */
+
+.realtime-offline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-header-phone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 8px;
+}
+
+.admin-header-mark {
+  width: 28px;
+  height: 28px;
+}
+
+.admin-header-spacer {
+  flex: 1;
+}
+
+.account-name {
+  white-space: nowrap;
+  max-width: 12em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: var(--semi-border-radius-medium);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.account-trigger:hover {
+  background: var(--semi-color-fill-0);
+}
+.account-trigger:focus-visible {
+  outline: 2px solid var(--semi-color-focus-border);
+  outline-offset: 2px;
+}
+
+/* ---------- 窄屏适配 ---------- */
+
+/* 平板和手机：表格按内容需要的宽度排，放不下就在表格自己的区域里左右滑（.semi-table-body 本身可横向滚动），
+ * 表头不折行。不这样的话表格被压在屏幕宽度里，表头被挤成一个字一行，后面的列被裁掉。
+ * Semi 的 scroll.x 只能给表格定一个固定宽度，解决不了下面列宽的问题，所以这里统一用样式处理。 */
+@media (max-width: 1023px) {
+  .semi-table-thead > .semi-table-row > .semi-table-row-head {
+    white-space: nowrap;
+  }
+  table.semi-table {
+    width: auto;
+    min-width: 100%;
+  }
+  /* 电脑上按列宽排；窄屏上列宽之和会超过屏宽，没写宽度的列（常是名称、内容这类长文字）就只剩一个字宽。
+   * 这里改成按内容分配：短的标签、数字、时间不折行，剩下的宽度给长文字列。 */
+  table.semi-table > colgroup > col {
+    width: auto !important;
+    min-width: 0 !important;
+  }
+  /* 五列以上的表按内容排开、左右滑着看，别把长文字列压成窄条；内容很长时按列数封顶，超出的长文字再折行。
+   * 内容本来就放得下时（min-width: 100% 优先于 max-width）照常占满宽度。四列以内的小表（详情页居多）在屏宽里折行排。 */
+  table.semi-table:has(> .semi-table-thead > .semi-table-row > th:nth-child(5)) {
+    width: max-content;
+    max-width: 720px;
+  }
+  table.semi-table:has(> .semi-table-thead > .semi-table-row > th:nth-child(7)) {
+    max-width: 880px;
+  }
+  /* 表里最要紧的长文字列（如订单的「项目」）至少留这么宽，别被顾客名这类次要长文字挤成窄条 */
+  .cell-wide {
+    min-width: 12em;
+  }
+}
+
+/* 手机：侧边抽屉占满屏宽，弹窗不超出屏幕 */
+@media (max-width: 767px) {
+  /* 手机上单元格左右留白减半，同样的屏宽多放一列 */
+  .admin-content .semi-table-thead > .semi-table-row > .semi-table-row-head,
+  .admin-content .semi-table-tbody > .semi-table-row > .semi-table-row-cell {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .semi-sidesheet-inner {
+    max-width: 100vw;
+  }
+  .semi-modal {
+    max-width: calc(100vw - 24px);
+  }
+  .page {
+    padding: 0;
+  }
+}

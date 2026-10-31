@@ -1,0 +1,137 @@
+@use '../../../styles/tokens' as ui;
+
+// 会员页（2026-10-20 重做）：会员卡、四格办理、生日礼物、这位顾客今天、流水。
+.staff-page-membership .page-content { padding: 12PX 16PX 0; }
+.member-page-content { font-family: 'Noto Sans SC', 'PingFang SC', sans-serif; display: flex; flex-direction: column; gap: 12PX; }
+.staff-page-membership .navbar-title { font-family: inherit; color: ui.$surface; }
+.staff-page-membership .staff-nav-item { min-height: 50PX; padding: 6PX 0 0; font-size: 10PX; color: ui.$member-nav-muted; }
+.staff-page-membership .staff-nav-current { color: ui.$accent; font-weight: 400; }
+.member-card { display: flex; flex-direction: column; gap: 12PX; margin: 0; padding: 16PX; border-radius: 18PX; background: ui.$brand-dark; color: ui.$surface; }
+.member-card-head { display: flex; align-items: center; gap: 10PX; }
+.member-card-initial { flex: 0 0 40PX; width: 40PX; height: 40PX; border-radius: 50%; background: ui.$accent; color: ui.$on-accent; font-size: 17PX; line-height: 40PX; font-weight: 600; text-align: center; }
+.member-card-copy { display: flex; flex: 1; flex-direction: column; gap: 2PX; min-width: 0; }
+.member-card-name { font-size: 18PX; line-height: 24PX; font-weight: 600; overflow-wrap: anywhere; }
+.member-card-meta { color: ui.$design-card-muted; font-size: 12PX; line-height: 18PX; }
+.screen .member-card-switch { flex-shrink: 0; min-height: 32PX; padding: 0 12PX; border: 1PX solid ui.$member-light-border; border-radius: 16PX; background: transparent; color: ui.$surface; font-size: 13PX; line-height: 30PX; }
+.member-card-loading, .member-card-birthday { color: ui.$design-card-muted; font-size: 12PX; line-height: 18PX; }
+.member-wallet { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr)); gap: 8PX; }
+.member-wallet-item { display: flex; flex-direction: column; gap: 2PX; min-width: 0; padding: 10PX 12PX; border-radius: 12PX; background: ui.$member-card-tile; }
+.member-card .field-help { color: ui.$design-card-muted; }
+// 透明内边距加负外边距：看着一行字，点得到的范围约 40 高
+.screen .member-card-link { align-self: flex-start; min-height: 0; padding: 10PX 8PX; margin: -10PX -8PX; background: transparent; color: ui.$design-card-muted; font-size: 13PX; line-height: 20PX; text-decoration: underline; }
+// 刚发的临时密码：大字，当面念给顾客
+.member-password { display: block; padding: 8PX 0; font-family: ui.$font-display; font-size: 36PX; line-height: 44PX; letter-spacing: 4PX; text-align: center; font-variant-numeric: tabular-nums; }
+.member-wallet-label { color: ui.$design-card-muted; font-size: 12PX; line-height: 18PX; }
+.member-wallet-value { font-size: 20PX; font-weight: 600; line-height: 30PX; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.member-wallet-count { font-size: 20PX; font-weight: 600; line-height: 30PX; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.member-wallet-gift { font-size: 11PX; line-height: 16.5PX; color: ui.$accent; white-space: nowrap; }
+.member-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10PX; }
+.screen .member-action { display: flex; flex-direction: column; align-items: flex-start; gap: 2PX; min-width: 0; min-height: 68PX; padding: 12PX 14PX; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; color: ui.$ink; text-align: left; }
+.member-action-title { font-size: 16PX; line-height: 24PX; font-weight: 600; }
+.member-action-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.screen .member-action-primary { background: ui.$ink; border-color: ui.$ink; color: ui.$surface; }
+.member-action-primary .member-action-note { color: ui.$design-input-border; }
+.member-gift { display: flex; align-items: center; gap: 12PX; margin-top: 12PX; padding: 12PX 14PX; border: 1PX solid ui.$member-gift-border; border-radius: 14PX; background: ui.$member-gift-surface; }
+.member-gift-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.member-gift-title { font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.member-gift-meta { color: ui.$muted; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+.screen .member-gift-button { flex-shrink: 0; min-height: 36PX; padding: 0 16PX; border-radius: 10PX; background: ui.$accent; color: ui.$on-accent; font-size: 14PX; line-height: 36PX; font-weight: 600; }
+.member-today { display: flex; flex-direction: column; gap: 12PX; margin-top: 0; }
+.member-section-title { font-size: 14PX; line-height: 21PX; font-weight: 600; color: ui.$ink; }
+.member-today-list { display: flex; flex-direction: column; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; overflow: hidden; }
+.screen .member-today-row { display: flex; align-items: center; gap: 10PX; width: 100%; min-height: 54PX; padding: 8PX 12PX; border-bottom: 1PX solid ui.$member-row-divider; color: ui.$ink; text-align: left; }
+.screen .member-today-row:last-child { border-bottom: 0; }
+.member-today-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.member-today-title { font-size: 15PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.member-today-meta { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.screen .member-today-button { flex-shrink: 0; min-height: 34PX; padding: 0 14PX; border-radius: 10PX; background: ui.$brand-dark; color: ui.$on-dark; font-size: 14PX; line-height: 34PX; font-weight: 600; }
+.screen .member-today-button-plain { border: 1PX solid ui.$divider; background: ui.$surface; color: ui.$action; line-height: 32PX; }
+.member-today-arrow { color: ui.$accent; font-size: 22PX; }
+.member-today-empty { display: block; padding: 14PX; color: ui.$muted; font-size: 14PX; line-height: 21PX; }
+.screen .member-entries-toggle { display: block; width: 100%; min-height: 21PX; margin-top: 0; padding: 0; background: transparent; color: ui.$action; font-size: 14PX; line-height: 21PX; text-align: center; }
+.member-entries { display: flex; flex-direction: column; }
+.member-entry { display: flex; flex-direction: column; gap: 2PX; padding: 10PX 0; border-bottom: 1PX solid ui.$divider; }
+.member-entry-title { font-size: 14PX; line-height: 20PX; font-weight: 600; overflow-wrap: anywhere; }
+.member-entry-meta { color: ui.$muted; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+.screen .member-option { display: flex; align-items: center; justify-content: space-between; gap: 8PX 12PX; flex-wrap: wrap; width: 100%; min-height: 52PX; padding: 10PX 14PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$ink; text-align: left; }
+.screen .member-option + .member-option { margin-top: 8PX; }
+.screen .member-option[disabled] { opacity: .55; }
+.member-option-name { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.member-option-note { flex-shrink: 1; max-width: 100%; overflow-wrap: anywhere; color: ui.$action; font-size: 14PX; }
+.screen .member-recharge-option { flex-direction: column; align-items: stretch; gap: 4PX; }
+.member-recharge-option .member-option-name { flex: none; line-height: 24PX; }
+.member-recharge-option .member-option-note { line-height: 20PX; }
+
+.member-find .staff-account-input-row { display: flex; align-items: flex-start; gap: 8PX; }
+.member-find .staff-account-input-row .staff-field { flex: 1; min-width: 0; margin: 0; }
+.member-find .staff-account-input-row .field-label { display: none; }
+.member-find .input { height: 44PX; min-height: 44PX; padding: 0 12PX; border: 1PX solid ui.$design-input-border; border-radius: 12PX; background: ui.$surface; font-size: 15PX; }
+.member-find .input::placeholder { color: ui.$design-placeholder; }
+.screen .member-open { flex: none; display: flex; align-items: center; justify-content: center; height: 44PX; min-height: 44PX; padding: 0 14PX; border: 1PX solid ui.$accent; border-radius: 12PX; background: ui.$surface; color: ui.$action; font-size: 15PX; font-weight: 600; }
+.screen .member-entry-copy { align-self: flex-start; min-height: 32PX; padding: 0 8PX; color: ui.$action; background: transparent; font-size: 13PX; line-height: 32PX; }
+.member-service-date { margin: 0; }
+.member-service-date .staff-field-heading { min-height: 21PX; margin-bottom: 6PX; align-items: baseline; gap: 4PX; }
+.member-service-date .field-label { font-size: 14PX; line-height: 21PX; font-weight: 600; color: ui.$ink; }
+.member-service-date .staff-field-heading .field-help { margin: 0; font-size: 12PX; line-height: 18PX; font-weight: 400; color: ui.$muted; }
+.member-service-date .staff-date-row { display: flex; align-items: center; gap: 8PX; }
+.member-service-date .staff-date-picker { flex: 1; min-width: 0; }
+.member-service-date .staff-picker { position: relative; height: 44PX; min-height: 44PX; box-sizing: border-box; padding: 0 30PX 0 14PX; border: 1PX solid ui.$design-input-border; border-radius: 12PX; font-size: 15PX; }
+.member-service-date .staff-picker::after { content: ''; position: absolute; right: 16PX; top: 16PX; width: 6PX; height: 6PX; border-right: 1.8PX solid ui.$muted; border-bottom: 1.8PX solid ui.$muted; transform: rotate(45deg); }
+.member-service-date .staff-tabs { display: flex; flex-shrink: 0; margin: 0; gap: 8PX; }
+.screen .member-service-date .staff-tab { flex: none; height: 44PX; min-height: 44PX; box-sizing: border-box; padding: 0 12PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$ink; font-size: 14PX; }
+.screen .member-service-date .staff-tab-selected { border-color: ui.$ink; background: ui.$ink; color: ui.$surface; font-weight: 400; }
+.member-consumption-sheet-mask, .member-done-sheet-mask { background: ui.$member-sheet-mask; }
+.member-consumption-sheet, .member-done-sheet { height: calc(100% - var(--member-sheet-top, 64PX)); max-height: calc(100% - var(--member-sheet-top, 64PX)); max-width: none; }
+.member-consumption-sheet .table-sheet-handle, .member-done-sheet .table-sheet-handle { width: 36PX; height: 4PX; margin: 8PX auto 0; border-radius: 2PX; background: ui.$accent; opacity: .5; }
+.member-consumption-sheet .table-sheet-head { gap: 10PX; padding: 12PX 18PX 0; }
+.member-consumption-sheet .table-sheet-heading { gap: 4PX; }
+.member-consumption-sheet .table-sheet-title { font-size: 26PX; line-height: 39PX; font-weight: 400; }
+.member-consumption-sheet .table-sheet-meta { font-size: 13PX; line-height: 19.5PX; }
+.screen .member-consumption-sheet .table-sheet-close { display: flex; align-items: center; justify-content: center; flex: 0 0 36PX; width: 36PX; height: 36PX; min-height: 36PX; background: ui.$surface; color: ui.$ink; }
+.member-sheet-close-icon { position: relative; width: 16PX; height: 16PX; }
+.member-sheet-close-icon > view { position: absolute; left: 2.343PX; top: 7.4PX; width: 11.314PX; height: 1.2PX; border-radius: .6PX; background: ui.$ink; transform: rotate(45deg); }
+.member-sheet-close-icon > view + view { transform: rotate(-45deg); }
+.member-consumption-sheet .table-sheet-body { gap: 12PX; padding: 12PX 18PX; }
+.member-consumption-sheet .table-sheet-section { gap: 6PX; }
+.member-consumption-sheet .table-sheet-label, .member-consumption-sheet .field-label { margin: 0; color: ui.$ink; font-size: 14PX; line-height: 21PX; font-weight: 600; }
+.member-consumption-sheet .staff-field { display: flex; flex-direction: column; gap: 6PX; min-width: 0; margin: 0; }
+.member-consumption-sheet .member-service-date { gap: 0; }
+.screen .member-consumption-sheet .table-sheet-choice { height: 44PX; min-height: 44PX; padding: 0 4PX; font-size: 14PX; line-height: 21PX; }
+.screen .member-consumption-sheet .table-sheet-choice-on { background: ui.$ink; border-color: ui.$ink; color: ui.$surface; }
+.member-consumption-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10PX; }
+.member-field-heading, .member-consumption-sheet .staff-stepper-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 4PX; }
+.member-field-help, .member-consumption-sheet .staff-stepper-heading .field-help { margin: 0; color: ui.$muted; font-size: 12PX; line-height: 18PX; font-weight: 400; }
+.member-consumption-sheet .table-sheet-segments { gap: 4PX; padding: 3PX; background: ui.$member-segment; border-radius: 12PX; }
+.screen .member-consumption-sheet .table-sheet-segments .table-sheet-choice { height: 36PX; min-height: 36PX; border: 0; border-radius: 9PX; background: transparent; color: ui.$muted; }
+.screen .member-consumption-sheet .table-sheet-segments .table-sheet-choice-on { background: ui.$surface; color: ui.$ink; box-shadow: 0 1PX 2PX ui.$member-segment-shadow; }
+.member-consumption-sheet .input { box-sizing: border-box; height: 44PX; min-height: 44PX; padding: 0 14PX; border: 1PX solid ui.$design-input-border; border-radius: 12PX; background: ui.$surface; font-size: 16PX; }
+.member-consumption-sheet textarea.input { height: 44PX; min-height: 44PX; padding: 10PX 14PX; font-size: 15PX; line-height: 22PX; }
+.member-consumption-sheet .input::placeholder { color: ui.$design-placeholder; }
+.member-consumption-sheet .staff-stepper { gap: 0; height: 44PX; box-sizing: border-box; border: 1PX solid ui.$design-input-border; border-radius: 12PX; background: ui.$surface; }
+.screen .member-consumption-sheet .staff-stepper-button { flex: 0 0 44PX; width: 44PX; height: 42PX; min-height: 42PX; padding: 0; background: transparent; color: ui.$muted; font-size: 20PX; }
+.screen .member-consumption-sheet .staff-stepper-button[disabled] { color: ui.$design-input-border; }
+.member-consumption-sheet .staff-stepper-value { flex: 1; font-size: 16PX; font-weight: 600; text-align: center; white-space: nowrap; }
+.member-consumption-sheet .table-sheet-footer { padding: 10PX 18PX max(34PX, env(safe-area-inset-bottom)); background: ui.$canvas; }
+.member-consumption-footer { display: flex; flex-direction: column; gap: 8PX; }
+.member-consumption-summary { color: ui.$muted; font-size: 13PX; line-height: 19.5PX; }
+.member-summary-value { color: ui.$ink; font-weight: 700; }
+.screen .member-consumption-sheet .table-sheet-primary, .screen .member-done-sheet .table-sheet-primary { flex: none; height: 48PX; min-height: 48PX; background: ui.$ink; color: ui.$surface; font-size: 16PX; line-height: 24PX; font-weight: 600; }
+.member-done-sheet .table-sheet-body { flex: 1; gap: 14PX; padding: 14PX 18PX 34PX; }
+.member-done-sheet .member-done-mark { align-self: center; margin-top: 10PX; width: 60PX; height: 60PX; background: ui.$role-clerk-soft; }
+.member-done-mark .done-mark-short, .member-done-mark .done-mark-long { height: 2.933PX; border-radius: 1.467PX; background: ui.$success; }
+.member-done-mark .done-mark-short { left: 20.667PX; top: 29.2PX; width: 8.485PX; }
+.member-done-mark .done-mark-long { left: 26.667PX; top: 35.2PX; width: 17.913PX; transform: rotate(-45deg); }
+.member-done-title { align-self: center; font-family: ui.$font-display; font-size: 26PX; line-height: 39PX; font-weight: 400; }
+.member-copy-card { padding: 14PX 16PX; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; }
+.member-copy-text { display: block; white-space: pre-line; font-size: 15PX; line-height: 25PX; }
+.screen .member-done-close { flex: none; display: flex; align-items: center; justify-content: center; height: 50PX; min-height: 50PX; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; color: ui.$ink; font-size: 16PX; font-weight: 400; }
+.member-done-hint { color: ui.$muted; font-size: 12PX; line-height: 18PX; text-align: center; }
+.member-done-sheet .table-sheet-primary { gap: 8PX; }
+.member-copy-icon { position: relative; width: 18PX; height: 18PX; }
+.member-copy-icon-back, .member-copy-icon-front { position: absolute; width: 9PX; height: 9PX; box-sizing: border-box; border: 1.35PX solid ui.$surface; border-radius: 1.5PX; }
+.member-copy-icon-back { left: 3PX; top: 3PX; }
+.member-copy-icon-front { left: 6PX; top: 6PX; background: ui.$ink; }
+
+@media (min-width: ui.$staff-wide) {
+  .staff-page-membership .staff-body { max-width: 720PX; }
+}

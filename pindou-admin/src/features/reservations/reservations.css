@@ -1,0 +1,28 @@
+/* 「预约」页只写布局；颜色用 Semi 默认主题。 */
+
+/* 看哪些预约的切换：放不下时换行，不撑出屏幕 */
+.reservation-views.semi-radioGroup {
+  display: inline-flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  max-width: 100%;
+}
+
+/* 表格一格里上下排两三行（标签和说明、套餐和应收） */
+.reservation-cell {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+}
+
+/* 代客登记：套餐、时间、座位的卡片排成网格，窄屏自动换行 */
+.reservation-choices.semi-radioGroup {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  max-width: 880px;
+}
+
+.reservation-choices-wide.semi-radioGroup {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}

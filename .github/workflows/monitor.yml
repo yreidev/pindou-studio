@@ -1,0 +1,37 @@
+name: 线上巡检
+
+# 从仓库外面看一眼线上：API、网页后台、备份新鲜度、证书（检查项见 deploy/monitor.sh）。
+# 目前只手动触发（业主 2026-10-05 决定暂不定时巡检）。要恢复每小时一次，在 on 下加：
+#   schedule:
+#     - cron: "17 * * * *"
+# 定时任务的失败通知发给最后改动 cron 的人；私有仓库按分钟计费，每小时一次一个月约 720 分钟。
+# 异地备份接通后，在仓库变量里设 PINDOU_REQUIRE_OFFSITE=true，异地备份停了也报警。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monitor
+  cancel-in-progress: false
+
+env:
+  # actions/checkout 先 git init 再取代码，git 每次都提示「没设默认分支名」；设上就不提示，对取到的代码没有影响
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: deploy/monitor.sh
+          sparse-checkout-cone-mode: false
+      - name: 巡检
+        env:
+          REQUIRE_OFFSITE: ${{ vars.PINDOU_REQUIRE_OFFSITE || 'false' }}
+        run: deploy/monitor.sh

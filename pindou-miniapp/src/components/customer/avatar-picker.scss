@@ -1,0 +1,9 @@
+@use '../../styles/tokens' as ui;
+
+// 注册页卡片里的一行：头像在左，「选择头像」在右
+.screen .avatar-picker-row { display: flex; align-items: center; justify-content: space-between; gap: 16PX; width: 100%; min-height: 72PX; padding: 8PX 0; background: transparent; }
+.avatar-picker-row .avatar-picker-image { width: 56PX; height: 56PX; border-radius: 50%; }
+// 编辑资料页正中的大头像（2026-10-20）：金边圆头像，下面写「更换头像」
+.screen .avatar-picker-large { display: flex; flex-direction: column; align-items: center; gap: 8PX; padding: 0; background: transparent; }
+.avatar-picker-large .avatar-picker-image { width: 88PX; height: 88PX; border: 3PX solid ui.$accent; border-radius: 50%; }
+.avatar-picker-action { color: ui.$action; font-size: 14PX; line-height: 20PX; }

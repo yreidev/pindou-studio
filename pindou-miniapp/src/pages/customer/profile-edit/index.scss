@@ -1,0 +1,19 @@
+@use '../../../styles/tokens' as ui;
+
+// 编辑资料（2026-10-20 重做，画稿 CProfileEdit）：大头像，昵称、手机号各一张卡。
+.profile-edit-avatar { display: flex; flex-direction: column; align-items: center; gap: 6PX; padding: 8PX 0 18PX; }
+.profile-edit-hint { color: ui.$muted; font-size: 12PX; line-height: 18PX; text-align: center; }
+.profile-edit-card { display: flex; flex-direction: column; gap: 8PX; margin-bottom: 12PX; padding: 14PX 16PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.profile-edit-card .field-label { margin: 0; }
+.profile-edit-card .field-help { margin: 0; }
+.profile-edit-label-row { display: flex; align-items: center; justify-content: space-between; gap: 12PX; }
+.screen .profile-edit-inline { min-height: 32PX; padding: 4PX 10PX; border-radius: 999PX; background: ui.$action-soft; color: ui.$action; font-size: 13PX; line-height: 24PX; }
+.profile-edit-phone { display: flex; align-items: center; gap: 8PX; }
+.profile-edit-phone-number { font-size: 18PX; line-height: 26PX; font-weight: 600; font-variant-numeric: tabular-nums; }
+.profile-edit-phone-status { padding: 1PX 8PX; border: 1PX solid ui.$warning; border-radius: 999PX; color: ui.$warning; font-size: 12PX; line-height: 16PX; }
+.profile-edit-phone-verified { border-color: ui.$success; color: ui.$success; }
+.profile-edit-phone-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8PX; }
+.screen .profile-edit-choice { @include ui.segment; border: 1PX solid ui.$divider; color: ui.$ink; font-weight: 600; }
+.screen .profile-edit-choice-dark { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.screen .profile-edit-choice-on { border-color: ui.$action; color: ui.$action; }
+.profile-edit-screen .submit-area { padding: 12PX 0 calc(20PX + env(safe-area-inset-bottom)); }

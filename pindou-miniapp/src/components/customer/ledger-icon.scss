@@ -1,0 +1,4 @@
+@use '../../styles/tokens' as ui;
+.ledger-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 36PX; width: 36PX; height: 36PX; border-radius: 10PX; background: ui.$action-soft; }
+.ledger-icon-recharge, .ledger-icon-reservation { background: ui.$role-clerk-soft; }
+.ledger-icon-reverse, .ledger-icon-other { background: ui.$disabled-surface; }

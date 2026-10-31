@@ -1,0 +1,82 @@
+@use '../../../styles/tokens' as ui;
+
+// 现场（2026-10-20 重做）：深色头部接着深色顶栏，下面是呼叫、等你处理、开台大按钮、两个小入口。
+.staff-page-workbench .page-content { padding-top: 0; }
+.workbench-view { display: flex; flex-direction: column; gap: 14PX; min-width: 0; }
+.workbench-hero { display: flex; flex-direction: column; gap: 12PX; margin: 0 -#{ui.$page-gutter}; padding: 6PX ui.$page-gutter 18PX; background: ui.$brand-dark; color: ui.$on-dark; }
+.workbench-account { display: flex; align-items: center; gap: 10PX; min-width: 0; }
+.workbench-initial { flex: 0 0 36PX; width: 36PX; height: 36PX; border-radius: 50%; background: ui.$accent; color: ui.$on-accent; font-size: 15PX; line-height: 36PX; font-weight: 600; text-align: center; }
+.workbench-name { min-width: 0; font-size: 16PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.workbench-role { flex-shrink: 0; padding: 0 7PX; border-radius: 999PX; background: rgba(216, 192, 143, .18); color: #d8c08f; font-size: 11PX; line-height: 20PX; }
+.screen .workbench-live { margin-left: auto; flex-shrink: 0; min-height: 0; padding: 0; background: transparent; color: #7fd8a9; font-size: 12PX; line-height: 18PX; }
+.screen .workbench-live-off { color: #f0c27a; }
+.workbench-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8PX; }
+.screen .workbench-count-card { display: flex; flex-direction: column; align-items: flex-start; gap: 2PX; min-width: 0; min-height: 0; padding: 10PX 12PX; border-radius: 12PX; background: #2d2b26; color: ui.$on-dark; text-align: left; }
+.workbench-count-label { font-size: 12PX; line-height: 18PX; color: ui.$muted-on-dark; }
+.workbench-count-value { font-family: ui.$font-display; font-size: 26PX; line-height: 30PX; font-variant-numeric: tabular-nums; }
+.workbench-count-free .workbench-count-value { color: #7fd8a9; }
+.workbench-count-attention .workbench-count-value { color: #f0a48f; }
+
+.workbench-block { display: flex; flex-direction: column; gap: 8PX; }
+.workbench-block-title { font-size: 13PX; line-height: 20PX; font-weight: 600; color: ui.$muted; }
+.workbench-todo { display: flex; flex-direction: column; border: 1PX solid ui.$divider; border-radius: 16PX; background: ui.$surface; overflow: hidden; }
+.screen .workbench-row { display: flex; align-items: center; gap: 10PX; width: 100%; min-height: 56PX; padding: 8PX 14PX; border-bottom: 1PX solid #efebe3; color: ui.$ink; text-align: left; }
+.screen .workbench-todo > .workbench-row:last-child { border-bottom: 0; }
+.workbench-row-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.workbench-row-title { font-size: 15PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.workbench-row-meta { font-size: 12PX; line-height: 18PX; color: ui.$muted; overflow-wrap: anywhere; }
+.workbench-row-arrow { flex-shrink: 0; color: ui.$accent; font-size: 22PX; line-height: 22PX; }
+// 顾客取消（2026-10-27）：一条一行，右边「知道了」
+.screen .workbench-cancelled-ok { flex-shrink: 0; height: 34PX; min-height: 34PX; padding: 0 14PX; }
+.workbench-cancelled .field-error { margin-top: 4PX; }
+.workbench-dot { flex: 0 0 10PX; width: 10PX; height: 10PX; border-radius: 50%; }
+.workbench-dot-danger { background: #c0492f; }
+.workbench-dot-warning { background: ui.$accent; }
+.workbench-dot-gold { background: #d8c08f; }
+.workbench-dot-ink { background: ui.$action; }
+.workbench-empty { display: block; padding: 16PX 14PX; color: ui.$muted; font-size: 13PX; line-height: 20PX; }
+.workbench-admission { display: flex; flex-direction: column; gap: 10PX; padding: 12PX 14PX; border-bottom: 1PX solid #efebe3; background: #fbf7ee; }
+.workbench-admission-head { display: flex; align-items: flex-start; gap: 10PX; }
+.workbench-tag { flex-shrink: 0; padding: 0 8PX; border-radius: 6PX; background: ui.$brand-dark; color: #d8c08f; font-size: 11PX; line-height: 22PX; }
+.workbench-admission-copy { display: flex; flex: 1; flex-direction: column; gap: 2PX; min-width: 0; }
+.workbench-admission-actions { display: grid; grid-template-columns: minmax(0, 1fr) 76PX 76PX; gap: 8PX; }
+.workbench-admission .coupon-fields { padding: 0; }
+.screen .workbench-button { display: flex; align-items: center; justify-content: center; min-width: 0; height: 40PX; min-height: 40PX; padding: 0 8PX; border: 1PX solid ui.$divider; border-radius: 10PX; background: ui.$surface; color: ui.$ink; font-size: 14PX; line-height: 20PX; text-align: center; }
+.screen .workbench-button-dark { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; font-size: 15PX; font-weight: 600; }
+.screen .workbench-button-quiet { color: ui.$muted; }
+.screen .workbench-button[disabled] { opacity: .55; }
+
+.screen .workbench-start { display: flex; align-items: center; gap: 12PX; width: 100%; min-height: 60PX; padding: 0 16PX; border-radius: 16PX; background: ui.$accent; color: ui.$on-accent; text-align: left; }
+.workbench-start-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.workbench-start-title { font-size: 17PX; line-height: 24PX; font-weight: 600; }
+.workbench-start-note { font-size: 12PX; line-height: 18PX; color: #5f4a29; }
+.workbench-start .workbench-row-arrow { color: ui.$on-accent; }
+.workbench-shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10PX; }
+.screen .workbench-shortcut { display: flex; align-items: center; justify-content: center; min-height: 52PX; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; color: ui.$ink; font-size: 15PX; font-weight: 600; }
+.workbench-spirit { display: block; padding: 6PX 0 4PX; color: #b0a999; font-size: 11PX; line-height: 17PX; text-align: center; }
+
+/* 顾客呼叫：红框卡片，在最顶上一眼看到 */
+.workbench-calls { display: flex; flex-direction: column; gap: 10PX; padding: 12PX 14PX; border: 2PX solid #c0492f; border-radius: 16PX; background: #fbeee9; }
+.workbench-calls-head { display: flex; align-items: center; justify-content: space-between; }
+.workbench-calls-title { color: #a23c25; }
+.screen .workbench-calls-quiet { min-height: 32PX; padding: 0 6PX; background: transparent; color: #a23c25; font-size: 13PX; line-height: 32PX; }
+.workbench-call { display: flex; flex-direction: column; gap: 8PX; }
+.workbench-call + .workbench-call { padding-top: 10PX; border-top: 1PX solid #e0b9ab; }
+.workbench-call-copy { display: flex; flex-direction: column; gap: 2PX; min-width: 0; }
+.workbench-call-title { font-size: 16PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.workbench-call-meta { color: ui.$muted; font-size: 12PX; line-height: 18PX; overflow-wrap: anywhere; }
+/* 「阿贝 正在处理 · 2 分钟前」；认领满 10 分钟还没处理的仍是提醒色 */
+.workbench-call-claim { color: #a23c25; font-size: 13PX; line-height: 20PX; font-weight: 600; overflow-wrap: anywhere; }
+.workbench-call-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8PX; }
+.workbench-call-actions .workbench-button:only-child { grid-column: 1 / -1; }
+/* 「我去处理」4 个字，半格宽也不折行 */
+.screen .workbench-call-action { white-space: nowrap; }
+/* 有人认领着：不再催，换成「在办」的绿色 */
+.workbench-call-claimed .workbench-call-claim { color: ui.$success; }
+
+@media (min-width: ui.$staff-wide) {
+  .staff-page-workbench .page-content { padding-top: 20PX; }
+  .workbench-view { max-width: 720PX; }
+  .workbench-hero { margin: 0; padding: 16PX; border-radius: 16PX; }
+}
+@media (max-width: 350px) { .workbench-hero { margin: 0 -16PX; padding-left: 16PX; padding-right: 16PX; } }

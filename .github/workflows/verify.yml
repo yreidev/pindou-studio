@@ -1,0 +1,313 @@
+name: 工程验证
+
+# 每次推到 main、每个合并请求都跑。先看这次改了哪几块，后端、小程序、网页后台、网页端到端四块并行检查，
+# 没改到的跳过（Makefile、工作流、Node 版本这类公共文件改了就全跑）；最后「结论」汇总。
+# 网页端到端最慢（私有仓库的执行机只有 2 核，Playwright 只开 1 个 worker），分 3 台机器各跑三分之一。
+# 发布镜像（release.yml）不再重跑这些检查，而是等这个提交在这里的结论：通过才出镜像。
+# 执行机固定 ubuntu-24.04（各工作流同）：ubuntu-latest 2026-10-19 起换成 26.04，Playwright 的系统依赖、
+# 服务容器换了系统可能要跟着改，到时候单独开一个分支试过再换，不在某次发版时被动撞上。
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # actions/checkout 先 git init 再取代码，git 每次都提示「没设默认分支名」；设上就不提示，对取到的代码没有影响
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+  # Go 编译缓存的位置（Makefile 本地默认放 ~/.cache/pindou-go-build）。缓存不用 setup-go 自带的那份：
+  # 它按 go.sum 定键、命中后就不再更新，永远停在第一次存的那份（2026-10-06 查到只有 73MB），每次都从零编译。
+  # 改由下面的 actions/cache 每次在 main 上跑完存一份新的，下一次从最近一份接着编。
+  GOCACHE: /home/runner/.cache/go-build
+
+jobs:
+  changes:
+    name: 改了哪几块
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.diff.outputs.backend }}
+      miniapp: ${{ steps.diff.outputs.miniapp }}
+      admin: ${{ steps.diff.outputs.admin }}
+      e2e: ${{ steps.diff.outputs.e2e }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: make store-config-test
+      - id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -eu
+          all() { for k in backend miniapp admin e2e; do echo "$k=true" >> "$GITHUB_OUTPUT"; done; echo "全部检查"; }
+          case "$EVENT" in
+            push) from="$BEFORE" ;;
+            pull_request) from="$BASE" ;;
+            *) all; exit 0 ;;
+          esac
+          if [ -z "$from" ] || [ "$from" = 0000000000000000000000000000000000000000 ] || ! git cat-file -e "$from^{commit}" 2>/dev/null; then
+            all; exit 0
+          fi
+          files=$(git diff --name-only "$from" HEAD)
+          printf '%s\n' "$files"
+          has() { printf '%s\n' "$files" | grep -Eq "$1"; }
+          shared='^(Makefile|package(-lock)?\.json|\.nvmrc|\.github/workflows/)'
+          flag() { if has "$shared" || has "$1"; then echo "$2=true"; else echo "$2=false"; fi >> "$GITHUB_OUTPUT"; }
+          # 网页后台的类型由契约生成；小程序、后端以后也按契约检查，契约改了一起查
+          flag '^(pindou-backend/|docs/api\.yaml$)' backend
+          flag '^(pindou-miniapp/|docs/api\.yaml$)' miniapp
+          # 网页「现场」看板直接引用门店布局与小程序的平面图底图，改它们也要查网页后台
+          flag '^(pindou-admin/|docs/api\.yaml$|layout/|pindou-miniapp/src/assets/seatmap/)' admin
+          # 端到端跑网页后台和后端（顾客网页 2026-10-31 已下线）；「现场」看板用小程序的平面图底图
+          flag '^(pindou-backend/|pindou-admin/|docs/api\.yaml$|layout/|pindou-miniapp/src/assets/seatmap/)' e2e
+          cat "$GITHUB_OUTPUT"
+
+  backend:
+    name: 后端
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      # 与生产同一个镜像（glibc 的排序规则与 alpine 的 musl 不同）
+      postgres:
+        image: postgres:17.11-trixie
+        env:
+          POSTGRES_PASSWORD: pindou_ci_test
+          # 与镜像默认行为相同（容器内套接字免密、网络连接要密码），写明了 initdb 就不再打「enabling trust」的告警
+          POSTGRES_INITDB_ARGS: --auth-local=trust --auth-host=scram-sha-256
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PINDOU_TEST_DATABASE_URL: postgres://postgres:pindou_ci_test@127.0.0.1:5432/postgres?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # v6 起才按 go.mod 的 toolchain 行选版本；它自带的缓存关掉，用下面两份
+      - id: go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: pindou-backend/go.mod
+          cache: false
+      # 编译缓存与模块：从最近一份接着编（键带 commit，恢复时按前缀取最新的），main 上跑完再存一份
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ steps.go.outputs.go-version }}-backend-${{ github.sha }}
+          restore-keys: go-${{ runner.os }}-${{ steps.go.outputs.go-version }}-backend-
+      # 三个工具（版本在 Makefile）编好的程序按「Go 版本 + 工具版本」缓存：以前每次从源码编，golangci-lint 与 sqlc 共要 3 分多钟。
+      # golangci-lint 要用 setup-go 选的工具链编：分析器和被分析的代码同一个 Go 版本
+      - id: tool-versions
+        run: echo "key=$(make -s backend-tools-versions)" >> "$GITHUB_OUTPUT"
+      - id: tools
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/go/bin
+          key: go-tools-${{ runner.os }}-${{ steps.go.outputs.go-version }}-${{ steps.tool-versions.outputs.key }}
+      - if: steps.tools.outputs.cache-hit != 'true'
+        run: make backend-tools
+      - run: make backend-check
+      - run: make backend-lint
+      # 核对生成的代码是最新的：用上面装好的 sqlc（Makefile 认版本，对不上才退回 go run）
+      - run: make backend-sqlc-check
+      - run: make backend-vuln
+      # 只在 main 上存：合并请求从 main 的那份恢复，不各自再存一份占缓存额度。Go 自己会清掉 5 天没用到的编译结果
+      - if: success() && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ steps.go.outputs.go-version }}-backend-${{ github.sha }}
+
+  miniapp:
+    name: 小程序
+    needs: changes
+    if: needs.changes.outputs.miniapp == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: pindou-miniapp/package-lock.json
+      - run: npm ci --prefix pindou-miniapp
+      - run: make frontend-check frontend-format frontend-lint frontend-test frontend-build
+
+  admin:
+    name: 网页后台
+    needs: changes
+    if: needs.changes.outputs.admin == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
+        with:
+          # 版本取 pindou-admin/package.json 的 packageManager；Node 由下面的 setup-node 按 .nvmrc 装，依赖由后面的步骤装
+          working-directory: pindou-admin
+          node-version-file: false
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: pindou-admin/pnpm-lock.yaml
+      - run: pnpm --dir pindou-admin install --frozen-lockfile
+      - run: make admin-check admin-format admin-lint admin-test
+
+  e2e:
+    name: 网页端到端 ${{ matrix.shard }}/3
+    needs: changes
+    if: needs.changes.outputs.e2e == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    # 每台各起一个后端和临时库，用例按 Playwright 的 --shard 平分（2026-10-10 一台串行要 7.5 分钟）。
+    # 一片失败不取消其余几片，失败的用例一次看全
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    services:
+      postgres:
+        image: postgres:17.11-trixie
+        env:
+          POSTGRES_PASSWORD: pindou_ci_test
+          # 与镜像默认行为相同（容器内套接字免密、网络连接要密码），写明了 initdb 就不再打「enabling trust」的告警
+          POSTGRES_INITDB_ARGS: --auth-local=trust --auth-host=scram-sha-256
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PINDOU_TEST_DATABASE_URL: postgres://postgres:pindou_ci_test@127.0.0.1:5432/postgres?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: pindou-backend/go.mod
+          cache: false
+      # 端到端起的是 cmd/pindou-dev：编译缓存同后端那份的做法，单独一份（编的东西不同）
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ steps.go.outputs.go-version }}-e2e-${{ github.sha }}
+          restore-keys: go-${{ runner.os }}-${{ steps.go.outputs.go-version }}-e2e-
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
+        with:
+          # 版本取 pindou-admin/package.json 的 packageManager；Node 由下面的 setup-node 按 .nvmrc 装，依赖由后面的步骤装
+          working-directory: pindou-admin
+          node-version-file: false
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: pindou-admin/pnpm-lock.yaml
+      - run: pnpm --dir pindou-admin install --frozen-lockfile
+      # 浏览器本体按锁文件缓存；系统依赖每次装（很快，缓存不了）
+      - id: playwright
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pindou-admin/pnpm-lock.yaml') }}
+      - if: steps.playwright.outputs.cache-hit != 'true'
+        run: pnpm --dir pindou-admin exec playwright install --with-deps chromium
+      - if: steps.playwright.outputs.cache-hit == 'true'
+        run: pnpm --dir pindou-admin exec playwright install-deps chromium
+      - run: make admin-e2e E2E_ARGS=--shard=${{ matrix.shard }}/3
+      # 几片编的东西一样，只由第 1 片存（同一个键只能存一次）
+      - if: success() && github.ref == 'refs/heads/main' && matrix.shard == 1
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ steps.go.outputs.go-version }}-e2e-${{ github.sha }}
+      - name: 端到端失败时保留报告
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-report-${{ matrix.shard }}
+          path: |
+            pindou-admin/playwright-report
+            pindou-admin/test-results
+          retention-days: 7
+
+  # Go 编译缓存每次在 main 上按提交存一份新的（后端约 700MB、端到端约 150MB），旧的不会再被用到，
+  # 却一直占着仓库 10GB 的缓存额度：2026-10-10 堆到 10.2GB，GitHub 开始按最久没用淘汰，连浏览器本体的缓存也会被挤掉。
+  # 这里每类只留最新存的一份（换 Go 版本后旧版本的也一起删）。只动这个工作流自己存的 go- 开头的缓存；
+  # 删不掉也不影响检查结论（release.yml 等的就是这个工作流的结论）。
+  prune-caches:
+    name: 清理旧缓存
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [backend, e2e]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    continue-on-error: true
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          caches=$(gh cache list -R "$REPO" --key go- --ref refs/heads/main --limit 200 --json id,key,createdAt)
+          for kind in backend e2e tools; do
+            # 同一类按存的时间从新到旧，第一份留下
+            printf '%s' "$caches" | jq -r --arg kind "$kind" '
+              map(select(if $kind == "tools" then (.key | startswith("go-tools-")) else (.key | test("^go-[^-]+-[^-]+-" + $kind + "-")) end))
+              | sort_by(.createdAt) | reverse | .[1:][] | "\(.id) \(.key)"' |
+            while read -r id key; do
+              echo "删除 $key"
+              gh cache delete "$id" -R "$REPO"
+            done
+          done
+
+  result:
+    name: 结论
+    if: always()
+    needs: [changes, backend, miniapp, admin, e2e]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # 跳过的块（这次没改到）不算失败；任何一块失败或被取消，整个检查就不通过
+      - env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "各块结果：$RESULTS"
+          case " $RESULTS " in
+            *" failure "*|*" cancelled "*) echo "::error::有检查没通过"; exit 1 ;;
+          esac

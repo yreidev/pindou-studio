@@ -1,0 +1,514 @@
+# 拼豆在单节点 k3s 上的资源：API、网页后台页面服务、入口、每天的 pg_dump 备份与网络策略。用法与发布步骤见
+# docs/deployment.md 和 .claude/skills/backend-release。数据库在 pindou-db.yaml（CloudNativePG），这个文件只认 postgres:5432。
+# 后端和网页后台各是一个镜像、各自发版（docs/plan-split-release.md）。
+#
+# 两个 Secret 不在这里，部署前在服务器上手工创建（命令见 docs/deployment.md）：
+#   pindou-postgres   数据库密码（与 username 键）
+#   pindou-api-env    PINDOU_DATABASE_URL、微信 AppID/Secret 等环境变量
+# 证书由 Traefik 的 letsencrypt 解析器自动申请（ggapi-infra 的 k3s/cn/traefik-config.yaml）。
+#
+# 硬约束：
+# - API 是两个副本、滚动更新：业务数据、登录会话、限流和幂等记录都在 PostgreSQL 里，推送经 LISTEN/NOTIFY
+#   转发，迁移在咨询锁里执行。新版本必须能和上一版同时连着同一个库跑（迁移只增不改，先加后删）。
+# - PostgreSQL 只有一个实例（单节点），它停了 API 也停。
+# - 存活检查用 /healthz（只看进程），不能用 /readyz（会 ping 数据库）：数据库一抖 API 就被反复重启。
+# - 不要让 API 走 EdgeOne/CDN：限流按 X-Real-IP 计，经 CDN 后所有顾客变成同几个 IP，会被一起限流。
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pindou
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pindou-api
+  namespace: pindou
+spec:
+  selector:
+    app.kubernetes.io/name: pindou-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pindou-api
+  namespace: pindou
+spec:
+  # 业务数据只在 PostgreSQL 里，进程不持有状态（docs/plan-postgres-source-of-truth.md）：两个副本，
+  # 一个出问题另一个照常服务；滚动发布先起新的、就绪了再停旧的，发布不停机。
+  replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pindou-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pindou-api
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      # 停止顺序：preStop 先等 8 秒（Traefik 把这个 Pod 从端点里摘掉要几秒，期间还会有新请求进来），
+      # 再发 SIGTERM：就绪检查立刻失败、事件流断开（客户端重连到另一个副本）、进行中的请求最多再做 20 秒。
+      terminationGracePeriodSeconds: 40
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          # 发布时改这一行的标签（与 git 标签 backend-v<版本> 对应；到 0.0.38 为止是 v<版本>），见 backend-release skill
+          image: docker.io/yreidev/pindou-api:0.0.39
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: pindou-api-env
+          # 这里的值优先于 Secret 里的同名变量
+          env:
+            - name: PINDOU_HTTP_ADDRESS
+              value: ":8080"
+            - name: GOMEMLIMIT
+              value: 200MiB
+          # 进程不持有业务数据，常驻几十 MB；导出全部数据时短暂多用一些
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 8
+          # 启动要等数据库（最多 1 分钟）、跑迁移（咨询锁里，两个副本同时启动只有一个在跑），之后才开始监听
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+            failureThreshold: 90
+          # 探针不开事务、不碰业务表；超时给 3 秒（默认 1 秒），数据库一时卡顿不至于把服务摘下。
+          # 进程收到停止信号后就绪检查立刻失败，滚动发布时不再有新请求转过来
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+---
+# 节点维护、驱逐时至少留一个副本在服务。
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pindou-api
+  namespace: pindou
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pindou-api
+---
+# 员工电脑网页后台的页面（admin.example.invalid）：只提供页面的 Go 小程序（cmd/pindou-admin-web，页面编进二进制），
+# 不连数据库、不调微信、不持有状态。接口照旧由 pindou-api 提供，同域名按路径分开（见下面的 IngressRoute）。
+# 一个副本就够：滚动发布先起新的、就绪了再停旧的，发布不停机；万一挂了，已打开的页面照常调接口，只是刷新要等它重启。
+apiVersion: v1
+kind: Service
+metadata:
+  name: pindou-admin
+  namespace: pindou
+spec:
+  selector:
+    app.kubernetes.io/name: pindou-admin
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pindou-admin
+  namespace: pindou
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pindou-admin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pindou-admin
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      # 同 API：preStop 先等 Traefik 摘掉这个 Pod，再发 SIGTERM，进行中的请求最多再做 10 秒
+      terminationGracePeriodSeconds: 25
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: web
+          # 发布时改这一行的标签（与 git 标签 admin-v<版本> 对应），见 backend-release skill
+          image: docker.io/yreidev/pindou-admin:0.0.39
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PINDOU_HTTP_ADDRESS
+              value: ":8080"
+            - name: GOMEMLIMIT
+              value: 48MiB
+          # 页面编在二进制里，只读不算，常驻十几 MB
+          resources:
+            requests:
+              cpu: 10m
+              memory: 24Mi
+            limits:
+              memory: 64Mi
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 8
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+  namespace: pindou
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+# 响应压缩（接口的 JSON、网页的 HTML/JS/CSS）：由 Traefik 做，API 进程里不压缩。挂在各条 HTTPS 路由上。
+# - text/event-stream 必须排除：SSE 要逐条送达，Traefik 的 compress 默认只排除 application/grpc，
+#   不排除它就会把推送攒进压缩缓冲（不足 minResponseBodyBytes 的先缓着不发）。
+#   WebSocket 握手回 101 后连接被接管，compress 不碰它。
+# - 已经压缩过的格式不再压：导出的 xlsx 本身是 zip（还要让微信的文档预览原样拿到文件），后台的 png 图标。
+# - minResponseBodyBytes 写明默认值 1024：小于它的响应压了也省不了多少。
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: compress
+  namespace: pindou
+spec:
+  compress:
+    excludedContentTypes:
+      - text/event-stream
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      - image/png
+    minResponseBodyBytes: 1024
+---
+# 只对列出的域名跳 HTTPS。不能做成全局跳转：同机 personal.example.invalid 的备案首页由 EdgeOne 用 HTTP 80 回源。
+# 员工电脑网页后台：/api/（含事件流）和 /healthz 转给 API，其余是网页后台服务的页面；页面与 /api/v2 同源，不需要 CORS。
+# 单独两条路由、单独申请证书：后台域名的证书出问题不牵连小程序接口用的 pindou.example.invalid。
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pindou-admin-http
+  namespace: pindou
+spec:
+  entryPoints: [web]
+  routes:
+    - match: Host(`admin.example.invalid`)
+      kind: Rule
+      middlewares:
+        - name: https-redirect
+      services:
+        - name: pindou-api
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pindou-admin
+  namespace: pindou
+spec:
+  entryPoints: [websecure]
+  routes:
+    # 写明优先级，不靠规则长短（Traefik 默认按规则字符串长度排）：接口这一条先匹配
+    - match: Host(`admin.example.invalid`) && (PathPrefix(`/api/`) || Path(`/healthz`))
+      kind: Rule
+      priority: 20
+      middlewares:
+        - name: compress
+      services:
+        - name: pindou-api
+          port: 80
+    - match: Host(`admin.example.invalid`)
+      kind: Rule
+      priority: 10
+      middlewares:
+        - name: compress
+      services:
+        - name: pindou-admin
+          port: 80
+  tls:
+    certResolver: letsencrypt
+---
+# 小程序接口（pindou.example.invalid）。顾客网页 2026-10-31 下线（docs/plan-split-release.md）：这个域名下接口以外的路径
+# 只剩微信「扫普通链接二维码打开小程序」的校验文件和「请用微信扫码」的说明页，由 API 进程按域名提供
+# （PINDOU_CUSTOMER_WEB_HOSTS 默认就是这个域名）。同样单独两条路由、单独申请证书。
+# 桌上的网页桌码印的是 https://pindou.example.invalid/t?tableId=…，这个域名印出去就不能再改。
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pindou-customer-http
+  namespace: pindou
+spec:
+  entryPoints: [web]
+  routes:
+    - match: Host(`pindou.example.invalid`)
+      kind: Rule
+      middlewares:
+        - name: https-redirect
+      services:
+        - name: pindou-api
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pindou-customer
+  namespace: pindou
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`pindou.example.invalid`)
+      kind: Rule
+      middlewares:
+        - name: compress
+      services:
+        - name: pindou-api
+          port: 80
+  tls:
+    certResolver: letsencrypt
+---
+# 每天 03:15（北京时间）pg_dump 逻辑备份，校验归档可读后才发布，保留 30 天，写到宿主机 /var/backups/pindou/postgres；
+# 配置了 pindou-backup-offsite 时再加密传一份到异地对象存储（见 docs/deployment.md）。
+# 与 CloudNativePG 的基础备份 + WAL 归档（pindou-db.yaml）互不依赖：这份不受 PostgreSQL 版本、镜像和 locale 限制，
+# 换大版本、换机器、只想取回一张表时用它；它也是 /statusz 报告的备份（backup_runs）。
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: pindou
+spec:
+  schedule: "15 3 * * *"
+  timeZone: Asia/Shanghai
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      # 一次卡住的备份（比如撞上发布时迁移的排它锁）最多占 30 分钟；否则 Forbid 会让之后的备份全被静默跳过
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: postgres-backup
+        spec:
+          automountServiceAccountToken: false
+          enableServiceLinks: false
+          restartPolicy: Never
+          # 先本机备份（dump），再把这份归档加密传到异地（offsite，没配置就跳过），最后记下异地那份（record）。
+          # 每一步成功都在 backup_runs 里留一笔，/statusz 报告最近一次，外部监控据此发现备份停了。
+          initContainers:
+            - name: dump
+              image: docker.io/library/postgres:17.11-trixie
+              env: &backup-db-env
+                - name: PGHOST
+                  value: postgres
+                - name: PGUSER
+                  value: pindou
+                - name: PGDATABASE
+                  value: pindou
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pindou-postgres
+                      key: password
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  umask 077
+                  # 网络策略控制器把新 Pod 加进放行名单要几秒，刚启动就连库会被拒绝（彩排实测），先等它
+                  for i in $(seq 1 30); do pg_isready -q && break; sleep 2; done
+                  # 文件名用北京时间（带 +0800），03:15 那份不会看起来像前一天的
+                  stamp=$(TZ=Asia/Shanghai date +%Y%m%dT%H%M%S%z)
+                  name="pindou_$stamp.dump"
+                  partial="/backups/pindou_$stamp.partial"
+                  trap 'rm -f "$partial"' EXIT HUP INT TERM
+                  # 上次被强制结束（SIGKILL 不走 trap）留下的半成品
+                  find /backups -type f -name 'pindou_*.partial' -mmin +60 -delete
+                  pg_dump --lock-wait-timeout=60s --format=custom --file="$partial"
+                  pg_restore --list "$partial" > /dev/null
+                  mv "$partial" "/backups/$name"
+                  find /backups -type f -name 'pindou_*.dump' -mtime +30 -delete
+                  psql -q -v ON_ERROR_STOP=1 -v name="$name" -v size="$(stat -c %s "/backups/$name")" <<'SQL'
+                  INSERT INTO backup_runs (kind, name, size_bytes) VALUES ('local', :'name', :size);
+                  SQL
+                  echo "$name" > /work/latest
+                  echo "backup $name done"
+              volumeMounts: &backup-mounts
+                - name: backups
+                  mountPath: /backups
+                - name: work
+                  mountPath: /work
+            # 异地副本：rclone 的 crypt 远端在本机加密后再上传（对象存储里只有密文，文件名也加密），保留 90 天。
+            # 配置全在可选的 Secret pindou-backup-offsite 里（见 docs/deployment.md「备份与恢复」），没建就跳过。
+            - name: offsite
+              image: docker.io/rclone/rclone:1.75.1
+              envFrom:
+                - secretRef:
+                    name: pindou-backup-offsite
+                    optional: true
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  if [ -z "${RCLONE_CONFIG_OFFSITE_TYPE:-}" ]; then echo "offsite backup not configured, skipped"; exit 0; fi
+                  name=$(cat /work/latest)
+                  rclone copyto --retries 5 --low-level-retries 20 "/backups/$name" "offsite:$name"
+                  # 传上去的大小对得上才算数（crypt 远端列出的是解密后的大小）
+                  remote=$(rclone size --json "offsite:$name" | sed -n 's/.*"bytes":\([0-9]*\).*/\1/p')
+                  [ "$remote" = "$(stat -c %s "/backups/$name")" ] || { echo "offsite size mismatch: $remote" >&2; exit 1; }
+                  rclone delete --min-age 90d --include 'pindou_*.dump' offsite:
+                  echo "$name" > /work/offsite
+                  echo "offsite $name done"
+              volumeMounts: *backup-mounts
+          containers:
+            - name: record
+              image: docker.io/library/postgres:17.11-trixie
+              env: *backup-db-env
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  [ -f /work/offsite ] || exit 0
+                  name=$(cat /work/offsite)
+                  psql -q -v ON_ERROR_STOP=1 -v name="$name" -v size="$(stat -c %s "/backups/$name")" <<'SQL'
+                  INSERT INTO backup_runs (kind, name, size_bytes) VALUES ('offsite', :'name', :size);
+                  SQL
+              volumeMounts: *backup-mounts
+          volumes:
+            - name: backups
+              hostPath:
+                path: /var/backups/pindou/postgres
+                type: DirectoryOrCreate
+            - name: work
+              emptyDir: {}
+---
+# 默认拒绝进入本命名空间的流量，只放行：Traefik → API、Traefik → 网页后台页面；数据库的放行在 pindou-db.yaml。
+# 后端无条件信任 X-Real-IP 做限流，所以只能让 Traefik 碰到它。
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: pindou
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-from-traefik
+  namespace: pindou
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: pindou-api
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: traefik
+      ports:
+        - port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: admin-from-traefik
+  namespace: pindou
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: pindou-admin
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: traefik
+      ports:
+        - port: 8080

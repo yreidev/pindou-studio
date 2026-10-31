@@ -1,0 +1,25 @@
+@use '../../styles/tokens' as ui;
+
+// 底部「图纸」：顶上做图纸的两个入口，下面两列方图，图下面名字和「本周上新」
+.patterns-maker { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 10PX; padding: 8PX 0 8PX; }
+.screen .patterns-maker-main, .screen .patterns-maker-mine { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4PX; min-width: 0; min-height: 88PX; padding: 14PX; border-radius: ui.$card-radius; text-align: left; }
+.screen .patterns-maker-main { background: ui.$brand-dark; color: ui.$on-dark; }
+.screen .patterns-maker-mine { border: 1PX solid ui.$divider; background: ui.$surface; color: ui.$ink; }
+// 品牌字体只收了页面标题里的字（scripts/build-font-subset.mjs），这里的字不全在里面，用普通字体
+.patterns-maker-title { display: block; font-size: 17PX; font-weight: 600; line-height: 24PX; }
+.patterns-maker-note { display: block; font-size: 12PX; line-height: 18PX; opacity: 0.78; overflow-wrap: anywhere; }
+.patterns-maker-latest { display: flex; gap: 4PX; width: 100%; min-width: 0; font-size: 12PX; line-height: 18PX; opacity: 0.78; }
+.patterns-maker-latest-name { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.patterns-maker-latest-done { flex: 0 0 auto; }
+.patterns-intro { display: flex; flex-direction: column; gap: 4PX; padding: 8PX 0 16PX; }
+.patterns-heading { display: block; font-family: ui.$font-display; font-size: 22PX; line-height: 30PX; color: ui.$ink; }
+.patterns-filters { display: flex; flex-wrap: wrap; gap: 8PX; margin-bottom: 16PX; }
+.screen .patterns-filter { min-height: 36PX; padding: 6PX 14PX; border: 1PX solid ui.$divider; border-radius: 18PX; background: ui.$surface; color: ui.$muted; font-size: 14PX; line-height: 22PX; }
+.screen .patterns-filter-selected { @include ui.selected; border-color: ui.$accent; }
+.patterns-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16PX 12PX; }
+.screen .patterns-card { display: block; width: 100%; min-width: 0; padding: 0; text-align: left; color: ui.$ink; background: transparent; }
+.patterns-media { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; border: 1PX solid ui.$divider; border-radius: ui.$artwork-radius; background: ui.$surface; }
+.patterns-image { position: absolute; inset: 0; width: 100%; height: 100%; }
+.patterns-caption { display: flex; align-items: center; gap: 6PX; min-width: 0; padding-top: 8PX; }
+.patterns-name { flex: 1; min-width: 0; font-size: 15PX; line-height: 22PX; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.patterns-new { flex: 0 0 auto; padding: 0 6PX; border-radius: 4PX; background: ui.$action-soft; color: ui.$action; font-size: 12PX; line-height: 20PX; }

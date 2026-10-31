@@ -1,0 +1,49 @@
+# 按时间点恢复：从 pindou-db 的基础备份 + WAL 归档恢复出一个新的临时集群 pindou-db-pitr，停在 __TARGET_TIME__。
+# 不动正在跑的库：先在临时集群里核对、取出要的数据，再决定怎么处理（步骤见 docs/deployment.md「按时间点恢复」）。
+#   sed 's/__TARGET_TIME__/2026-10-05T07:40:12.000000Z/' deploy/k3s/pindou-db-pitr.yaml | kubectl apply -f -
+# 时间写 UTC（带 Z）或带时区的时间戳；会自动选这个时间之前最近的一个基础备份。
+# 它不归档 WAL（没有 plugins 一节），不会写进 pindou-db 的归档；存储类是 local-path（删集群时卷跟着删）。
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pindou-db-pitr
+  namespace: pindou
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.11-202609281634-standard-trixie
+  imagePullPolicy: IfNotPresent
+  enablePDB: false
+  smartShutdownTimeout: 10
+  stopDelay: 60
+  postgresql:
+    parameters:
+      timezone: Etc/UTC
+  bootstrap:
+    recovery:
+      source: pindou-db
+      # 恢复出来的库仍叫 pindou、属于 pindou；密码沿用同一个 Secret
+      database: pindou
+      owner: pindou
+      secret:
+        name: pindou-postgres
+      recoveryTarget:
+        targetTime: "__TARGET_TIME__"
+  externalClusters:
+    - name: pindou-db
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: pindou-db-local
+          serverName: pindou-db
+  storage:
+    storageClass: local-path
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 768Mi
+  managed:
+    services:
+      disabledDefaultServices: [ro, r]

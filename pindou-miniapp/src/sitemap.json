@@ -1,0 +1,9 @@
+{
+  "desc": "Example示例工坊·拼豆·手作研究室小程序页面索引规则",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

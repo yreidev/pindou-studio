@@ -1,0 +1,51 @@
+@use '../../styles/tokens' as ui;
+.profile-screen .navbar-title { font-family: inherit; color: ui.$surface; }
+.profile-screen .page-content { padding: 0 16PX; line-height: normal; }
+.profile-top { margin: 0 -16PX 16PX; padding: 10PX 16PX 22PX 20PX; border-radius: 0 0 20PX 20PX; background: ui.$brand-dark; color: ui.$surface; }
+.profile-screen .profile-header { display: flex; align-items: center; gap: 14PX; width: 100%; padding: 0; background: transparent; color: ui.$surface; text-align: left; }
+.profile-avatar { flex: 0 0 60PX; width: 60PX; height: 60PX; border: 2PX solid ui.$accent; border-radius: 30PX; }
+.profile-identity { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 6PX; }
+.profile-name { color: ui.$surface; font-size: 21PX; font-weight: 600; overflow-wrap: anywhere; }
+.profile-role { display: flex; align-items: center; gap: 8PX; font-size: 12PX; }
+.profile-tier { padding: 2PX 8PX; border-radius: 10PX; background: ui.$accent; color: ui.$ink; font-weight: 600; }
+.profile-edit-link { color: ui.$design-input-border; }
+.profile-top .profile-chevron { flex-basis: 18PX; width: 18PX; height: 18PX; }
+.profile-service-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10PX; margin-bottom: 12PX; }
+.profile-screen .profile-service { display: grid; grid-template-columns: 22PX minmax(0, 1fr); column-gap: 10PX; row-gap: 4PX; align-items: start; padding: 14PX; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; text-align: left; }
+.profile-service-icon { grid-row: 1 / 3; width: 22PX; height: 22PX; }
+.profile-service-title { font-size: 16PX; font-weight: 600; color: ui.$ink; }
+.profile-service-note { min-width: 0; font-size: 12PX; color: ui.$muted; }
+.profile-member-note, .profile-reservation-note { display: flex; flex-direction: column; gap: 4PX; }
+.profile-member-note { white-space: nowrap; }
+.profile-member-balance, .profile-reservation-note > text:first-child { color: ui.$ink; font-size: 13PX; }
+.profile-service-keep { white-space: nowrap; }
+.profile-screen .profile-workbench { display: flex; align-items: center; gap: 12PX; width: 100%; min-height: 60PX; margin-bottom: 12PX; padding: 12PX 14PX; border-radius: ui.$card-radius; background: ui.$action-soft; color: ui.$ink; text-align: left; }
+.profile-workbench-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.profile-workbench-title { font-size: 16PX; line-height: 22PX; font-weight: 600; }
+.profile-workbench-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.profile-list { border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; overflow: hidden; }
+.profile-screen .profile-link { display: flex; align-items: center; gap: 12PX; width: 100%; min-height: 54PX; padding: 0 14PX 0 16PX; border-bottom: 1PX solid ui.$divider; text-align: left; background: transparent; font-size: 15PX; }
+.profile-screen .profile-list .profile-link:last-child { border-bottom: 0; }
+.profile-row-icon { flex: 0 0 20PX; width: 20PX; height: 20PX; }
+.profile-row-label { flex: none; }
+.profile-row-value { flex: 1; min-width: 0; color: ui.$muted; font-size: 13PX; text-align: right; overflow-wrap: anywhere; }
+.profile-phone-value { display: flex; flex: 1; align-items: center; justify-content: flex-end; gap: 8PX; min-width: 0; }
+.profile-phone-number { font-size: 14PX; }
+.profile-phone-status { display: inline-block; flex: none; padding: 1PX 8PX; border: 1PX solid; border-radius: 10PX; font-size: 12PX; }
+.profile-phone-verified { border-color: ui.$success; color: ui.$success; }
+.profile-phone-unverified { border-color: ui.$warning; color: ui.$warning; }
+.profile-chevron { flex: 0 0 16PX; width: 16PX; height: 16PX; margin-left: auto; }
+.profile-actions { display: flex; flex-direction: column; align-items: center; gap: 12PX; padding: 12PX 0 0; }
+.profile-screen .profile-signout { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 46PX; padding: 0; border: 1PX solid ui.$divider; border-radius: 14PX; background: ui.$surface; color: ui.$danger; font-size: 15PX; }
+.profile-screen .profile-version { padding: 0; color: ui.$muted; font-size: 12PX; text-align: center; }
+.profile-screen .profile-header-failed { display: flex; align-items: center; justify-content: space-between; gap: 12PX; padding: 12PX 14PX; border-radius: 12PX; background: rgba(ui.$canvas, .08); }
+.profile-screen .profile-header-failed-text { flex: 1; color: ui.$muted-on-dark; font-size: 14PX; }
+.profile-screen .profile-retry { min-height: 0; padding: 6PX 14PX; border: 1PX solid rgba(ui.$canvas, .3); border-radius: 999PX; background: transparent; color: ui.$surface; font-size: 13PX; }
+.profile-phone-placeholder { margin-left: auto; color: ui.$muted; font-size: 14PX; }
+.profile-message-link .ledger-icon { flex: 0 0 20PX; width: 20PX; height: 20PX; border-radius: 0; background: transparent; }
+.profile-message-preview { min-width: 0; flex: 1; color: ui.$muted; font-size: 13PX; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+.profile-message-count { display: flex; align-items: center; justify-content: center; flex: none; min-width: 18PX; height: 18PX; padding: 0 5PX; box-sizing: border-box; border-radius: 9PX; background: ui.$danger; color: ui.$surface; font-size: 11PX; font-weight: 600; }
+
+.profile-screen .navbar-back { left: 4PX; width: 44PX; min-height: 44PX; }
+.profile-message-summary { display: flex; align-items: center; justify-content: flex-end; flex: 1; min-width: 0; gap: 8PX; }
+.profile-screen { font-family: 'Noto Sans SC', 'PingFang SC', sans-serif; }

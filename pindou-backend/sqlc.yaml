@@ -1,0 +1,42 @@
+# 固定写法的 SQL 由 sqlc 生成 Go 代码（make backend-sqlc 生成，make backend-sqlc-check 核对是否最新）。
+# 查询在 internal/storage/queries/*.sql，生成的代码就放在旁边（package queries），提交进仓库。
+# 表结构取 internal/storage/schema.sql：迁移跑完之后从真库导出的一份（sqlc 读不了迁移里的 DO 块，见 schema_test.go）。
+# 条件或排序在运行时拼出来的查询（搜索、分页、按集合写回）仍是手写的。
+version: "2"
+sql:
+  - engine: postgresql
+    schema: internal/storage/schema.sql
+    queries: internal/storage/queries
+    gen:
+      go:
+        package: queries
+        out: internal/storage/queries
+        sql_package: pgx/v5
+        emit_pointers_for_null_types: true
+        omit_unused_structs: true
+        overrides:
+          # 编号在程序里一律是字符串（pgx 能把字符串编码成 uuid）
+          - db_type: uuid
+            go_type: string
+          - db_type: uuid
+            nullable: true
+            go_type:
+              type: string
+              pointer: true
+          # 表里的列是 pg_catalog.timestamptz，查询里 ::timestamptz 转换出来的是 timestamptz，两种都要列
+          - db_type: pg_catalog.timestamptz
+            go_type: time.Time
+          - db_type: pg_catalog.timestamptz
+            nullable: true
+            go_type:
+              import: time
+              type: Time
+              pointer: true
+          - db_type: timestamptz
+            go_type: time.Time
+          - db_type: timestamptz
+            nullable: true
+            go_type:
+              import: time
+              type: Time
+              pointer: true

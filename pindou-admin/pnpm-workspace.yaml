@@ -1,0 +1,5 @@
+# pnpm 11 不再读 package.json 里的 "pnpm" 字段，设置写在这里（网页后台不是多包仓库，不列 packages）。
+peerDependencyRules:
+  allowedVersions:
+    # openapi-typescript 的对等依赖只写到 TypeScript 5，实际在 6 上生成的类型没问题
+    openapi-typescript>typescript: '6'

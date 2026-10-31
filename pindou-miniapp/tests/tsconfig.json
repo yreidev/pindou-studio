@@ -1,0 +1,12 @@
+{
+  // 单元测试的类型检查（npm run check 的第二步）。测试跑在 Vitest 的 ESM 里，用 import.meta、顶层 await；
+  // 替身大多是随手写的对象，不逐个标注类型（noImplicitAny 关掉），被测的源码照样按严格模式检查。
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noImplicitAny": false
+  },
+  "include": ["./**/*.ts", "./**/*.tsx", "../src", "../types", "../vitest.config.mts"]
+}

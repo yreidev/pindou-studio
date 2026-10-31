@@ -1,0 +1,8 @@
+@use 'tokens' as ui;
+// 门店联系方式（components/customer/store-contact.tsx）：跟在包间说明、超限与爽约暂停的说明后面，
+// 电话点一下拨号、微信号点一下复制。用到的页面在自己的样式里 @use 这一份。
+.store-contact { display: flex; flex-wrap: wrap; gap: 8PX; margin-top: 8PX; }
+.screen .store-contact-item { display: inline-flex; align-items: center; gap: 6PX; min-width: 0; min-height: 44PX; padding: 6PX 14PX; border: 1PX solid ui.$border; border-radius: 999PX; background: ui.$surface; color: ui.$ink; font-size: 13PX; line-height: 18PX; }
+.store-contact-label { color: ui.$muted; }
+.store-contact-value { font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.store-contact-hint { color: ui.$action; }

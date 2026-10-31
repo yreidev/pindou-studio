@@ -1,0 +1,60 @@
+/* 「商品与库存」页的布局。颜色用 Semi 默认主题，这里只管排布。 */
+
+.inventory-form {
+  max-width: 920px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 采购明细：商品、数量、单价、删除，窄屏两列换行 */
+.purchase-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.purchase-line {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) minmax(100px, 1fr) minmax(120px, 1fr) 40px;
+  gap: 8px;
+  align-items: start;
+}
+
+.purchase-line-head {
+  padding-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .purchase-line {
+    grid-template-columns: 1fr 1fr;
+  }
+  .purchase-line-head {
+    display: none;
+  }
+}
+
+/* 盘点：左边填写，右边核对 */
+.adjust-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(280px, 380px);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .adjust-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 库存表里就地改预警线：输入框和按钮一行，错误提示在下面，靠右和数字对齐 */
+.alert-editor {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+}

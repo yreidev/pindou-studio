@@ -1,0 +1,100 @@
+@use '../../../styles/tokens' as ui;
+
+// 本次手作（2026-10-20 重做，画稿 CHandsonPick / CHandsonWaiting / CHandsonTiming）
+.screen.experience-dark { min-height: 100vh; background: ui.$brand-dark; color: ui.$on-dark; }
+.experience-content { gap: 14PX; padding-bottom: calc(96PX + env(safe-area-inset-bottom)); }
+.experience-intro { padding: 8PX 0; }
+.experience-intro .page-heading { padding-bottom: 8PX; }
+
+// 选时长：「你在 C1」、选座（多座的桌）、坐多久、团购，底部固定一条「申请入座」
+.experience-where { display: flex; flex-direction: column; gap: 2PX; padding: 16PX 18PX; border-radius: 20PX; background: ui.$brand-dark; color: ui.$on-dark; }
+.experience-where-label { color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+.experience-where-code { font-family: ui.$font-display; font-size: 40PX; line-height: 48PX; }
+.experience-where-meta { color: #d8c08f; font-size: 13PX; line-height: 20PX; }
+.experience-section { display: flex; flex-direction: column; gap: 10PX; }
+.experience-question { font-size: 16PX; line-height: 24PX; font-weight: 600; }
+.experience-seats { display: grid; grid-template-columns: repeat(auto-fill, minmax(88PX, 1fr)); gap: 8PX; }
+.screen .experience-seat { display: flex; flex-direction: column; align-items: center; gap: 2PX; min-height: 56PX; padding: 8PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; }
+.screen .experience-seat-selected { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.experience-seat-status { font-size: 12PX; line-height: 16PX; opacity: 0.8; }
+.experience-packages { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10PX; }
+.screen .experience-package { display: flex; flex-direction: column; align-items: flex-start; gap: 2PX; min-height: 68PX; padding: 12PX 14PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; text-align: left; }
+.screen .experience-package-selected { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.experience-package-name { font-size: 17PX; line-height: 24PX; font-weight: 600; overflow-wrap: anywhere; }
+.experience-package-note { font-size: 12PX; line-height: 18PX; opacity: 0.75; }
+.experience-coupon { padding: 12PX 14PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; }
+.screen .experience-switch { min-height: 40PX; padding: 0; background: transparent; color: ui.$action; font-size: 13PX; line-height: 20PX; text-align: center; }
+.experience-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; align-items: center; gap: 12PX; padding: 12PX ui.$page-gutter calc(12PX + env(safe-area-inset-bottom)); border-top: 1PX solid ui.$divider; background: ui.$canvas; }
+.experience-bar-copy { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.experience-bar-main { font-size: 15PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+.experience-bar-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.screen .experience-submit { flex-shrink: 0; min-width: 120PX; min-height: 46PX; padding: 0 20PX; border-radius: 23PX; background: ui.$brand-dark; color: ui.$on-dark; font-size: 16PX; line-height: 46PX; font-weight: 600; text-align: center; }
+.screen .experience-submit[disabled] { background: ui.$disabled-surface; color: ui.$disabled-ink; }
+
+// 等店员确认：三步进度
+.experience-waiting { display: flex; flex-direction: column; gap: 10PX; padding: 18PX; border: 1PX solid ui.$divider; border-radius: 20PX; background: ui.$surface; }
+.experience-waiting-title { font-family: ui.$font-display; font-size: 24PX; line-height: 32PX; }
+.experience-waiting-note { color: ui.$muted; font-size: 14PX; line-height: 21PX; }
+.experience-steps { display: flex; flex-direction: column; gap: 0; margin: 6PX 0; }
+.experience-step { position: relative; display: flex; gap: 12PX; padding-bottom: 14PX; }
+.experience-step:not(:last-child)::after { content: ''; position: absolute; left: 6PX; top: 16PX; bottom: 0; width: 2PX; background: ui.$divider; }
+.experience-step-dot { flex: 0 0 14PX; width: 14PX; height: 14PX; margin-top: 3PX; border: 2PX solid ui.$divider; border-radius: 50%; box-sizing: border-box; background: ui.$surface; }
+.experience-step-mark { margin-top: 3PX; }
+.experience-step-current .experience-step-dot { border-color: ui.$accent; background: ui.$action-soft; }
+.experience-step-copy { display: flex; flex-direction: column; min-width: 0; }
+.experience-step-title { font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.experience-step:not(.experience-step-done):not(.experience-step-current) .experience-step-title { color: ui.$muted; font-weight: 400; }
+.experience-step-note { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.experience-rows { display: flex; flex-direction: column; gap: 6PX; padding-top: 12PX; border-top: 1PX solid ui.$divider; }
+.experience-row { display: flex; gap: 12PX; font-size: 14PX; line-height: 20PX; }
+.experience-row-label { flex: 0 0 36PX; color: ui.$muted; }
+.experience-row-value { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.screen .experience-cancel { min-height: 44PX; margin-top: 6PX; border: 1PX solid ui.$divider; border-radius: 22PX; background: transparent; color: ui.$ink; font-size: 15PX; line-height: 42PX; text-align: center; }
+.experience-waiting-foot { color: ui.$muted; font-size: 12PX; line-height: 18PX; text-align: center; }
+// 最近一次申请被拒绝、或过期了（2026-10-27）：写明结果，下面照常能重新扫码申请
+.experience-unanswered { display: flex; flex-direction: column; gap: 4PX; padding: 14PX 16PX; border-radius: ui.$radius; background: ui.$warning-soft; color: ui.$warning; }
+.experience-unanswered-title { font-size: 15PX; line-height: 22PX; font-weight: 600; }
+.experience-unanswered-meta { font-size: 13PX; line-height: 20PX; font-variant-numeric: tabular-nums; }
+.experience-unanswered-note { color: ui.$ink; font-size: 13PX; line-height: 20PX; }
+
+// 计时中：深色页，圆环倒计时
+.experience-timing { display: flex; flex-direction: column; align-items: stretch; gap: 14PX; padding: 4PX 0 8PX; color: ui.$on-dark; }
+.experience-timing + .experience-timing { padding-top: 18PX; border-top: 1PX solid rgba(247, 245, 240, 0.14); }
+.experience-timing-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12PX; }
+.experience-timing-copy { display: flex; flex-direction: column; min-width: 0; }
+.experience-timing-table { font-family: ui.$font-display; font-size: 34PX; line-height: 40PX; }
+.experience-timing-subtitle { color: ui.$muted-on-dark; font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.experience-state { flex-shrink: 0; padding: 2PX 10PX; border-radius: 999PX; background: rgba(76, 195, 138, 0.18); color: #7fd8a9; font-size: 12PX; line-height: 20PX; font-weight: 600; }
+.experience-timing-overdue .experience-state { background: rgba(192, 73, 47, 0.24); color: #e0b9ab; }
+.experience-ring { align-self: center; display: flex; align-items: center; justify-content: center; width: 220PX; height: 220PX; border-radius: 50%; }
+.experience-ring-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 196PX; height: 196PX; border-radius: 50%; background: ui.$brand-dark; }
+.experience-ring-label { color: ui.$muted-on-dark; font-size: 13PX; line-height: 18PX; }
+.experience-ring-value { font-family: ui.$font-display; font-size: 52PX; line-height: 60PX; font-variant-numeric: tabular-nums; }
+.experience-ring-note { color: #d8c08f; font-size: 13PX; line-height: 18PX; }
+.experience-timing-alert { color: #e0b9ab; font-size: 14PX; line-height: 20PX; text-align: center; }
+.experience-timing-rows { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8PX; padding: 12PX 0; border-top: 1PX solid rgba(247, 245, 240, 0.14); border-bottom: 1PX solid rgba(247, 245, 240, 0.14); }
+.experience-timing-cell { display: flex; flex-direction: column; align-items: center; min-width: 0; text-align: center; }
+.experience-timing-cell-label { color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; }
+.experience-timing-cell-value { font-size: 15PX; line-height: 22PX; font-weight: 600; overflow-wrap: anywhere; }
+
+// 呼叫店员：深色页上的大按钮
+.experience-call { display: flex; flex-direction: column; gap: 8PX; }
+.experience-call .muted { color: ui.$muted-on-dark; text-align: center; }
+.experience-dark .experience-call .button { min-height: 52PX; border: 0; border-radius: 26PX; background: #d8c08f; color: ui.$brand-dark; font-size: 17PX; font-weight: 600; }
+.experience-call-status { display: flex; flex-direction: column; align-items: center; gap: 4PX; padding: 14PX; border-radius: 16PX; background: rgba(216, 192, 143, 0.16); color: ui.$on-dark; }
+.experience-call-note { color: ui.$muted-on-dark; font-size: 12PX; line-height: 18PX; text-align: center; }
+@media (max-width: 350px) {
+  .experience-ring { width: 196PX; height: 196PX; }
+  .experience-ring-inner { width: 172PX; height: 172PX; }
+  .experience-ring-value { font-size: 44PX; line-height: 52PX; }
+}
+
+// 计时中打开自己的图纸（做图纸，docs/plan-bead-maker.md 第 4 节）
+.experience-pattern { display: flex; flex-direction: column; gap: 6PX; }
+.screen .experience-pattern-open { display: flex; flex-direction: column; align-items: flex-start; gap: 2PX; padding: 14PX 16PX; border: 1PX solid ui.$divider; border-radius: ui.$card-radius; background: ui.$surface; color: ui.$ink; text-align: left; }
+.experience-pattern-title { font-size: 16PX; line-height: 24PX; font-weight: 600; }
+.experience-pattern-note { color: ui.$muted; font-size: 13PX; line-height: 20PX; overflow-wrap: anywhere; }
+.experience-pattern-hint { color: ui.$muted; font-size: 12PX; line-height: 18PX; }
+.experience-dark .experience-pattern-hint { color: ui.$muted-on-dark; }
+.screen.experience-dark .experience-pattern-open { border-color: #3a3833; background: #2d2b26; color: ui.$on-dark; }
+.experience-dark .experience-pattern-note { color: ui.$muted-on-dark; }

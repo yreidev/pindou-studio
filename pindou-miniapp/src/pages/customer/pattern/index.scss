@@ -1,0 +1,12 @@
+@use '../../../styles/tokens' as ui;
+
+// 图纸详情：大图按原图比例铺满宽度，下面名字和标签，底部「预约来拼这张」
+.pattern-content { display: flex; flex-direction: column; gap: 12PX; padding-bottom: env(safe-area-inset-bottom); }
+.screen .pattern-media { display: block; width: 100%; padding: 0; overflow: hidden; border: 1PX solid ui.$divider; border-radius: ui.$artwork-radius; background: ui.$surface; }
+.pattern-image { display: block; width: 100%; height: auto; }
+.pattern-hint { text-align: center; }
+.pattern-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8PX; padding-top: 4PX; }
+.pattern-name { font-size: ui.$title-size; line-height: 32PX; font-weight: 600; overflow-wrap: anywhere; }
+.pattern-tag { padding: 0 8PX; border-radius: 4PX; background: ui.$disabled-surface; color: ui.$muted; font-size: 13PX; line-height: 24PX; }
+.pattern-tag-new { background: ui.$action-soft; color: ui.$action; }
+.screen .pattern-reserve { margin-top: 8PX; }

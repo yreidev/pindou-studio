@@ -1,0 +1,150 @@
+# 小程序体验版：打 miniapp-v<版本> 标签（或手动触发）时，等这个提交在 main 上的「工程验证」通过，构建小程序并用
+# miniprogram-ci 上传体验版（robot 1；公众平台「版本管理」里体验版选过一次 robot 1 那一格之后，每次上传自动跟上）。
+# 2026-10-31 起三端各自发版（docs/plan-split-release.md）：标签的版本必须等于 pindou-miniapp/package.json 的版本号，
+# 对不上就失败、不上传。旧的 v0.0.x 标签不再触发。
+# 只传体验版：正式版仍由业主在公众平台提审。改版本号、打标签就是确认上传，真机验收照 .claude/skills/mp-upload。
+# 体验版连的是正式后端：小程序要用新接口时，先把后端发上去（backend-v 标签、部署）再打小程序的标签。
+# 需要仓库 secret：WECHAT_MP_UPLOAD_KEY（公众平台「开发管理 → 开发设置 → 小程序代码上传」生成的密钥文件全文）。
+# 公众平台的上传 IP 白名单要关着：GitHub 执行机的出口地址不固定。
+name: 小程序体验版
+
+on:
+  push:
+    tags: ['miniapp-v*']
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: miniapp-upload
+  cancel-in-progress: false
+
+env:
+  # actions/checkout 先 git init 再取代码，git 每次都提示「没设默认分支名」；设上就不提示，对取到的代码没有影响
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+
+jobs:
+  version:
+    name: 版本号对得上才传
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: check
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -eu
+          version=$(jq -r .version pindou-miniapp/package.json)
+          if [ "$REF_TYPE" = tag ] && [ "${REF_NAME#miniapp-v}" != "$version" ]; then
+            echo "::error::标签 $REF_NAME 与 pindou-miniapp/package.json 的版本 $version 不同：先改版本号、推到 main，再打标签"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "上传小程序 $version"
+
+  verified:
+    name: 等 main 上的检查结论
+    needs: version
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      # 与 release.yml 的同名任务相同
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -u
+          for i in $(seq 1 130); do
+            run=$(gh run list -R "$REPO" --workflow verify.yml --event push --commit "$SHA" --limit 1 \
+              --json databaseId,status,conclusion -q '.[0] // empty | "\(.databaseId) \(.status) \(.conclusion)"')
+            if [ -z "$run" ]; then
+              if [ "$i" -ge 12 ]; then
+                echo "::error::提交 $SHA 在 main 上没有「工程验证」记录：先把它推到 main，再打标签"
+                exit 1
+              fi
+            else
+              read -r id status conclusion <<< "$run"
+              if [ "$status" = completed ]; then
+                if [ "$conclusion" = success ]; then echo "main 上的检查已通过：https://github.com/$REPO/actions/runs/$id"; exit 0; fi
+                echo "::error::main 上的检查没通过（$conclusion）：https://github.com/$REPO/actions/runs/$id，不上传"
+                exit 1
+              fi
+              echo "检查进行中（run $id）…"
+            fi
+            sleep 20
+          done
+          echo "::error::等检查超时"
+          exit 1
+
+  upload:
+    environment: production-build
+    name: 上传体验版
+    needs: [version, verified]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            pindou-miniapp/package-lock.json
+            deploy/miniprogram/package-lock.json
+      - run: npm ci --prefix pindou-miniapp
+      - run: npm ci --prefix deploy/miniprogram --no-audit --no-fund
+
+      - name: 校验私有配置引用
+        env:
+          CONFIG_REPOSITORY: ${{ vars.STORE_CONFIG_REPOSITORY }}
+          CONFIG_COMMIT: ${{ vars.STORE_CONFIG_COMMIT }}
+        run: |
+          test -n "$CONFIG_REPOSITORY"
+          [[ "$CONFIG_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+      - name: 读取固定版本的私有门店配置
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ vars.STORE_CONFIG_REPOSITORY }}
+          ref: ${{ vars.STORE_CONFIG_COMMIT }}
+          ssh-key: ${{ secrets.STORE_CONFIG_SSH_KEY }}
+          path: .store-config
+          persist-credentials: false
+      - name: 应用门店素材与构建环境
+        run: python3 deploy/apply-store-config.py .store-config
+
+      # 正式后端和 AppID 来自私有构建配置，与本机同一套配置。
+      - run: npm run build:weapp --prefix pindou-miniapp
+      - name: 上传
+        env:
+          WECHAT_MP_UPLOAD_KEY_CONTENT: ${{ secrets.WECHAT_MP_UPLOAD_KEY }}
+          VERSION: ${{ needs.version.outputs.version }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -eu
+          if [ -z "$WECHAT_MP_UPLOAD_KEY_CONTENT" ]; then
+            echo "::error::缺仓库 secret WECHAT_MP_UPLOAD_KEY（小程序代码上传密钥）"
+            exit 1
+          fi
+          key="$RUNNER_TEMP/mp-upload.key"
+          (umask 077; printf '%s\n' "$WECHAT_MP_UPLOAD_KEY_CONTENT" > "$key")
+          trap 'rm -f "$key"' EXIT
+          WECHAT_MP_UPLOAD_KEY="$key" node deploy/miniprogram/mp.mjs upload "$VERSION（$REF_NAME · ${SHA:0:7}）"

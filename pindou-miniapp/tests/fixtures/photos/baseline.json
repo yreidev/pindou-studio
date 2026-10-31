@@ -1,0 +1,368 @@
+{
+  "52 格写实（默认）": {
+    "cat-grass": {
+      "colorError": 5.52,
+      "strays": 66.5,
+      "lineKept": 0.535,
+      "colors": 26
+    },
+    "cat-tabby": {
+      "colorError": 4.46,
+      "strays": 33.8,
+      "lineKept": 0.65,
+      "colors": 40
+    },
+    "dog-beach": {
+      "colorError": 5.66,
+      "strays": 50.3,
+      "lineKept": 0.169,
+      "colors": 34
+    },
+    "rabbit-strawberry": {
+      "colorError": 4.62,
+      "strays": 41.5,
+      "lineKept": 0.462,
+      "colors": 56
+    },
+    "portrait-astronaut-1": {
+      "colorError": 7.13,
+      "strays": 63,
+      "lineKept": 0.334,
+      "colors": 60
+    },
+    "portrait-astronaut-2": {
+      "colorError": 6.1,
+      "strays": 34.6,
+      "lineKept": 0.417,
+      "colors": 38
+    },
+    "portrait-pollaiuolo": {
+      "colorError": 5.74,
+      "strays": 13.4,
+      "lineKept": 0.671,
+      "colors": 33
+    },
+    "portrait-rembrandt": {
+      "colorError": 4.22,
+      "strays": 6.2,
+      "lineKept": null,
+      "colors": 10
+    },
+    "landscape-lake": {
+      "colorError": 5.24,
+      "strays": 22,
+      "lineKept": 0.448,
+      "colors": 23
+    },
+    "landscape-flowers": {
+      "colorError": 7.69,
+      "strays": 86.7,
+      "lineKept": 0.278,
+      "colors": 57
+    },
+    "landscape-starry-night": {
+      "colorError": 7.89,
+      "strays": 48.8,
+      "lineKept": 0.241,
+      "colors": 32
+    },
+    "landscape-sunset": {
+      "colorError": 3.51,
+      "strays": 9.4,
+      "lineKept": null,
+      "colors": 23
+    },
+    "sunflower": {
+      "colorError": 6.59,
+      "strays": 42.9,
+      "lineKept": 0.545,
+      "colors": 40
+    },
+    "cake": {
+      "colorError": 4.87,
+      "strays": 58.8,
+      "lineKept": 0.318,
+      "colors": 50
+    },
+    "cartoon-apple": {
+      "colorError": 5.23,
+      "strays": 1.2,
+      "lineKept": null,
+      "colors": 20
+    },
+    "cartoon-fish": {
+      "colorError": 9.1,
+      "strays": 39.8,
+      "lineKept": 0.167,
+      "colors": 20
+    },
+    "cartoon-kazoo": {
+      "colorError": 13.81,
+      "strays": 9.3,
+      "lineKept": 0.452,
+      "colors": 6
+    },
+    "text-love": {
+      "colorError": 4.92,
+      "strays": 26.1,
+      "lineKept": 0.231,
+      "colors": 35
+    },
+    "text-slow": {
+      "colorError": 4.98,
+      "strays": 16.7,
+      "lineKept": 0.313,
+      "colors": 22
+    },
+    "text-bridge": {
+      "colorError": 10.25,
+      "strays": 105.8,
+      "lineKept": 0.381,
+      "colors": 41
+    }
+  },
+  "52 格卡通": {
+    "cat-grass": {
+      "colorError": 6.36,
+      "strays": 12.1,
+      "lineKept": 0.419,
+      "colors": 7
+    },
+    "cat-tabby": {
+      "colorError": 5.49,
+      "strays": 10.9,
+      "lineKept": 0.6,
+      "colors": 14
+    },
+    "dog-beach": {
+      "colorError": 7.14,
+      "strays": 27.5,
+      "lineKept": 0.713,
+      "colors": 11
+    },
+    "rabbit-strawberry": {
+      "colorError": 5.86,
+      "strays": 8.9,
+      "lineKept": 0.462,
+      "colors": 13
+    },
+    "portrait-astronaut-1": {
+      "colorError": 9.13,
+      "strays": 37,
+      "lineKept": 0.408,
+      "colors": 14
+    },
+    "portrait-astronaut-2": {
+      "colorError": 7.24,
+      "strays": 24.6,
+      "lineKept": 0.597,
+      "colors": 10
+    },
+    "portrait-pollaiuolo": {
+      "colorError": 6.57,
+      "strays": 4.7,
+      "lineKept": 0.811,
+      "colors": 12
+    },
+    "portrait-rembrandt": {
+      "colorError": 7.18,
+      "strays": 1.2,
+      "lineKept": null,
+      "colors": 4
+    },
+    "landscape-lake": {
+      "colorError": 7.39,
+      "strays": 8.8,
+      "lineKept": 0.276,
+      "colors": 7
+    },
+    "landscape-flowers": {
+      "colorError": 8.7,
+      "strays": 26.8,
+      "lineKept": 0.332,
+      "colors": 13
+    },
+    "landscape-starry-night": {
+      "colorError": 9.02,
+      "strays": 23.9,
+      "lineKept": 0.384,
+      "colors": 10
+    },
+    "landscape-sunset": {
+      "colorError": 4.81,
+      "strays": 1.5,
+      "lineKept": null,
+      "colors": 11
+    },
+    "sunflower": {
+      "colorError": 7.25,
+      "strays": 18.7,
+      "lineKept": 0.591,
+      "colors": 13
+    },
+    "cake": {
+      "colorError": 7.1,
+      "strays": 28.6,
+      "lineKept": 0.435,
+      "colors": 13
+    },
+    "cartoon-apple": {
+      "colorError": 5.88,
+      "strays": 1.2,
+      "lineKept": null,
+      "colors": 7
+    },
+    "cartoon-fish": {
+      "colorError": 9.79,
+      "strays": 20,
+      "lineKept": 0.333,
+      "colors": 7
+    },
+    "cartoon-kazoo": {
+      "colorError": 15.11,
+      "strays": 31.3,
+      "lineKept": 0.516,
+      "colors": 5
+    },
+    "text-love": {
+      "colorError": 6.45,
+      "strays": 14.5,
+      "lineKept": 0.359,
+      "colors": 9
+    },
+    "text-slow": {
+      "colorError": 6.88,
+      "strays": 8.9,
+      "lineKept": 0.375,
+      "colors": 7
+    },
+    "text-bridge": {
+      "colorError": 11.61,
+      "strays": 65,
+      "lineKept": 0.381,
+      "colors": 12
+    }
+  },
+  "29 格原样": {
+    "cat-grass": {
+      "colorError": 6.24,
+      "strays": 10.9,
+      "lineKept": 0.538,
+      "colors": 5
+    },
+    "cat-tabby": {
+      "colorError": 5.42,
+      "strays": 13.8,
+      "lineKept": 0.556,
+      "colors": 11
+    },
+    "dog-beach": {
+      "colorError": 7.35,
+      "strays": 37.2,
+      "lineKept": 0.795,
+      "colors": 9
+    },
+    "rabbit-strawberry": {
+      "colorError": 5.96,
+      "strays": 21.2,
+      "lineKept": 0.625,
+      "colors": 12
+    },
+    "portrait-astronaut-1": {
+      "colorError": 9.07,
+      "strays": 43.1,
+      "lineKept": 0.44,
+      "colors": 11
+    },
+    "portrait-astronaut-2": {
+      "colorError": 7.43,
+      "strays": 38.3,
+      "lineKept": 0.703,
+      "colors": 11
+    },
+    "portrait-pollaiuolo": {
+      "colorError": 6.97,
+      "strays": 9.3,
+      "lineKept": 0.758,
+      "colors": 11
+    },
+    "portrait-rembrandt": {
+      "colorError": 4.49,
+      "strays": 0,
+      "lineKept": null,
+      "colors": 4
+    },
+    "landscape-lake": {
+      "colorError": 6.5,
+      "strays": 14.5,
+      "lineKept": 0.6,
+      "colors": 8
+    },
+    "landscape-flowers": {
+      "colorError": 7.86,
+      "strays": 46,
+      "lineKept": 0.431,
+      "colors": 14
+    },
+    "landscape-starry-night": {
+      "colorError": 7.83,
+      "strays": 27,
+      "lineKept": 0.476,
+      "colors": 11
+    },
+    "landscape-sunset": {
+      "colorError": 4.25,
+      "strays": 0,
+      "lineKept": null,
+      "colors": 9
+    },
+    "sunflower": {
+      "colorError": 7.35,
+      "strays": 43.9,
+      "lineKept": 0.667,
+      "colors": 11
+    },
+    "cake": {
+      "colorError": 6.22,
+      "strays": 37.9,
+      "lineKept": 0.269,
+      "colors": 10
+    },
+    "cartoon-apple": {
+      "colorError": 6.72,
+      "strays": 1.9,
+      "lineKept": null,
+      "colors": 7
+    },
+    "cartoon-fish": {
+      "colorError": 11.87,
+      "strays": 29,
+      "lineKept": 0.333,
+      "colors": 5
+    },
+    "cartoon-kazoo": {
+      "colorError": 18.84,
+      "strays": 100.8,
+      "lineKept": 0.636,
+      "colors": 8
+    },
+    "text-love": {
+      "colorError": 6.75,
+      "strays": 15.2,
+      "lineKept": 0.263,
+      "colors": 6
+    },
+    "text-slow": {
+      "colorError": 6.79,
+      "strays": 4.4,
+      "lineKept": 0.538,
+      "colors": 6
+    },
+    "text-bridge": {
+      "colorError": 11.79,
+      "strays": 89.1,
+      "lineKept": 0.402,
+      "colors": 9
+    }
+  }
+}

@@ -1,0 +1,209 @@
+@use './tokens' as ui;
+@use './staff-responsive' as responsive;
+
+.staff-screen { background: ui.$canvas; padding-bottom: calc(76PX + env(safe-area-inset-bottom)); color: ui.$ink; }
+.staff-screen .page-content { max-width: ui.$content-width; }
+.staff-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 0 0 env(safe-area-inset-bottom); background: ui.$brand-dark; }
+.staff-screen .staff-nav-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2PX; min-height: 54PX; padding: 4PX 0; font-size: 11PX; line-height: 14PX; color: ui.$muted-on-dark; background: transparent; }
+.staff-screen .staff-nav-current { color: #d8c08f; font-weight: 600; }
+.staff-nav-icon { flex: 0 0 24PX; width: 24PX; height: 24PX; }
+/* 待办数：现场、预约两格上的小红点数字 */
+.staff-nav-badge { position: absolute; top: 4PX; left: calc(50% + 8PX); min-width: 16PX; height: 16PX; padding: 0 4PX; box-sizing: border-box; border-radius: 8PX; background: #c0492f; color: #ffffff; font-size: 10PX; line-height: 16PX; font-weight: 600; text-align: center; }
+.staff-sidebar-item .staff-nav-badge { position: static; margin-left: auto; }
+.staff-sidebar-label { flex: 1; min-width: 0; }
+.staff-nav-space { height: 0; }
+/* 员工页顶栏是深色的（和顾客页区分） */
+.staff-screen .navbar { background: ui.$brand-dark; color: ui.$on-dark; }
+.staff-hero { padding: 18PX 0 12PX; }
+.staff-heading { display: block; font-size: ui.$section-title-size; line-height: 26PX; font-weight: 600; color: ui.$ink; overflow-wrap: anywhere; }
+.staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: ui.$action-gap; margin: 0; }
+.staff-card { min-width: 0; min-height: 104PX; padding: 16PX 0; border-bottom: 1PX solid ui.$divider; }
+.staff-card-label { display: block; color: ui.$muted; font-size: ui.$caption-size; line-height: 22PX; overflow-wrap: anywhere; }
+.staff-card-value { font-variant-numeric: tabular-nums; display: block; margin-top: 8PX; font-size: 28PX; line-height: 38PX; font-weight: 600; color: ui.$ink; overflow-wrap: anywhere; }
+.staff-card-note { display: block; margin-top: 4PX; color: ui.$muted; font-size: ui.$caption-size; line-height: 22PX; }
+.staff-section { margin: 0; padding: ui.$section-space 0; border-bottom: 1PX solid ui.$divider; }
+.staff-section-title { display: block; margin-bottom: 12PX; font-size: ui.$section-title-size; line-height: 26PX; font-weight: 600; color: ui.$ink; overflow-wrap: anywhere; }
+.staff-section > .button { margin-top: 12PX; }
+.staff-list { display: flex; flex-direction: column; gap: 9PX; }
+.staff-list-row { display: flex; align-items: center; gap: 10PX; min-width: 0; padding: 12PX 0; border-bottom: 1PX solid ui.$divider; }
+.staff-list-row:last-child { border-bottom: 0; }
+.staff-list-main { flex: 1; min-width: 0; }
+.staff-list-title { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.staff-list-meta { display: block; margin-top: 4PX; color: ui.$muted; font-size: ui.$caption-size; line-height: 22PX; overflow-wrap: anywhere; }
+.staff-pill { flex: 0 0 auto; padding: 2PX 8PX; border-radius: 4PX; background: ui.$action-soft; color: ui.$action; font-size: ui.$caption-size; line-height: 22PX; }
+.staff-pill-warning { background: ui.$warning-soft; color: ui.$warning; }
+.staff-pill-danger { background: ui.$danger-soft; color: ui.$danger; }
+.staff-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: ui.$action-gap; margin-top: 16PX; }
+.staff-actions .button { flex: 1 1 112PX; }
+.staff-screen .staff-actions .button + .button { margin-top: 0; }
+.staff-screen .staff-tab { @include ui.segment; flex: 1 1 0; padding-left: 4PX; padding-right: 4PX; }
+/* 时长按钮上那行套餐价：第二行、小一号、不抢主字号 */
+.staff-screen .staff-tab-note { display: block; font-size: 11PX; line-height: 16PX; color: ui.$muted; }
+.staff-screen .staff-tab-selected .staff-tab-note { color: inherit; opacity: .85; }
+.staff-screen .staff-tab-selected { @include ui.selected; }
+.staff-field { margin: ui.$field-space 0; }
+.staff-field .field-label { margin-bottom: 8PX; }
+.staff-field-heading { display: flex; justify-content: space-between; align-items: center; gap: 12PX; min-height: ui.$control-height; margin-bottom: 8PX; }
+.staff-field-heading .field-label { margin-bottom: 0; }
+.staff-field-heading .text-button { flex: 0 0 auto; padding-right: 0; }
+.staff-tabs { display: flex; gap: 8PX; margin: 12PX 0; }
+.area-card { padding: 12PX; border-radius: ui.$radius; background: ui.$action-soft; }
+.area-card + .area-card { margin-top: 9PX; }
+.area-title { font-weight: 600; }
+.table-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8PX; margin-top: 12PX; }
+.table-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4PX; min-height: 88PX; padding: 10PX 8PX; border: 1PX solid ui.$border; border-radius: ui.$radius; background: ui.$surface; text-align: center; }
+.table-tile-wrap { min-width: 0; }
+.table-tile-wrap .table-tile { width: 100%; }
+.table-split { display: block; width: 100%; margin-top: 5PX; padding: 3PX 4PX; font-size: 12PX; }
+.table-tile-occupied { border-color: ui.$action; background: ui.$action-soft; }
+.table-tile-expiring { border-color: ui.$warning; background: ui.$warning-soft; }
+.table-tile-overdue { border-color: ui.$danger; background: ui.$danger-soft; }
+.table-number { display: block; font-size: 18PX; line-height: 24PX; font-weight: 700; }
+.table-status { display: block; color: ui.$muted; font-size: 12PX; line-height: 16PX; }
+.table-time { display: block; color: ui.$ink; font-size: 12PX; line-height: 16PX; font-variant-numeric: tabular-nums; }
+.table-tile-overdue .table-time { color: ui.$danger; }
+.metric-line { display: flex; align-items: center; justify-content: space-between; gap: 12PX; padding: 12PX 0; border-bottom: 1PX solid ui.$divider; }
+.metric-line > text, .metric-line > taro-text-core { min-width: 0; overflow-wrap: anywhere; }
+.metric-line > text:last-child, .metric-line > taro-text-core:last-child { text-align: right; }
+.metric-line:last-child { border-bottom: 0; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12PX; overflow-wrap: anywhere; }
+@media (min-width: 600px) { .staff-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .table-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.staff-screen .staff-list-row { width: 100%; min-height: 48PX; text-align: left; }
+.staff-list-row > .text-button { flex: 0 0 auto; padding-right: 0; }
+.staff-screen .staff-section-title { color: ui.$ink; }
+.staff-screen .staff-field .field-label { display: block; color: ui.$ink; }
+.staff-picker { display: flex; align-items: center; padding: 12PX; min-height: ui.$input-height; line-height: ui.$control-line-height; border: 1PX solid ui.$border; border-radius: ui.$radius; background: ui.$surface; color: ui.$ink; overflow-wrap: anywhere; }
+.staff-picker-value { display: block; overflow-wrap: anywhere; }
+.staff-date-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 12PX; }
+.staff-notice { display: block; padding: 12PX; margin: 12PX 0; background: ui.$warning-soft; color: ui.$warning; border-radius: 6PX; }
+.staff-primary-action { margin-top: 20PX; }
+.staff-empty { padding: 32PX 0; color: ui.$muted; text-align: center; }
+.staff-stepper { display: flex; align-items: center; gap: 8PX; }
+.staff-stepper .input { flex: 1; width: 0; text-align: center; }
+.screen .staff-stepper .weui-input { text-align: center; }
+.staff-screen .staff-stepper-button { display: flex; align-items: center; justify-content: center; flex: 0 0 ui.$input-height; width: ui.$input-height; height: ui.$input-height; border-radius: ui.$radius; background: ui.$action-soft; color: ui.$ink; font-size: 20PX; line-height: 24PX; }
+.staff-screen .staff-row-selected { background: ui.$action-soft; }
+.staff-account-scan { margin-bottom: 16PX; }
+.staff-account-list { display: flex; flex-direction: column; gap: 8PX; margin-top: 8PX; max-height: 336PX; overflow-y: auto; }
+.screen .staff-account-option { display: flex; align-items: center; justify-content: space-between; gap: 12PX; min-height: 48PX; padding: 12PX 16PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; color: ui.$ink; text-align: left; }
+.screen .staff-account-option-selected { border: 2PX solid ui.$accent; background: ui.$action-soft; }
+.staff-account-search .staff-notice .text-button { padding-left: 0; }
+.staff-success { display: block; margin-top: 12PX; color: ui.$success; }
+.staff-confirmation { padding: 16PX 0; }
+.staff-sheet-mask { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; background: rgba(0,0,0,.72); }
+.staff-sheet { background: ui.$surface; width: 100%; max-width: 640PX; margin: 0 auto; max-height: 85vh; overflow-y: auto; padding: 20PX 16PX calc(20PX + env(safe-area-inset-bottom)); border-radius: 8PX 8PX 0 0; }
+.staff-sheet > .button, .staff-sheet > .text-button { width: 100%; margin-top: 16PX; }
+.staff-sheet > .section-title { margin-top: 20PX; }
+.floor-scroll { height: 360PX; width: 100%; border: 1PX solid ui.$border; }
+.floor-canvas { position: relative; background-color: ui.$canvas; background-image: linear-gradient(ui.$border 1PX, transparent 1PX), linear-gradient(90deg, ui.$border 1PX, transparent 1PX); background-size: 88PX 88PX; }
+.floor-cells { display: grid; }
+.staff-screen .floor-cell { display: flex; align-items: center; justify-content: center; width: 88PX; height: 88PX; color: ui.$muted; font-size: 28PX; line-height: 38PX; }
+.floor-table { width: 88PX; height: 88PX; padding: 4PX; z-index: 1; }
+.floor-table .table-tile { width: 80PX; height: 80PX; min-height: 80PX; padding: 6PX 4PX; gap: 2PX; }
+.floor-table .table-number { font-size: 16PX; line-height: 20PX; }
+.staff-screen .table-tile-selected { border: 2PX solid ui.$action; }
+.staff-screen .table-tile, .staff-screen .staff-list-row { color: ui.$ink; }
+.staff-screen .bottom-action { bottom: 0; }
+.staff-screen .staff-list-title { font-size: ui.$body-size; line-height: 22PX; }
+.staff-screen .staff-list-row { min-height: 52PX; gap: 16PX; }
+.staff-screen .table-tile { border-radius: ui.$radius; }
+.staff-screen .table-status { color: ui.$muted; }
+.staff-screen .checkout-total { font-size: 28PX; line-height: 38PX; }
+.staff-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16PX; margin-bottom: 16PX; }
+.staff-toolbar .staff-picker { flex: 1; min-width: 0; }
+.staff-mode-label { display: block; color: ui.$action; font-size: ui.$caption-size; line-height: 22PX; margin-top: 8PX; }
+
+.checkout-payment .bottom-action .row { flex-wrap: wrap; }
+.table-time, .checkout-total { font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+@include responsive.layout;
+
+.staff-page-checkout .bottom-action { padding: 16PX 16PX calc(16PX + env(safe-area-inset-bottom)); border-radius: 14PX; background: ui.$brand-dark; color: ui.$on-dark; }
+.staff-page-checkout .bottom-action .money { color: ui.$on-dark; }
+.staff-page-checkout .bottom-action .button { border-radius: 24PX; }
+
+.resource-freshness { display: flex; align-items: center; justify-content: space-between; gap: 12PX; min-height: 48PX; border-bottom: 1PX solid ui.$divider; }
+/* 连接正常：压成一行细的，别占掉每页顶部 48PX */
+.resource-freshness-quiet { min-height: 28PX; border-bottom: 0; }
+.resource-freshness-quiet .text-button { padding-top: 0; padding-bottom: 0; }
+.resource-freshness-copy { display: flex; align-items: center; flex-wrap: wrap; gap: 0 12PX; flex: 1; min-width: 0; }
+.resource-connection, .resource-updated { font-size: 12PX; line-height: 20PX; overflow-wrap: anywhere; }
+.resource-connected { color: ui.$success; }
+.resource-reconnecting { color: ui.$warning; }
+.resource-updated { color: ui.$muted; font-variant-numeric: tabular-nums; }
+.resource-freshness .text-button { flex-shrink: 0; }
+.operational-tables { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12PX; }
+.operational-tables .table-tile { min-height: 112PX; }
+.operational-tables .table-status, .operational-tables .table-time { font-size: 14PX; line-height: 22PX; }
+.inventory-adjustment { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; padding-top: calc(24PX + env(safe-area-inset-top)); background: rgba(0, 0, 0, .72); }
+.inventory-adjustment .inventory-editor { width: 100%; max-width: 640PX; max-height: 85vh; overflow-y: auto; margin: 0 auto; padding: 24PX 20PX calc(24PX + env(safe-area-inset-bottom)); border-radius: 16PX 16PX 0 0; background: ui.$surface; box-sizing: border-box; }
+.inventory-adjustment .input { background: ui.$canvas; }
+.staff-screen .checkout-line-fields { padding: 16PX; border: 1PX solid ui.$divider; border-radius: ui.$radius; background: ui.$surface; }
+.checkout-line-fields .input, .checkout-line-fields .staff-picker { background: ui.$canvas; }
+.checkout-line-fields .staff-field { margin: 12PX 0; }
+.checkout-line-heading { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12PX; }
+.staff-screen .staff-list-row[disabled] { opacity: .7; }
+.staff-screen .table-tile[disabled] { opacity: .55; }
+.staff-screen.staff-task-screen { padding-bottom: env(safe-area-inset-bottom); }
+.staff-page-session-detail .resource-freshness, .staff-page-session-detail .inline-error { grid-column: 1 / -1; }
+@media (max-width: 767px) {
+  .staff-tabs { flex-wrap: wrap; }
+  .staff-screen .staff-tab { min-width: 64PX; }
+  .staff-picker { padding-right: 32PX; position: relative; }
+  .staff-picker::after { content: ''; position: absolute; right: 14PX; width: 6PX; height: 6PX; border-right: 2PX solid ui.$muted; border-bottom: 2PX solid ui.$muted; transform: rotate(45deg); }
+  .staff-page-workbench .staff-card { min-height: 80PX; padding: 12PX 0; }
+}
+@media (max-width: 350px) { .operational-tables { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) {
+  .inventory-adjustment { display: contents; }
+  .inventory-adjustment .inventory-editor { width: auto; margin: 0; padding: 24PX 16PX; border-radius: ui.$radius; max-height: calc(100vh - 112PX); }
+  .workbench-workspace { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .workbench-workspace > .staff-section:first-child { grid-column: 1; grid-row: 1 / 3; }
+  .workbench-workspace > .staff-grid { grid-column: 2; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workbench-attention { grid-column: 2; }
+}
+
+.staff-page-session-detail .staff-body > .navigation-row { grid-column: 1 / -1; }
+
+.staff-pill { max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 767px) { .stock-item { flex-wrap: wrap; } }
+
+/* 员工端桌位页（2026-09-19 重排）。四种状态 free / busy / attention / off，
+   平面图热区与列表方块用同一套色，图例也是这四个。 */
+.staff-plan { position: relative; width: 100%; }
+.staff-plan-image { display: block; width: 100%; }
+.staff-screen .staff-plan-hit { position: absolute; display: flex; align-items: center; justify-content: center; min-height: 0; padding: 0; border-radius: 4PX; line-height: 1; }
+.staff-plan-code { font-size: 11PX; font-weight: 700; color: ui.$ink; }
+.staff-plan-dim { opacity: .22; }
+/* 底图上各区自带底色（A 区是粉的）。状态色透明度低于 .8 时粉色会透上来，
+   空闲的 A1/A2 看着像「需关注」的红——2026-09-19 采图抓到过。 */
+.staff-plan-free { background: rgba(122, 168, 116, .82); box-shadow: inset 0 0 0 1PX rgba(72, 112, 68, .7); }
+.staff-plan-busy { background: rgba(198, 142, 74, .85); box-shadow: inset 0 0 0 1PX rgba(140, 96, 42, .75); }
+.staff-plan-attention { background: rgba(214, 96, 84, .85); box-shadow: inset 0 0 0 1PX rgba(160, 52, 44, .8); }
+/* 停用：斜纹，一眼和「使用中」分开 */
+.staff-plan-off {
+  background: repeating-linear-gradient(45deg, rgba(34, 33, 29, .14) 0, rgba(34, 33, 29, .14) 3PX, rgba(247, 245, 240, .85) 3PX, rgba(247, 245, 240, .85) 7PX);
+  box-shadow: inset 0 0 0 1PX rgba(34, 33, 29, .28);
+}
+/* 图上有、门店数据里没有：后端启动校正会拦住这种情况，画成红色是兜底提示 */
+.staff-plan-missing { background: rgba(200, 80, 80, .35); }
+.staff-plan-legend { display: flex; flex-wrap: wrap; gap: 12PX 16PX; margin-top: 12PX; }
+.staff-plan-legend-item { display: flex; align-items: center; gap: 6PX; }
+.staff-plan-swatch { width: 14PX; height: 14PX; border-radius: 3PX; }
+
+/* 列表方块沿用 .table-tile；补上这一版多出的两个状态 */
+.table-tile-free { border-color: rgba(72, 112, 68, .45); background: rgba(122, 168, 116, .14); }
+.table-tile-busy { border-color: ui.$action; background: ui.$action-soft; }
+.table-tile-attention { border-color: ui.$danger; background: ui.$danger-soft; }
+.table-tile-off { border-style: dashed; color: ui.$muted; background: transparent; }
+.table-tile-off .table-number { color: ui.$muted; }
+/* 方块下面那个小小的「停用 / 启用」：低频操作，不和「开台」抢位置 */
+.staff-screen .table-toggle { display: block; width: 100%; min-height: 0; margin-top: 4PX; padding: 4PX; font-size: 12PX; line-height: 16PX; color: ui.$muted; background: transparent; }
+
+/* 员工工作台页脚的品牌精神。一句小字，别抢操作区。 */
+.workbench-spirit { display: block; padding: 20PX 0 8PX; color: ui.$muted; font-size: 12PX; line-height: 18PX; text-align: center; }
+/* 桌码：桌号一行，三个按钮一行。两种码并排，店员一眼看得出有得选 */
+.staff-table-code { padding: 12PX 0; border-bottom: 1PX solid ui.$divider; }
+.staff-table-code .staff-actions { margin-top: 8PX; }
+.staff-actions-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.workbench-version { display: block; padding-bottom: 12PX; color: ui.$muted; font-size: 11PX; line-height: 16PX; text-align: center; }

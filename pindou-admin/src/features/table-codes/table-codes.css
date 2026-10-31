@@ -1,0 +1,159 @@
+/* 桌码页的布局与打印版面；颜色全用 Semi 默认主题的变量。 */
+
+.table-code-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-code-thumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+.table-code-thumb img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+.table-code-thumb:focus-visible {
+  outline: 2px solid var(--semi-color-focus-border);
+  outline-offset: 2px;
+}
+
+.table-codes-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+  max-width: 560px;
+}
+
+.table-code-preview {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.table-code-preview img {
+  width: 280px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- 打印 ---------- */
+
+/* 打印版面平时不显示 */
+.table-code-sheets {
+  display: none;
+}
+
+@media print {
+  .table-code-sheets {
+    display: block;
+  }
+
+  /* 只留桌码：标题说明、操作区、弹窗与提示都不打印（侧栏、顶栏由 app.css 隐藏） */
+  .table-codes-page .page-header,
+  body:has(.table-code-sheets) .semi-portal {
+    display: none !important;
+  }
+
+  /* 后台布局是一屏高、内容区自己滚动，打印时会被截成一页；放开高度和滚动，去掉内边距 */
+  body:has(.table-code-sheets) .semi-layout,
+  body:has(.table-code-sheets) .semi-layout-content {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  .table-codes-page .page {
+    max-width: none;
+  }
+
+  .table-code-sheet {
+    display: grid;
+    justify-items: center;
+    break-after: page;
+  }
+  .table-code-sheet:last-child {
+    break-after: auto;
+  }
+
+  .table-code-card {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    break-inside: avoid;
+    box-sizing: border-box;
+  }
+  .table-code-card img {
+    display: block;
+    height: auto;
+  }
+  .table-code-label {
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .table-code-brand {
+    line-height: 1.4;
+  }
+
+  /* 每页 1 张：大图居中 */
+  .table-code-per-page-1 .table-code-sheet {
+    grid-template-columns: 1fr;
+    padding-top: 20mm;
+  }
+  .table-code-per-page-1 .table-code-card img {
+    width: 120mm;
+  }
+  .table-code-per-page-1 .table-code-label {
+    font-size: 40pt;
+    margin-top: 8mm;
+  }
+  .table-code-per-page-1 .table-code-brand {
+    font-size: 14pt;
+  }
+
+  /* 每页多张：两列网格，虚线框方便裁开 */
+  .table-code-per-page-4 .table-code-sheet,
+  .table-code-per-page-6 .table-code-sheet {
+    grid-template-columns: 1fr 1fr;
+    gap: 6mm;
+  }
+  .table-code-per-page-4 .table-code-card,
+  .table-code-per-page-6 .table-code-card {
+    width: 100%;
+    padding: 5mm;
+    border: 0.3mm dashed var(--semi-color-border);
+  }
+  .table-code-per-page-4 .table-code-card img {
+    width: 70mm;
+  }
+  .table-code-per-page-4 .table-code-label {
+    font-size: 24pt;
+    margin-top: 3mm;
+  }
+  .table-code-per-page-4 .table-code-brand {
+    font-size: 11pt;
+  }
+  .table-code-per-page-6 .table-code-card img {
+    width: 50mm;
+  }
+  .table-code-per-page-6 .table-code-label {
+    font-size: 18pt;
+    margin-top: 2mm;
+  }
+  .table-code-per-page-6 .table-code-brand {
+    font-size: 9pt;
+  }
+}

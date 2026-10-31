@@ -1,0 +1,15 @@
+/* 运营与系统页的布局；颜色全用 Semi 默认主题。 */
+
+.operations-export-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.operations-data-export {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 720px;
+}

@@ -1,0 +1,108 @@
+@use '../../styles/tokens' as ui;
+
+// 首页一屏版（画布「F 一屏版」）。★ 每块的高度和 services/storefront.ts 的 homeBlockHeights 一一对应，
+// 首页按那张表挑放哪些块；改这里的高度要一起改那张表，否则矮屏会多出一截要滑动。
+.home-screen { min-height: 0; padding-bottom: 0; }
+.home-screen .brand-slogan { color: ui.$muted-on-dark; }
+.home-screen .page-content { padding: 0; }
+.home-main { display: flex; flex-direction: column; gap: 14PX; padding: 12PX 16PX; }
+.home-main-fit { justify-content: space-between; }
+.home-main > view, .home-main > taro-view-core, .home-main > button, .home-main > taro-button-core { flex: 0 0 auto; }
+.home-icon { flex: 0 0 22PX; width: 22PX; height: 22PX; }
+
+.home-greeting { display: flex; align-items: center; height: 36PX; }
+.home-greeting-text { font-size: 18PX; line-height: 26PX; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.screen .home-staff-entry { display: flex; align-items: center; gap: 12PX; width: 100%; height: 52PX; padding: 0 4PX; border-bottom: 1PX solid ui.$divider; color: ui.$ink; text-align: left; font-size: 16PX; font-weight: 600; background: transparent; }
+
+// 本次手作：深色大按钮
+.screen .home-start { display: flex; align-items: center; gap: 14PX; width: 100%; height: 76PX; padding: 0 16PX; border-radius: 16PX; background: ui.$brand-dark; color: ui.$on-dark; text-align: left; }
+.home-start-icon { display: flex; flex: 0 0 44PX; align-items: center; justify-content: center; width: 44PX; height: 44PX; border-radius: 12PX; background: ui.$accent; }
+.home-start-image { width: 24PX; height: 24PX; }
+.home-start-copy { flex: 1; min-width: 0; }
+.home-start-title { display: block; font-size: 17PX; line-height: 24PX; font-weight: 600; }
+.home-start-note { display: block; color: ui.$muted-on-dark; font-size: 13PX; line-height: 20PX; }
+.home-chevron { flex: 0 0 auto; color: ui.$muted-on-dark; font-size: 24PX; line-height: 24PX; }
+.home-scan-error { margin-top: -6PX; }
+
+// 状态卡：正在店里（深色）、今天的预约（白底金边）
+.home-card { display: flex; flex-direction: column; justify-content: space-between; height: 148PX; padding: 12PX 14PX; border-radius: 16PX; }
+.home-card-dark { background: ui.$brand-dark; color: ui.$on-dark; }
+.home-card-light { border: 1PX solid ui.$accent; background: ui.$surface; color: ui.$ink; }
+.home-card-head { display: flex; align-items: center; gap: 8PX; min-width: 0; }
+.home-card-title { flex: 1; min-width: 0; font-size: 14PX; line-height: 20PX; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-card-note { flex: 0 0 auto; font-size: 12PX; line-height: 20PX; color: ui.$muted; }
+.home-card-dark .home-card-note { color: ui.$muted-on-dark; }
+.home-card-body { min-width: 0; }
+.home-card-big { display: block; font-size: 24PX; line-height: 30PX; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-card-sub { display: block; color: ui.$muted; font-size: 13PX; line-height: 18PX; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-card-actions { display: flex; gap: 10PX; }
+.screen .home-card-button { flex: 1; min-width: 0; height: 40PX; min-height: 40PX; padding: 0 8PX; border-radius: 10PX; font-size: 14PX; line-height: 40PX; font-weight: 600; text-align: center; }
+.screen .home-card-button-gold { background: ui.$accent; color: ui.$on-accent; }
+.screen .home-card-button-ghost { border: 1PX solid ui.$muted-on-dark; background: transparent; color: ui.$on-dark; line-height: 38PX; }
+.screen .home-card-button-dark { background: ui.$brand-dark; color: ui.$on-dark; }
+.screen .home-card-button-plain { border: 1PX solid ui.$divider; background: ui.$surface; color: ui.$action; line-height: 38PX; }
+.screen .home-card-button[disabled] { opacity: .6; }
+
+// 三个入口
+.home-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10PX; height: 68PX; }
+.screen .home-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4PX; min-width: 0; height: 68PX; padding: 0 4PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$ink; }
+.home-action-text { font-size: 14PX; line-height: 20PX; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+
+.home-failure { display: flex; align-items: center; justify-content: space-between; height: 44PX; }
+
+// 公告：一行，点开看全文
+.screen .home-notice { display: flex; align-items: center; gap: 10PX; width: 100%; height: 44PX; padding: 0 12PX; border-radius: 10PX; background: ui.$action-soft; color: ui.$ink; text-align: left; }
+.home-notice-icon { flex: 0 0 20PX; width: 20PX; height: 20PX; }
+.home-notice-text { flex: 1; min-width: 0; font-size: 14PX; line-height: 20PX; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+// 块标题行：品牌字体标题 + 右边「全部 ›」
+.home-block-head { display: flex; align-items: center; justify-content: space-between; height: 22PX; }
+.home-block-title { font-family: ui.$font-display; font-size: 19PX; line-height: 22PX; color: ui.$ink; }
+// 看着只有一行字高，透明内边距加同样大的负外边距把点得到的范围扩到约 40，排版不变
+.screen .home-block-more { flex: 0 0 auto; min-width: 0; min-height: 22PX; padding: 9PX 0 9PX 12PX; margin: -9PX 0 -9PX -12PX; background: transparent; color: ui.$action; font-size: 13PX; line-height: 22PX; }
+.home-block-more-text { flex: 0 0 auto; color: ui.$action; font-size: 13PX; line-height: 20PX; }
+
+// 今天还能约：标题 22 + 间距 8 + 格子 56 = 86
+.home-slots { display: flex; flex-direction: column; gap: 8PX; height: 86PX; }
+.home-slot-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8PX; }
+.screen .home-slot { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2PX; min-width: 0; height: 56PX; min-height: 56PX; padding: 0 2PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$ink; }
+.home-slot-time { font-size: 16PX; line-height: 22PX; font-weight: 600; }
+.home-slot-note { font-size: 11PX; line-height: 16PX; color: ui.$action; white-space: nowrap; }
+.screen .home-slot-night { border-color: ui.$brand-dark; background: ui.$brand-dark; color: ui.$on-dark; }
+.home-slot-night .home-slot-note { color: ui.$accent; }
+.screen .home-slot-full, .screen .home-slot[disabled] { border-color: ui.$divider; background: ui.$disabled-surface; color: ui.$muted; }
+.home-slot-full .home-slot-note { color: ui.$muted; }
+.screen .home-slot-empty { display: flex; align-items: center; gap: 8PX; width: 100%; height: 56PX; padding: 0 14PX; border: 1PX dashed ui.$divider; border-radius: 12PX; background: ui.$surface; color: ui.$muted; font-size: 13PX; line-height: 20PX; text-align: left; }
+
+// 本周上新：一行 80；三张小图 140（标题 22 + 8 + 卡 110）；三张大图 190（22 + 8 + 160）
+.home-featured { display: flex; flex-direction: column; gap: 8PX; }
+.home-featured-row { flex-direction: row; align-items: center; gap: 10PX; height: 80PX; padding: 0 12PX; border: 1PX solid ui.$divider; border-radius: 12PX; background: ui.$surface; }
+.screen .home-featured-strip { display: flex; flex: 1; align-items: center; gap: 12PX; min-width: 0; height: 78PX; padding: 0; background: transparent; color: ui.$ink; text-align: left; }
+.home-featured-thumb { flex: 0 0 56PX; width: 56PX; height: 56PX; border-radius: 8PX; background: ui.$disabled-surface; }
+.home-featured-copy { flex: 1; min-width: 0; }
+.home-featured-label { display: block; font-family: ui.$font-display; font-size: 13PX; line-height: 18PX; color: ui.$muted; }
+.home-featured-line { display: flex; align-items: center; gap: 6PX; min-width: 0; }
+.home-featured-tag { flex: 0 0 auto; padding: 0 6PX; border-radius: 4PX; background: ui.$action-soft; color: ui.$action; font-size: 11PX; line-height: 18PX; }
+.home-featured-small { height: 140PX; }
+.home-featured-large { height: 190PX; }
+.home-featured-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10PX; }
+.screen .home-featured-card { display: flex; flex-direction: column; gap: 6PX; min-width: 0; padding: 0; background: transparent; color: ui.$ink; text-align: left; }
+.home-featured-media { position: relative; width: 100%; overflow: hidden; border: 1PX solid ui.$divider; border-radius: 10PX; background: ui.$surface; }
+.home-featured-small .home-featured-media { height: 78PX; }
+.home-featured-large .home-featured-media { height: 126PX; }
+.home-featured-image { position: absolute; inset: 0; width: 100%; height: 100%; }
+.home-featured-badge { position: absolute; top: 6PX; left: 6PX; padding: 0 5PX; border-radius: 4PX; background: ui.$accent; color: ui.$on-accent; font-size: 11PX; line-height: 16PX; }
+.home-featured-name { display: block; min-width: 0; font-size: 13PX; line-height: 20PX; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-featured-large .home-featured-name { font-size: 14PX; line-height: 22PX; }
+.home-featured-row .home-featured-name { font-size: 16PX; line-height: 24PX; }
+
+// 门店：营业状态、地址，右边导航、电话、微信
+.home-store { display: flex; align-items: center; gap: 4PX; height: 56PX; padding-top: 6PX; border-top: 1PX solid ui.$divider; }
+.home-store-copy { flex: 1; min-width: 0; }
+.home-store-line { display: flex; align-items: center; gap: 6PX; }
+.home-store-dot { flex: 0 0 8PX; width: 8PX; height: 8PX; border-radius: 50%; background: ui.$muted; }
+.home-store-dot-open { background: ui.$success; }
+.home-store-hours { font-size: 14PX; line-height: 22PX; font-weight: 600; }
+.home-store-address { display: block; color: ui.$muted; font-size: 12PX; line-height: 18PX; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.screen .home-store-button { display: flex; flex: 0 0 44PX; align-items: center; justify-content: center; width: 44PX; height: 44PX; min-height: 44PX; padding: 0; border-radius: 50%; background: ui.$action-soft; }

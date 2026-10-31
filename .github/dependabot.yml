@@ -1,0 +1,19 @@
+# 工作流里的 action 都固定到完整的提交 SHA（标签能被改指，SHA 不能；发布工作流里有镜像仓库令牌和小程序上传密钥）。
+# Dependabot 每周查一次新版本，有就开一个合并请求，SHA 和行尾的「# v版本」注释一起改；合并前照常跑工程验证。
+# 只管 action：小程序、网页后台与后端的依赖由人按需升级（升级要跟着验收，不适合自动来）。
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Shanghai
+    # 一周的升级合成一个合并请求，不一个 action 一个
+    groups:
+      actions:
+        patterns: ['*']
+    commit-message:
+      prefix: ci
+    open-pull-requests-limit: 5

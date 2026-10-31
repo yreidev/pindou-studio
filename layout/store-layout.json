@@ -1,0 +1,340 @@
+{
+  "_": "公开示例布局，不代表真实门店。正式构建由私有配置提供，并同步后端副本。",
+  "plan": {
+    "image": "plan.jpg",
+    "width": 1400,
+    "height": 1100
+  },
+  "zones": [
+    {
+      "key": "A",
+      "name": "A 区",
+      "desc": "单人示例位",
+      "color": "#fccfcd",
+      "seatsPerUnit": 1
+    },
+    {
+      "key": "B",
+      "name": "B 区",
+      "desc": "单人示例位",
+      "color": "#cfeaf8",
+      "seatsPerUnit": 1
+    },
+    {
+      "key": "C",
+      "name": "C 区",
+      "desc": "单人示例位",
+      "color": "#d8eccb",
+      "seatsPerUnit": 1
+    },
+    {
+      "key": "D",
+      "name": "D 区",
+      "desc": "双人示例桌",
+      "color": "#fddeb5",
+      "seatsPerUnit": 2
+    },
+    {
+      "key": "E",
+      "name": "E 区",
+      "desc": "单人示例位",
+      "color": "#e8d5f4",
+      "seatsPerUnit": 1
+    }
+  ],
+  "facilities": [
+    {
+      "name": "配件打孔区",
+      "color": "#f0c48a"
+    },
+    {
+      "name": "烫豆区",
+      "color": "#f4bdbd"
+    }
+  ],
+  "rooms": [
+    {
+      "name": "包间",
+      "zones": [
+        "D",
+        "E"
+      ],
+      "note": "想包下整个包间，请提前联系门店预约"
+    }
+  ],
+  "tables": [
+    {
+      "code": "A1",
+      "zone": "A",
+      "number": 1,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 140,
+        "y": 160,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "A2",
+      "zone": "A",
+      "number": 2,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 310,
+        "y": 160,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "A3",
+      "zone": "A",
+      "number": 3,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 480,
+        "y": 160,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "A4",
+      "zone": "A",
+      "number": 4,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 650,
+        "y": 160,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "A5",
+      "zone": "A",
+      "number": 5,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 820,
+        "y": 160,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "A6",
+      "zone": "A",
+      "number": 6,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 990,
+        "y": 160,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "B1",
+      "zone": "B",
+      "number": 1,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 140,
+        "y": 330,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "B2",
+      "zone": "B",
+      "number": 2,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 310,
+        "y": 330,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "B3",
+      "zone": "B",
+      "number": 3,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 480,
+        "y": 330,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "B4",
+      "zone": "B",
+      "number": 4,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 650,
+        "y": 330,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "B5",
+      "zone": "B",
+      "number": 5,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 820,
+        "y": 330,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "B6",
+      "zone": "B",
+      "number": 6,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 990,
+        "y": 330,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "B7",
+      "zone": "B",
+      "number": 7,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 1160,
+        "y": 330,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "C1",
+      "zone": "C",
+      "number": 1,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 140,
+        "y": 500,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "C2",
+      "zone": "C",
+      "number": 2,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 310,
+        "y": 500,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "C3",
+      "zone": "C",
+      "number": 3,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 480,
+        "y": 500,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "D1",
+      "zone": "D",
+      "number": 1,
+      "seatCount": 2,
+      "wholeTable": true,
+      "hotspot": {
+        "x": 140,
+        "y": 670,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "D2",
+      "zone": "D",
+      "number": 2,
+      "seatCount": 2,
+      "wholeTable": true,
+      "hotspot": {
+        "x": 310,
+        "y": 670,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "E1",
+      "zone": "E",
+      "number": 1,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 140,
+        "y": 840,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "E2",
+      "zone": "E",
+      "number": 2,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 310,
+        "y": 840,
+        "w": 120,
+        "h": 100
+      }
+    },
+    {
+      "code": "E3",
+      "zone": "E",
+      "number": 3,
+      "seatCount": 1,
+      "wholeTable": false,
+      "hotspot": {
+        "x": 480,
+        "y": 840,
+        "w": 120,
+        "h": 100
+      }
+    }
+  ]
+}

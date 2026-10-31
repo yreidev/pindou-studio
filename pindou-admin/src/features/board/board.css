@@ -1,0 +1,276 @@
+/* 「现场」看板。只写布局；颜色一律用 Semi 默认主题的语义色变量（--semi-color-*），不做品牌配色。 */
+
+.board {
+  /* 平面图按屏幕高度取宽：屏幕高度减去顶栏、页头、图例等占掉的高度，再按底图宽高比换算 */
+  --board-chrome: 200px;
+}
+
+/* 全屏：浏览器全屏（或不支持时只是铺满）、藏起后台的侧栏与顶栏，内容区只留看板 */
+html[data-board-fullscreen] .semi-layout-sider,
+html[data-board-fullscreen] .admin-header {
+  display: none !important;
+}
+html[data-board-fullscreen] .admin-content {
+  padding: 16px !important;
+}
+html[data-board-fullscreen] .board {
+  --board-chrome: 124px;
+}
+html[data-board-fullscreen] .board .page {
+  max-width: none;
+}
+
+.board-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.board-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.board-map {
+  flex: 0 1 auto;
+  width: min(100%, calc((100dvh - var(--board-chrome)) * var(--plan-ratio)));
+  min-width: min(100%, 320px);
+}
+
+.board-side {
+  flex: 1 1 300px;
+  min-width: min(100%, 300px);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+/* ---------- 平面图 ---------- */
+
+.board-plan {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;
+  border-radius: var(--semi-border-radius-medium);
+  overflow: hidden;
+  background: var(--semi-color-fill-0);
+}
+
+.board-plan-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+}
+
+.board-seat {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  font: inherit;
+  /* 字号跟着平面图宽度走：柜台大屏上看得清，平板上不挤出座位框 */
+  font-size: clamp(9px, 1.75cqw, 14px);
+  line-height: 1.2;
+  color: var(--semi-color-text-0);
+  white-space: nowrap;
+  overflow: visible;
+}
+
+button.board-seat {
+  cursor: pointer;
+}
+button.board-seat:hover {
+  box-shadow: var(--semi-shadow-elevated);
+}
+/* 停用的座位点了只提示不能开台 */
+button.board-seat.board-state-off {
+  cursor: not-allowed;
+}
+button.board-seat.board-state-off:hover {
+  box-shadow: none;
+}
+button.board-seat:focus-visible {
+  outline: 2px solid var(--semi-color-focus-border);
+  outline-offset: 2px;
+}
+
+.board-seat-code {
+  font-weight: 600;
+}
+
+/* 30 分钟内要到店的预约：座位下方一枚反色小标签，和座位状态的颜色分开 */
+.board-seat-booking {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  line-height: 1.35;
+  background: var(--semi-color-text-0);
+  color: var(--semi-color-bg-0);
+  z-index: 1;
+}
+
+/* 图例里的色块，和座位同一套状态配色（写在状态配色前面，免得边框颜色被盖掉） */
+.board-swatch {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-radius: 3px;
+}
+
+/* 状态配色：座位与图例共用。底图上座位框里印着编号，状态色铺在不透明的底色上，免得透出底图的字 */
+.board-seat,
+.board-swatch {
+  --seat-fill: transparent;
+  background: linear-gradient(var(--seat-fill), var(--seat-fill)), var(--semi-color-bg-0);
+}
+.board-state-free {
+  --seat-fill: var(--semi-color-success-light-default);
+  border-color: var(--semi-color-success);
+}
+.board-state-running {
+  --seat-fill: var(--semi-color-primary-light-default);
+  border-color: var(--semi-color-primary);
+}
+.board-state-expiring {
+  --seat-fill: var(--semi-color-warning-light-default);
+  border-color: var(--semi-color-warning);
+}
+.board-state-overdue {
+  --seat-fill: var(--semi-color-danger);
+  border-color: var(--semi-color-danger);
+  color: var(--semi-color-white);
+}
+.board-state-paused {
+  --seat-fill: var(--semi-color-tertiary-light-default);
+  border-color: var(--semi-color-tertiary);
+}
+.board-state-companion {
+  --seat-fill: var(--semi-color-secondary-light-default);
+  border-color: var(--semi-color-secondary);
+}
+.board-state-stopped {
+  border-color: var(--semi-color-primary);
+  border-style: dashed;
+}
+.board-state-off {
+  --seat-fill: var(--semi-color-disabled-fill);
+  border-color: var(--semi-color-disabled-border);
+  border-style: dashed;
+  color: var(--semi-color-disabled-text);
+}
+
+.board-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 8px;
+}
+
+.board-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.board-legend .board-legend-booking {
+  position: static;
+  transform: none;
+}
+
+/* ---------- 侧栏 ---------- */
+
+/* 待确认入座、即将到店用 Semi 的 List：一行的内容占满整行，长称呼在格子里换行，不撑开侧栏 */
+.board-list .semi-list-item-body-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.board-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.board-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.board-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* 快到点与超时：整行可点，打开会话详情 */
+.board-reminder {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  border-bottom: 1px solid var(--semi-color-border);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.board-reminder > span:first-child {
+  min-width: 0;
+}
+/* 顾客称呼再长也不挤掉右边的「超时 15 分」 */
+.board-reminder > .semi-tag {
+  flex-shrink: 0;
+}
+.board-reminder:last-child {
+  border-bottom: none;
+}
+.board-reminder:hover {
+  background: var(--semi-color-fill-0);
+}
+.board-reminder:focus-visible {
+  outline: 2px solid var(--semi-color-focus-border);
+  outline-offset: -2px;
+}
+
+.board-time {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 开台面板 ---------- */
+
+/* 计时选项（四个时长加自由计时）排成网格，窄了自动换行 */
+.board-open-timing.semi-radioGroup {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 8px;
+}
