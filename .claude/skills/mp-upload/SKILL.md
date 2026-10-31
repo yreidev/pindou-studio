@@ -24,7 +24,7 @@ description: 编译小程序并上传体验版/发布版。当需要 build、pre
 **没有开发者工具的分包缓存、剔图片、关窗口这些问题**，也不用先 `cli quit`。
 
 ```sh
-export WECHAT_MP_UPLOAD_KEY=~/.claude/credentials/wx-upload-touristappid.key   # 代码上传密钥（600），不进仓库
+export WECHAT_MP_UPLOAD_KEY=<代码上传密钥文件路径>   # 密钥文件权限 600，不进仓库
 make miniapp-preview                     # 构建 + 预览：打印各分包字节数，预览码存 deploy/miniprogram/preview-qrcode.jpg
 make miniapp-upload DESC="0.0.8：……"     # 构建 + 上传体验版；版本号取 pindou-miniapp/package.json
 ```

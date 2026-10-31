@@ -13,7 +13,7 @@ description: 后端或网页后台发布到生产。当要部署后端、网页�
 
 1. **出镜像**：代码经 PR 合进 main（触发 `verify.yml`）→ 在合并后的提交上打 `backend-v<版本>` 标签并推送（到 0.0.38 为止是 `v<版本>`，现在不再触发）→ 批准 `production-build` 环境。`release.yml` 不重跑检查，等这个提交在 main 上的「工程验证」通过后推 `docker.io/yreidev/pindou-api:<版本>` 和 `sha-<7 位>`。**等这个工作流变绿再往下走。** 然后在私有配置仓库改清单里 API 镜像的标签、提交推送（只改清单不影响构建，`production-build` 里固定的配置提交不用跟着改）。
 2. **先备份**：`kubectl -n pindou create job --from=cronjob/postgres-backup pre-<版本>`，`kubectl -n pindou wait --for=condition=complete job/pre-<版本> --timeout=10m`，`kubectl -n pindou logs job/pre-<版本> -c dump` 看到 `backup pindou_<时间>.dump done`（任务里已 `pg_restore --list` 验过；数据库换成 CloudNativePG 前后都适用，不用知道 Pod 名）。把 `/var/backups/pindou/postgres/` 里这份复制到 `/var/backups/pindou/manual/` 并拷回本机（定时任务 30 天后会清掉原件）。没验证过的备份不算备份。再记下此刻（UTC）：迁移出问题时可以按时间点恢复到发布前。
-3. **应用**：先在服务器上 `k3s crictl pull docker.io/yreidev/pindou-api:<版本>`（缩短停机），用 `k3s crictl inspecti` 核对拉到的 digest 与工作流摘要里的 `digest:` 一致（标签可以被重推覆盖，digest 不会）；再把私有配置仓库的清单拷到服务器 `kubectl apply -f`，`kubectl -n pindou rollout status deploy/pindou-api`。两个副本滚动更新，不停机。
+3. **应用**：先在服务器上 `k3s crictl pull docker.io/yreidev/pindou-api:<版本>`（缩短停机），用 `k3s crictl inspecti` 核对拉到的 digest 与工作流摘要里的 `digest:` 一致（标签可以被重推覆盖，digest 不会）；再把私有配置仓库的清单拷到服务器，先 `kubectl diff -f` 看一遍：只应有 API 镜像标签这一处变化。清单里同时有网页后台，标签比线上旧时一 apply 网页后台就被退回旧版，有别的变化先停下查清；没问题再 `kubectl apply -f`，`kubectl -n pindou rollout status deploy/pindou-api`。两个副本滚动更新，不停机。
 4. **验证**（缺一不可）：
    - `kubectl -n pindou get pods` 两个 API Pod 都 Ready
    - `/healthz` 返回的 `version` 等于这次的版本号（标签去掉 `backend-v`）、`commit` 等于这个标签的提交（`version` 是 dev 或 `commit` 带 `-dirty` 说明不是 CI 按标签出的产物，不能上生产）
@@ -32,7 +32,7 @@ description: 后端或网页后台发布到生产。当要部署后端、网页�
 
 1. **出镜像**：`pindou-admin/package.json` 的 `version` 经 PR 合进 main → 打 `admin-v<版本>` 标签并推送（和 package.json 的版本不同时 `release.yml` 报错、不出镜像）→ 批准 `production-build` 环境。等工作流变绿，再在私有配置清单里改 `pindou-admin` 镜像的标签。
 2. **先备份**：同后端第 2 步（页面会调接口改数据）。
-3. **应用**：`k3s crictl pull docker.io/yreidev/pindou-admin:<版本>`，核对 digest；`kubectl apply -f` 私有配置的清单，`kubectl -n pindou rollout status deploy/pindou-admin`（一个副本，先起新的再停旧的）。
+3. **应用**：`k3s crictl pull docker.io/yreidev/pindou-admin:<版本>`，核对 digest；私有配置的清单先 `kubectl diff -f`，只应有 `pindou-admin` 镜像标签这一处变化（API 标签不能被带回旧版），再 `kubectl apply -f`，`kubectl -n pindou rollout status deploy/pindou-admin`（一个副本，先起新的再停旧的）。
 4. **验证**：`pindou-admin` 的 Pod Ready；`https://admin.example.invalid` 打开是登录页、响应头带 `Content-Security-Policy`；扫码登录，首页「网页后台版本」是这次的版本和这个标签提交的前 7 位（`dev` 说明不是 CI 按标签出的，不能上生产）；受影响的页面走一遍。
 5. **退路**：`kubectl -n pindou rollout undo deploy/pindou-admin`，并把私有配置清单里的标签改回去；页面服务不碰库，退回不受迁移限制。
 
