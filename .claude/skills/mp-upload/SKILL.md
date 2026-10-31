@@ -7,12 +7,16 @@ description: 编译小程序并上传体验版/发布版。当需要 build、pre
 
 ## 主流程：打标签自动上传（2026-10-05 起）
 
-`pindou-miniapp/package.json` 的版本号改成这次的版本、推 main、打 `miniapp-v<版本>` 标签：`.github/workflows/miniapp.yml`
-等 main 上的「工程验证」通过后构建、用 miniprogram-ci（robot 1）上传体验版，Actions 日志里有各分包字节数。
+`pindou-miniapp/package.json` 的版本号改成这次的版本、经 PR 合进 main（2026-10-31 起仓库公开，main 受保护，不能直接推），
+在合并后的提交上打 `miniapp-v<版本>` 标签：`.github/workflows/miniapp.yml` 先核版本号、等 main 上的「工程验证」通过，
+「上传体验版」任务停在 `production-build` 环境等审核，在 Actions 这次运行的页面点「Review deployments」批准后才读私有配置
+（正式 AppID、接口地址）构建、用 miniprogram-ci（robot 1）上传体验版，「上传」那一步的日志里有各分包字节数和正式 AppID。
 小程序和后端、网页后台各自发版（2026-10-31 起，`docs/plan-split-release.md`）：标签和 package.json 的版本不同就报错、不传；
-以前共用的 `v<版本>` 标签（到 0.0.38）不再触发。密钥在仓库 secret `WECHAT_MP_UPLOAD_KEY`（密钥文件全文）。
+以前共用的 `v<版本>` 标签（到 0.0.38）不再触发。密钥在 `production-build` 环境的 secret `WECHAT_MP_UPLOAD_KEY`（密钥文件全文）。
 **改版本号、打标签就等于确认上传体验版**；正式版仍由业主在公众平台提审。体验版连正式后端：小程序要用新接口时先发后端。
-真机先验：本机 `make miniapp-preview` 出预览码给业主扫，确认后再打标签。
+只在正式版才调的新接口（如版本上报）可以先传体验版，但提审前后端必须先上线。
+真机先验：本机 `make miniapp-preview` 出预览码给业主扫，确认后再打标签。公开仓库直接构建是示例配置，
+要预览正式的，先在仓库外的一次性目录里用 `deploy/apply-store-config.py` 套上私有配置（见 `docs/deployment.md`）。
 
 ## 本机：miniprogram-ci（2026-10 起）
 
